@@ -77,7 +77,7 @@ function Nav() {
     { href: "/services/automatisation-workflow-ia", label: "Workflows IA" },
     { href: "/services/agent-ia-chatbot", label: "Agents IA" },
     { href: "/services/formation-ia-entreprise", label: "Formation" },
-    { href: "/cas-usage/automatiser-devis-ia", label: "Cas d'usage" },
+    { href: "/blog", label: "Blog" },
     { href: "/#contact", label: "Contact ↗", cta: true },
   ];
   return (
@@ -138,14 +138,20 @@ function Foot() {
             <li><Link style={l} href="/services/automatisation-workflow-ia">Workflows IA</Link></li>
             <li><Link style={l} href="/services/agent-ia-chatbot">Agents IA & chatbots</Link></li>
             <li><Link style={l} href="/services/formation-ia-entreprise">Formation IA</Link></li>
+            <li><Link style={l} href="/services/automatisation-pme">Automatisation PME</Link></li>
+            <li><Link style={l} href="/services/prospection-ia">Prospection IA</Link></li>
+            <li><Link style={l} href="/services/support-client-ia">Support client IA</Link></li>
+            <li><Link style={l} href="/services/crm-ia">CRM IA</Link></li>
+            <li><Link style={l} href="/services/ia-pour-ecommerce">IA e-commerce</Link></li>
             <li><Link style={l} href="/agence-automatisation-ia-paris">Agence IA Paris</Link></li>
           </ul>
         </div>
         <div>
-          <strong style={{ color: "#e9efe5" }}>Cas d&apos;usage</strong>
+          <strong style={{ color: "#e9efe5" }}>Ressources</strong>
           <ul style={{ listStyle: "none", padding: 0, margin: "12px 0 0", display: "flex", flexDirection: "column", gap: 6 }}>
-            <li><Link style={l} href="/cas-usage/automatiser-devis-ia">Automatiser devis</Link></li>
-            <li><Link style={l} href="/cas-usage/onboarding-rh-ia">Onboarding RH</Link></li>
+            <li><Link style={l} href="/blog">Blog</Link></li>
+            <li><Link style={l} href="/cas-usage/automatiser-devis-ia">Cas : automatiser devis</Link></li>
+            <li><Link style={l} href="/cas-usage/onboarding-rh-ia">Cas : onboarding RH</Link></li>
           </ul>
           <div style={{ marginTop: 18 }}>
             <strong style={{ color: "#e9efe5" }}>Légal</strong>
