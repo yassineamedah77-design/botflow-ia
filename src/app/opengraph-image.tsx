@@ -1,6 +1,7 @@
 import { ImageResponse } from "next/og";
 
-export const alt = "Botflow — Agence Automatisation IA pour PME & Startups";
+export const alt =
+  "BotFlow IA — Sofia, l'IA pour cliniques esthétiques & instituts de beauté";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -31,34 +32,54 @@ export default function Image() {
               boxShadow: "0 0 30px #7afca5",
             }}
           />
-          <div style={{ fontSize: 36, fontWeight: 600, letterSpacing: "0.5px" }}>Botflow</div>
+          <div style={{ fontSize: 36, fontWeight: 600, letterSpacing: "0.5px" }}>
+            BotFlow IA
+          </div>
         </div>
 
         <div style={{ display: "flex", flexDirection: "column", gap: 24 }}>
           <div
             style={{
               display: "flex",
-              fontSize: 84,
+              fontSize: 74,
               fontWeight: 500,
               lineHeight: 1.02,
               letterSpacing: "-0.04em",
-              maxWidth: 1000,
+              maxWidth: 1040,
               color: "#e9efe5",
             }}
           >
-            Agence Automatisation IA pour PME &amp; startups.
+            Vos DM, vos heures creuses, deviennent des rendez-vous.
           </div>
-          <div style={{ display: "flex", fontSize: 28, color: "#cfd6cd", maxWidth: 900, lineHeight: 1.3 }}>
-            Workflows n8n + Claude · Agents IA sur-mesure · Formation · France
+          <div
+            style={{
+              display: "flex",
+              fontSize: 26,
+              color: "#cfd6cd",
+              maxWidth: 1000,
+              lineHeight: 1.3,
+            }}
+          >
+            Sofia, l'IA pour cliniques esthétiques & instituts de beauté · 🇫🇷 FR · 🇵🇹 PT · 🇬🇧 EN
           </div>
         </div>
 
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: 22, color: "#8a948a" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            fontSize: 22,
+            color: "#8a948a",
+          }}
+        >
           <div>botflow-ia.fr</div>
-          <div style={{ color: "#d8f5c5" }}>Audit gratuit · ROI dès 4 semaines</div>
+          <div style={{ color: "#d8f5c5" }}>
+            Audit gratuit · Conforme RGPD
+          </div>
         </div>
       </div>
     ),
-    { ...size }
+    { ...size },
   );
 }

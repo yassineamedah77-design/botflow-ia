@@ -18,25 +18,46 @@ const instrumentSerif = Instrument_Serif({
 
 export const metadata: Metadata = {
   title: {
-    default: "Botflow — Agence Automatisation IA pour PME & Startups | France",
-    template: "%s | Botflow",
+    default:
+      "BotFlow IA — IA & automatisation pour cliniques esthétiques et instituts de beauté · FR / PT",
+    template: "%s | BotFlow IA",
   },
   description:
-    "Agence française d'automatisation IA. Workflows n8n + Claude, agents IA sur-mesure, formation Claude/ChatGPT. Audit gratuit · ROI dès 4 semaines · PME et startups.",
+    "Sofia, votre assistante virtuelle IA bilingue (FR/PT/EN). Répond 24/7 sur WhatsApp & Instagram, qualifie vos clientes, remplit votre agenda Planity/Treatwell. Pour cliniques esthétiques, instituts de beauté, spas et médecine esthétique. France & Portugal. Conforme RGPD.",
   metadataBase: new URL("https://botflow-ia.fr"),
   alternates: { canonical: "/" },
+  keywords: [
+    "agence IA clinique esthétique",
+    "chatbot WhatsApp institut beauté",
+    "automatisation spa",
+    "IA médecine esthétique",
+    "Planity automatisation",
+    "Treatwell automatisation",
+    "Zolmi automatisation",
+    "assistante virtuelle clinique",
+    "AEO clinique esthétique",
+    "réactivation clientes spa",
+    "machine à contenus Instagram esthétique",
+    "no-show institut beauté",
+    "agência IA clínica estética Portugal",
+  ],
   openGraph: {
-    title: "Botflow — Agence Automatisation IA",
-    description: "Workflows IA, agents sur-mesure, formation Claude pour PME et startups françaises.",
+    title:
+      "BotFlow IA — L'IA qui remplit l'agenda des cliniques esthétiques & instituts de beauté",
+    description:
+      "Sofia répond 24/7 sur WhatsApp & Instagram, qualifie vos clientes, remplit Planity/Treatwell. FR · PT · EN. Conforme RGPD.",
     url: "https://botflow-ia.fr",
-    siteName: "Botflow",
+    siteName: "BotFlow IA",
     locale: "fr_FR",
+    alternateLocale: ["pt_PT", "en_US"],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Botflow — Agence Automatisation IA",
-    description: "Workflows IA pour PME françaises.",
+    title:
+      "BotFlow IA — IA pour cliniques esthétiques & instituts de beauté",
+    description:
+      "Sofia, votre assistante virtuelle IA bilingue. Répond 24/7, remplit votre agenda.",
   },
   robots: { index: true, follow: true },
   verification: process.env.NEXT_PUBLIC_GSC_VERIFICATION
