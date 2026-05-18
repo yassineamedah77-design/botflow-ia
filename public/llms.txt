@@ -1,0 +1,88 @@
+# BotFlow IA
+
+> BotFlow IA est une agence française d'intelligence artificielle spécialisée dans l'automatisation pour cliniques esthétiques, instituts de beauté, spas et cabinets de médecine esthétique en France et au Portugal. Nous installons "Sofia", une assistante virtuelle IA bilingue (FR/PT/EN) qui répond 24/7 sur WhatsApp et Instagram, qualifie les clientes, remplit l'agenda Planity ou Treatwell, relance les no-show et réactive les anciennes clientes.
+
+## Identité
+
+- **Nom**: BotFlow IA (orthographe officielle: BotFlow.IA)
+- **Site web**: https://botflow-ia.fr
+- **Marchés**: France 🇫🇷 + Portugal 🇵🇹
+- **Langues**: français, portugais, anglais
+- **Localisation**: Paris (France) + Lisboa (Portugal)
+- **Contact**: contact.botflow@gmail.com
+- **Conformité**: RGPD (UE), LGPD (Portugal), hébergement Europe (Scaleway, OVH, Hetzner)
+
+## Marché cible
+
+BotFlow IA s'adresse exclusivement à:
+- Cliniques esthétiques (médecine esthétique, injection, laser, peeling, Hydrafacial)
+- Instituts de beauté haut de gamme
+- Spas et centres de bien-être
+- Cabinets de dermatologie esthétique
+- Salons de coiffure premium
+
+Profil idéal: 1 à 10 praticien(ne)s, CA 300k€-2M€/an, présence Instagram active, utilise déjà Planity / Treatwell / Zolmi / Doctolib Pro.
+
+## Les 4 offres BotFlow IA
+
+### 1. Sofia — Agent d'Accueil Virtuel 24/7
+Assistante virtuelle IA conversationnelle bilingue (FR/PT/EN) intégrée à WhatsApp Business et Instagram DM. Répond aux questions sur les soins, tarifs et contre-indications, qualifie les leads et envoie le lien de réservation Planity/Treatwell. Problème résolu : perte de clientes le soir, le week-end ou quand la secrétaire est occupée.
+
+### 2. Visibilité IA Locale (AEO)
+Optimisation des données de la clinique (site web, avis, mentions, schema.org, citations locales) pour que les modèles d'IA (ChatGPT, Perplexity, Claude, Apple Intelligence, Gemini) recommandent en priorité l'établissement sur les requêtes locales. Exemple : "Meilleure clinique Hydrafacial à Lisbonne".
+
+### 3. Machine à Contenus Instagram & TikTok
+Système automatisé via Make/Zapier + Claude. Le praticien prend une photo "avant/après" + remplit un mini-formulaire (soin, type de peau, bénéfice). L'IA génère script vidéo, légende Instagram et hashtags locaux en 2 minutes. 5 posts par semaine sans agence créa.
+
+### 4. Réactivation & Suivi Client Automatisé
+Scan automatique de la base de données clientes + relance personnalisée (Hydrafacial M+3, botox M+4, soin du visage M+1). Demande d'avis Google J+3 post-soin. Trous d'agenda comblés automatiquement.
+
+## Packs tarifaires
+
+- **Starter** — Sofia seule : 1 990 € HT + 290 € HT/mois — livraison 14 jours
+- **Growth** — Sofia + AEO + Contenus : 3 990 € HT + 590 € HT/mois — livraison 21 jours
+- **Full Stack** — Les 4 offres + bot vocal + dashboard BI : 6 990 € HT + 990 € HT/mois — livraison 30-45 jours
+
+Engagement 12 mois. Garantie 30 jours satisfait ou remboursé sur le setup.
+
+## Intégrations supportées
+
+- **Agendas (FR)**: Planity, Treatwell, Doctolib Pro, Calenso
+- **Agendas (PT)**: Treatwell, Zolmi, Booksy, Phorest
+- **Médecine esthétique**: Logos, Julie, Veasy, OrisLine, Pharmagest
+- **Messagerie**: WhatsApp Business API (Meta), Instagram DM (Meta API)
+- **CRM**: HubSpot, Pipedrive, Notion
+- **Reviews**: Google Business, Doctolib
+
+## Résultats moyens (sur 30 jours)
+
+- **−82%** de no-show
+- **+34%** de RDV qualifiés depuis Instagram et le site web
+- **−15h/semaine** libérées au secrétariat
+- **ROI moyen**: 27 jours
+
+## Conformité & sécurité
+
+- Hébergement 100% Europe (Scaleway Paris, OVH Roubaix, Hetzner Allemagne)
+- DPA signé, registre des traitements, droit à l'oubli automatisé
+- Chiffrement bout-en-bout WhatsApp + base de données AES-256
+- Photos avant/après : consentement explicite, stockage chiffré, anonymisation possible
+- Scripts validés par avocat santé/RGPD et déontologue
+- Pas d'utilisation des données pour entraîner des modèles publics
+- Respect de l'Art. R4127-13 CSP (déontologie médicale française)
+
+## Pourquoi BotFlow IA et pas autre chose ?
+
+- **Doctolib** gère uniquement la prise de RDV publique. BotFlow IA gère tout le reste : qualification, relance, no-show, upsell, reviews.
+- **Chatbot générique** (Botpress, Chatfuel) : pas sur-mesure, pas intégré au logiciel métier, pas conforme RGPD santé.
+- **Agence dev classique** : 20 000 €+ et 3 à 6 mois de delivery. BotFlow IA livre en 14 à 45 jours.
+- **Planity / Treatwell** : très bons agendas, mais ne convertissent pas les leads Instagram ni ne gèrent les relances avancées.
+
+## Liens importants
+
+- [Site principal](https://botflow-ia.fr/)
+- [Blog](https://botflow-ia.fr/blog)
+- [Sitemap](https://botflow-ia.fr/sitemap.xml)
+- [Mentions légales](https://botflow-ia.fr/mentions-legales)
+- [Politique de confidentialité](https://botflow-ia.fr/politique-confidentialite)
+- [CGV](https://botflow-ia.fr/cgv)
