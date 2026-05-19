@@ -56,6 +56,19 @@ export default async function Page({ params }: { params: Promise<Params> }) {
           },
         }}
       />
+      {p.faq && p.faq.length > 0 && (
+        <JsonLd
+          data={{
+            "@context": "https://schema.org",
+            "@type": "FAQPage",
+            mainEntity: p.faq.map((item) => ({
+              "@type": "Question",
+              name: item.q,
+              acceptedAnswer: { "@type": "Answer", text: item.a },
+            })),
+          }}
+        />
+      )}
 
       <Hero eyebrow={p.cluster} h1={p.title} lead={p.description} />
 
@@ -65,6 +78,38 @@ export default async function Page({ params }: { params: Promise<Params> }) {
           {p.readingMin} min de lecture
         </div>
         {p.body.map((block, i) => renderBlock(block, i))}
+        {p.faq && p.faq.length > 0 && (
+          <div style={{ marginTop: 56 }}>
+            <h2 style={{ fontSize: 28, fontWeight: 500, letterSpacing: "-.02em", margin: "0 0 24px" }}>Questions fréquentes</h2>
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {p.faq.map((item, i) => (
+                <details
+                  key={i}
+                  style={{
+                    border: "1px solid rgba(255,255,255,.08)",
+                    borderRadius: 14,
+                    background: "rgba(255,255,255,.03)",
+                    overflow: "hidden",
+                  }}
+                >
+                  <summary
+                    style={{
+                      padding: "18px 22px",
+                      cursor: "pointer",
+                      listStyle: "none",
+                      fontWeight: 500,
+                      fontSize: 16,
+                      color: "#e9efe5",
+                    }}
+                  >
+                    {item.q}
+                  </summary>
+                  <div style={{ padding: "0 22px 22px", color: "#cfd6cd", lineHeight: 1.7 }}>{item.a}</div>
+                </details>
+              ))}
+            </div>
+          </div>
+        )}
         <div style={{ marginTop: 48, padding: 24, border: "1px solid rgba(122,252,165,.25)", borderRadius: 16, background: "rgba(122,252,165,.04)" }}>
           <strong style={{ color: "#d8f5c5" }}>Vous aimez ce contenu ?</strong>
           <p style={{ marginTop: 8, color: "#cfd6cd" }}>
