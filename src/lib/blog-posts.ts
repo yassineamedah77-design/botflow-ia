@@ -23,6 +23,224 @@ export type BlogBlock =
 
 export const posts: BlogPost[] = [
   {
+    slug: "whatsapp-business-clinique-esthetique-rgpd",
+    title: "WhatsApp Business pour cliniques esthétiques : guide d'installation conforme RGPD 2026",
+    description:
+      "Installer WhatsApp Business dans votre clinique esthétique sans risque RGPD : Business App vs Cloud API, vérification Meta, opt-in, templates approuvés, intégration Planity/Treatwell. Setup pas-à-pas.",
+    date: "2026-05-19",
+    readingMin: 11,
+    cluster: "Réduction no-show",
+    faq: [
+      {
+        q: "WhatsApp Business gratuit ou payant ?",
+        a: "WhatsApp Business App (smartphone) est gratuit, mais limité à un seul appareil et sans automatisation avancée. WhatsApp Business Cloud API (la version pro pour cliniques) facture les conversations : environ 0,07 € par conversation initiée par l'entreprise (24h glissantes) et 0,03 € pour celles initiées par la cliente. Pour 500 conversations mensuelles, comptez 25 à 40 €/mois. Ajouter le coût du fournisseur d'accès (Twilio, 360dialog, Sinch) : 10 à 30 €/mois.",
+      },
+      {
+        q: "Puis-je utiliser mon numéro personnel pour WhatsApp Business ?",
+        a: "Non, c'est l'erreur la plus fréquente. Le numéro doit être dédié à l'entreprise et ne jamais avoir été utilisé sur WhatsApp Personnel. Risque sinon : suspension du compte par Meta sans préavis. Solution : numéro fixe géographique (01.../02...) ou mobile dédié activable via opérateur en 48h.",
+      },
+      {
+        q: "Quelle base légale RGPD pour envoyer des messages WhatsApp à mes clientes ?",
+        a: "Trois bases possibles selon le type de message. (1) Exécution d'un contrat : rappels de rendez-vous confirmés. (2) Intérêt légitime : relances de no-show, propositions de créneaux. (3) Consentement explicite : marketing, promotions, nouveautés. Toujours informer lors de la prise de rendez-vous (formulaire Planity, par exemple) et proposer un opt-out en 1 clic.",
+      },
+      {
+        q: "Mes données clientes sortent-elles d'Europe avec WhatsApp Business ?",
+        a: "Oui, Meta héberge en partie aux États-Unis. Pour les cliniques manipulant des données de santé sensibles (médecine esthétique, dermatologie), c'est un point d'attention. Solutions : (1) ne jamais faire transiter de données de santé dans le contenu des messages (préférer un lien sécurisé), (2) utiliser un BSP européen comme 360dialog ou Sinch qui contractualise des clauses RGPD renforcées, (3) tenir un registre des traitements à jour.",
+      },
+      {
+        q: "Combien de temps prend le setup complet ?",
+        a: "Configuration App seule : 30 minutes. Configuration Cloud API avec vérification Meta Business : 3 à 7 jours (vérification compte business + Facebook page + numéro). Intégration agenda (Planity, Treatwell) et premiers templates : 1 à 2 jours supplémentaires. Plan réaliste : 10 jours du démarrage au premier message envoyé en production.",
+      },
+      {
+        q: "Quels templates de message Meta valide-t-elle pour cliniques esthétiques ?",
+        a: "Meta approuve facilement les templates transactionnels (confirmation rendez-vous, rappel J-1, demande d'avis post-soin). Refus fréquents : promotions explicites (-20 % sur tous les soins), messages alarmistes (votre peau se dégrade), allégations médicales (traitement anti-âge garanti). Privilégier un ton informatif et concret. Validation moyenne en 24-48 h.",
+      },
+    ],
+    body: [
+      {
+        type: "quote",
+        text:
+          "TL;DR — WhatsApp Business est devenu indispensable pour les cliniques esthétiques (98% d'ouverture en 3 min). Deux versions : App (gratuite, smartphone, limitée) et Cloud API (pro, automatisable, payante au message). Conformité RGPD = numéro dédié + base légale claire + opt-out + registre des traitements + BSP européen. Setup complet en 10 jours, premier message en production le 11e jour.",
+      },
+      { type: "h2", text: "1. Pourquoi WhatsApp Business est devenu critique en clinique esthétique" },
+      {
+        type: "p",
+        text:
+          "L'email est mort pour les rappels de rendez-vous. Taux d'ouverture moyen 22% en France, lu en moyenne 6 heures après réception, souvent jamais. Le SMS reste utile mais sans interaction : la cliente lit, oublie, ne peut pas répondre facilement. WhatsApp, lui, ouvre à 98% dans les 3 minutes et permet une conversation bidirectionnelle immédiate.",
+      },
+      {
+        type: "p",
+        text:
+          "Pour une clinique esthétique, l'impact est triple : confirmation des rendez-vous (réduction no-show), reprogrammation 1 clic (récupération des annulations), nurturing prospects Instagram (qualification des DM en réservation). Une seule plateforme couvre la chaîne complète de la prise de contact à la fidélisation.",
+      },
+      { type: "h2", text: "2. WhatsApp Business App vs Cloud API : laquelle choisir" },
+      {
+        type: "p",
+        text:
+          "Meta propose deux produits sous le même nom. Confusion fréquente, conséquences sérieuses.",
+      },
+      { type: "h3", text: "WhatsApp Business App" },
+      {
+        type: "p",
+        text:
+          "Application gratuite installée sur le smartphone de la secrétaire ou de la praticienne. Pratique pour démarrer : profil professionnel, catalogue, réponses automatiques basiques. Limites : un seul appareil actif (multi-device limité à 4 secondaires), pas d'automatisation avancée, pas d'intégration directe avec Planity ou Treatwell. Convient à une clinique solo qui débute.",
+      },
+      { type: "h3", text: "WhatsApp Business Cloud API" },
+      {
+        type: "p",
+        text:
+          "Solution professionnelle hébergée chez Meta, accessible via un fournisseur d'accès (Business Solution Provider — BSP). Ouvre la voie à : multi-utilisateurs simultanés, automatisations conditionnelles, intégration native CRM/agenda, IA conversationnelle. Tarification à la conversation (environ 0,07 € par conversation initiée par l'entreprise). C'est le choix obligatoire dès qu'une clinique veut une vraie séquence J-3/J-1/H-2 automatisée.",
+      },
+      {
+        type: "ul",
+        items: [
+          "App : 0 à 5 messages/jour, 1 utilisateur, démarrage solo.",
+          "Cloud API : 10 à 1000+ messages/jour, multi-utilisateurs, automatisation, scale.",
+          "Migration App → Cloud API : possible, conserve les conversations sous 90 jours, demande 5 à 7 jours de paramétrage.",
+        ],
+      },
+      { type: "h2", text: "3. Choisir son BSP (Business Solution Provider) européen" },
+      {
+        type: "p",
+        text:
+          "Pour utiliser Cloud API, il faut passer par un BSP. C'est lui qui contractualise avec Meta, gère la facturation, fournit l'interface technique. Pour une clinique française ou portugaise, le critère #1 est la juridiction du BSP.",
+      },
+      { type: "h3", text: "BSP recommandés" },
+      {
+        type: "ul",
+        items: [
+          "360dialog (Allemagne) — choix recommandé pour la conformité RGPD. Tarif transparent, support FR/EN. Idéal cliniques 1-10 praticien(ne)s.",
+          "Sinch (Suède) — alternative européenne robuste, plus orientée volume élevé.",
+          "Twilio (États-Unis) — leader mondial, mais juridiction US. Acceptable si les données de santé ne transitent jamais dans les messages.",
+          "MessageBird/Bird (Pays-Bas) — bonne option avec interface no-code et tarifs prévisibles.",
+        ],
+      },
+      {
+        type: "p",
+        text:
+          "Éviter les BSP basés hors UE qui ne contractualisent pas de clauses contractuelles types (CCT). Vérifier dans le contrat : (1) hébergement des métadonnées dans l'UE, (2) DPA fourni, (3) audit log accessible, (4) localisation du support technique.",
+      },
+      { type: "h2", text: "4. Conformité RGPD : les 4 piliers à valider" },
+      { type: "h3", text: "Pilier 1 — Base légale claire" },
+      {
+        type: "p",
+        text:
+          "Pour chaque type de message, identifier la base légale. Rappels de rendez-vous confirmés = exécution du contrat. Relances no-show, propositions liste d'attente = intérêt légitime. Newsletter, promotions, lancements de soins = consentement explicite. Documenter cette répartition dans le registre des traitements.",
+      },
+      { type: "h3", text: "Pilier 2 — Information et consentement" },
+      {
+        type: "p",
+        text:
+          "Lors de la prise de rendez-vous (téléphone, Planity, Instagram), informer explicitement : « Nous utilisons WhatsApp Business pour les rappels et la gestion de votre rendez-vous. Vos données sont traitées en Europe. Vous pouvez vous désinscrire à tout moment en répondant STOP. » Ajouter ce paragraphe dans les CGV et la politique de confidentialité du site.",
+      },
+      { type: "h3", text: "Pilier 3 — Opt-out en 1 message" },
+      {
+        type: "p",
+        text:
+          "Toute conversation doit permettre le désabonnement. La cliente répond STOP, le système la sort immédiatement de toutes les séquences (rappels exclus si rendez-vous confirmé). Conserver la preuve technique du retrait dans les logs pendant 5 ans.",
+      },
+      { type: "h3", text: "Pilier 4 — Registre des traitements à jour" },
+      {
+        type: "p",
+        text:
+          "Mentionner WhatsApp Business dans le registre des traitements (obligation CNIL pour entreprises traitant des données régulièrement) : finalités, données collectées, durée de conservation, sous-traitants (Meta + BSP), transferts hors UE éventuels. Modèle gratuit fourni par la CNIL.",
+      },
+      { type: "h2", text: "5. Templates de message : ce que Meta valide" },
+      {
+        type: "p",
+        text:
+          "Tout message initié par l'entreprise (hors fenêtre de 24h après une interaction cliente) doit utiliser un template approuvé par Meta. Cette validation prend 24 à 48h.",
+      },
+      { type: "h3", text: "Templates approuvés facilement" },
+      {
+        type: "ul",
+        items: [
+          "Confirmation de rendez-vous (transactionnel, neutre, factuel).",
+          "Rappel J-1 avec instructions de préparation.",
+          "Notification de modification d'horaire à l'initiative de la clinique.",
+          "Demande d'avis post-soin (sans incentive financier explicite).",
+          "Proposition de créneau pour reprogrammation (réponse à une annulation).",
+        ],
+      },
+      { type: "h3", text: "Templates souvent refusés" },
+      {
+        type: "ul",
+        items: [
+          "Promotions explicites (-20 % sur tous les soins ce week-end).",
+          "Allégations médicales (traitement anti-âge garanti, effet immédiat sans risque).",
+          "Messages alarmistes (votre peau se dégrade sans intervention).",
+          "Marketing en série sans personnalisation (Bonjour à toutes).",
+        ],
+      },
+      {
+        type: "p",
+        text:
+          "Astuce : pour les promotions, passer par un template de notification générique (« Nouveau soin disponible chez X ») + lien vers page web où l'offre détaillée est présentée. Meta valide plus facilement.",
+      },
+      { type: "h2", text: "6. Intégration Planity, Treatwell et CRM" },
+      {
+        type: "p",
+        text:
+          "Le BSP fournit un webhook ou une API. La logique métier consiste à connecter cette API à votre agenda et à votre CRM via n8n, Make ou Zapier.",
+      },
+      {
+        type: "p",
+        text:
+          "Flux typique pour une clinique : (1) Planity envoie un webhook « nouveau RDV » → n8n récupère les données cliente (nom, soin, date, praticienne), (2) n8n envoie un message WhatsApp template « Confirmation » via BSP, (3) à J-3, J-1 et H-2, n8n redéclenche des templates spécifiques, (4) si la cliente répond, le message arrive dans une interface unifiée (BSP ou Sofia) avec contexte CRM.",
+      },
+      {
+        type: "p",
+        text:
+          "Connecteurs natifs disponibles : 360dialog s'intègre avec n8n via API REST documentée. Treatwell expose une API depuis 2023 (limitée mais suffisante pour les triggers RDV). Planity nécessite encore une intégration via un connecteur custom ou Zapier.",
+      },
+      { type: "h2", text: "7. Les 5 erreurs qui coûtent cher" },
+      {
+        type: "ol",
+        items: [
+          "Utiliser un numéro personnel — suspension Meta sans préavis, perte de l'historique. Toujours un numéro dédié.",
+          "Oublier l'opt-out — risque CNIL : 1ère mise en demeure, jusqu'à 20 000 € en cas de récidive (PME) selon le RGPD.",
+          "Stocker les conversations indéfiniment — durée de conservation à fixer (3 à 5 ans max pour la majorité des cas). Configurer la purge automatique.",
+          "Marketing déguisé en transactionnel — Meta détecte (analyses sémantiques) et bannit. Restez factuel.",
+          "Ne pas tester les templates avant production — 1 typo dans un rappel = mauvaise image. Tester avec 5 numéros internes avant rollout.",
+        ],
+      },
+      { type: "h2", text: "8. Setup pas-à-pas : 10 étapes en 10 jours" },
+      {
+        type: "ol",
+        items: [
+          "Jour 1 — Acheter ou activer un numéro dédié (mobile ou fixe géographique).",
+          "Jour 2 — Créer Meta Business Manager + page Facebook professionnelle + vérification entreprise.",
+          "Jour 3 — Choisir un BSP (recommandé 360dialog pour la conformité). Souscrire un plan.",
+          "Jour 4 — Le BSP demande à Meta l'accès Cloud API + vérifie le numéro (code SMS). 24-48h.",
+          "Jour 5 — Rédiger les 6 premiers templates : confirmation, rappel J-3, rappel J-1, rappel H-2, relance no-show, reprogrammation. Soumettre à Meta.",
+          "Jour 6-7 — Mettre à jour CGV + politique de confidentialité + formulaire Planity (mention opt-in WhatsApp). Mettre à jour le registre des traitements.",
+          "Jour 8 — Recevoir validation Meta des templates. Tester avec 5 numéros internes (membres équipe + amis).",
+          "Jour 9 — Configurer n8n ou Make : webhook Planity/Treatwell → API BSP. Tester end-to-end avec un faux rendez-vous.",
+          "Jour 10 — Mise en production sur un type de soin pilote (par exemple Hydrafacial). Mesurer le taux d'ouverture et de réponse.",
+          "Jour 11+ — Étendre à tous les soins, ajouter relance 30 min après no-show, activer liste d'attente intelligente.",
+        ],
+      },
+      {
+        type: "p",
+        text:
+          "Si vous voulez éviter ce parcours, Sofia (notre agent IA conversationnel) est livrée pré-intégrée avec 360dialog, templates validés, conformité RGPD documentée, et intégration Planity/Treatwell prête à l'emploi. Setup complet en 5 jours au lieu de 10.",
+      },
+      {
+        type: "cta",
+        href: "/solutions/no-show-killer",
+        label: "Découvrir Sofia : WhatsApp Business clé-en-main pour cliniques esthétiques →",
+      },
+      { type: "h2", text: "Pour aller plus loin" },
+      {
+        type: "ul",
+        items: [
+          "Article pillar du cluster : « Comment réduire les no-show dans votre clinique esthétique » — méthode complète J-3/J-1/H-2.",
+          "Cas client : « Comment Spa Marés a divisé ses no-show par 5 en 30 jours » (à paraître).",
+        ],
+      },
+    ],
+  },
+  {
     slug: "reduire-no-show-clinique-esthetique",
     title: "Comment réduire les no-show dans votre clinique esthétique : guide complet 2026",
     description:
