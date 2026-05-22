@@ -14,7 +14,7 @@ export async function generateMetadata({ params }: { params: Promise<Params> }):
   const { slug } = await params;
   const p = getPost(slug);
   if (!p) return { title: "Article introuvable" };
-  const url = `https://botflow-ia.fr/blog/${p.slug}`;
+  const url = `https://www.botflow-ia.fr/blog/${p.slug}`;
   return {
     title: p.title,
     description: p.description,
@@ -27,15 +27,15 @@ export default async function Page({ params }: { params: Promise<Params> }) {
   const { slug } = await params;
   const p = getPost(slug);
   if (!p) notFound();
-  const url = `https://botflow-ia.fr/blog/${p.slug}`;
+  const url = `https://www.botflow-ia.fr/blog/${p.slug}`;
 
   return (
     <Shell>
       <JsonLd data={ORG_LD} />
       <JsonLd
         data={breadcrumb([
-          { name: "Accueil", url: "https://botflow-ia.fr/" },
-          { name: "Blog", url: "https://botflow-ia.fr/blog" },
+          { name: "Accueil", url: "https://www.botflow-ia.fr/" },
+          { name: "Blog", url: "https://www.botflow-ia.fr/blog" },
           { name: p.title, url },
         ])}
       />
@@ -48,11 +48,11 @@ export default async function Page({ params }: { params: Promise<Params> }) {
           mainEntityOfPage: url,
           datePublished: p.date,
           dateModified: p.date,
-          author: { "@type": "Organization", name: "Botflow", url: "https://botflow-ia.fr" },
+          author: { "@type": "Organization", name: "Botflow", url: "https://www.botflow-ia.fr" },
           publisher: {
             "@type": "Organization",
             name: "Botflow",
-            logo: { "@type": "ImageObject", url: "https://botflow-ia.fr/logo.png" },
+            logo: { "@type": "ImageObject", url: "https://www.botflow-ia.fr/logo.png" },
           },
         }}
       />

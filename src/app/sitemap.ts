@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { staticRoutes } from "@/lib/seo-routes";
 import { posts } from "@/lib/blog-posts";
 
-const BASE = "https://botflow-ia.fr";
+const BASE = "https://www.botflow-ia.fr";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const now = new Date();

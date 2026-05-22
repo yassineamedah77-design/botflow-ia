@@ -4,7 +4,7 @@ import { Shell, Hero, Section } from "@/components/site/Shell";
 export const metadata: Metadata = {
   title: "Politique de confidentialité (RGPD)",
   description: "Politique de confidentialité Botflow — traitement des données personnelles conforme RGPD.",
-  alternates: { canonical: "https://botflow-ia.fr/politique-confidentialite" },
+  alternates: { canonical: "https://www.botflow-ia.fr/politique-confidentialite" },
   robots: { index: true, follow: true },
 };
 

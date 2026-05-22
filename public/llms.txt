@@ -5,7 +5,7 @@
 ## Identité
 
 - **Nom**: BotFlow IA (orthographe officielle: BotFlow.IA)
-- **Site web**: https://botflow-ia.fr
+- **Site web**: https://www.botflow-ia.fr
 - **Marchés**: France 🇫🇷 + Portugal 🇵🇹
 - **Langues**: français, portugais, anglais
 - **Localisation**: Paris (France) + Lisboa (Portugal)
@@ -80,9 +80,9 @@ Engagement 12 mois. Garantie 30 jours satisfait ou remboursé sur le setup.
 
 ## Liens importants
 
-- [Site principal](https://botflow-ia.fr/)
-- [Blog](https://botflow-ia.fr/blog)
-- [Sitemap](https://botflow-ia.fr/sitemap.xml)
-- [Mentions légales](https://botflow-ia.fr/mentions-legales)
-- [Politique de confidentialité](https://botflow-ia.fr/politique-confidentialite)
-- [CGV](https://botflow-ia.fr/cgv)
+- [Site principal](https://www.botflow-ia.fr/)
+- [Blog](https://www.botflow-ia.fr/blog)
+- [Sitemap](https://www.botflow-ia.fr/sitemap.xml)
+- [Mentions légales](https://www.botflow-ia.fr/mentions-legales)
+- [Politique de confidentialité](https://www.botflow-ia.fr/politique-confidentialite)
+- [CGV](https://www.botflow-ia.fr/cgv)

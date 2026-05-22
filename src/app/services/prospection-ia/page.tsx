@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Shell, Hero, Section, CTA, JsonLd, ORG_LD, breadcrumb, service } from "@/components/site/Shell";
 
-const URL = "https://botflow-ia.fr/services/prospection-ia";
+const URL = "https://www.botflow-ia.fr/services/prospection-ia";
 
 export const metadata: Metadata = {
   title: "Prospection IA — Lead generation automatisée | Botflow",
@@ -18,7 +18,7 @@ export default function Page() {
       <JsonLd data={service("Prospection IA", "Pipeline complet de prospection B2B automatisée avec IA : sourcing, enrichissement, scoring, personnalisation.")} />
       <JsonLd
         data={breadcrumb([
-          { name: "Accueil", url: "https://botflow-ia.fr/" },
+          { name: "Accueil", url: "https://www.botflow-ia.fr/" },
           { name: "Prospection IA", url: URL },
         ])}
       />
