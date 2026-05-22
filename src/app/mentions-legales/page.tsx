@@ -4,7 +4,7 @@ import { Shell, Hero, Section } from "@/components/site/Shell";
 export const metadata: Metadata = {
   title: "Mentions légales",
   description: "Mentions légales de Botflow — agence d'automatisation IA.",
-  alternates: { canonical: "https://botflow-ia.fr/mentions-legales" },
+  alternates: { canonical: "https://www.botflow-ia.fr/mentions-legales" },
   robots: { index: true, follow: true },
 };
 

@@ -3,7 +3,7 @@ import Link from "next/link";
 import { Shell, Hero, Section, JsonLd, ORG_LD, breadcrumb } from "@/components/site/Shell";
 import { posts } from "@/lib/blog-posts";
 
-const URL = "https://botflow-ia.fr/blog";
+const URL = "https://www.botflow-ia.fr/blog";
 
 export const metadata: Metadata = {
   title: "Blog — Automatisation IA, n8n, Claude | Botflow",
@@ -21,7 +21,7 @@ export default function Page() {
       <JsonLd data={ORG_LD} />
       <JsonLd
         data={breadcrumb([
-          { name: "Accueil", url: "https://botflow-ia.fr/" },
+          { name: "Accueil", url: "https://www.botflow-ia.fr/" },
           { name: "Blog", url: URL },
         ])}
       />
@@ -31,7 +31,7 @@ export default function Page() {
           "@type": "Blog",
           name: "Blog Botflow",
           url: URL,
-          publisher: { "@type": "Organization", name: "Botflow", url: "https://botflow-ia.fr" },
+          publisher: { "@type": "Organization", name: "Botflow", url: "https://www.botflow-ia.fr" },
         }}
       />
 

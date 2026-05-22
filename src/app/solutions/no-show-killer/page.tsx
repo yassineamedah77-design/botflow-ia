@@ -10,7 +10,7 @@ import {
   service,
 } from "@/components/site/Shell";
 
-const URL = "https://botflow-ia.fr/solutions/no-show-killer";
+const URL = "https://www.botflow-ia.fr/solutions/no-show-killer";
 
 export const metadata: Metadata = {
   title:
@@ -38,8 +38,8 @@ export default function Page() {
       />
       <JsonLd
         data={breadcrumb([
-          { name: "Accueil", url: "https://botflow-ia.fr/" },
-          { name: "Solutions", url: "https://botflow-ia.fr/" },
+          { name: "Accueil", url: "https://www.botflow-ia.fr/" },
+          { name: "Solutions", url: "https://www.botflow-ia.fr/" },
           { name: "NoShow Killer", url: URL },
         ])}
       />

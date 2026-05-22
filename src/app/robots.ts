@@ -26,8 +26,8 @@ export default function robots(): MetadataRoute.Robots {
       { userAgent: "MistralAI-User", allow: "/" },
     ],
     sitemap: [
-      "https://botflow-ia.fr/sitemap.xml",
+      "https://www.botflow-ia.fr/sitemap.xml",
     ],
-    host: "https://botflow-ia.fr",
+    host: "https://www.botflow-ia.fr",
   };
 }

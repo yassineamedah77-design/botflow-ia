@@ -264,8 +264,8 @@ export const ORG_LD = {
   "@context": "https://schema.org",
   "@type": "Organization",
   name: "Botflow",
-  url: "https://botflow-ia.fr",
-  logo: "https://botflow-ia.fr/logo.png",
+  url: "https://www.botflow-ia.fr",
+  logo: "https://www.botflow-ia.fr/logo.png",
   email: "contact.botflow@gmail.com",
   description: "Agence d'automatisation IA pour PME et startups en France.",
   address: { "@type": "PostalAddress", addressLocality: "Paris", addressCountry: "FR" },
@@ -291,7 +291,7 @@ export function service(name: string, description: string) {
     "@type": "Service",
     name,
     description,
-    provider: { "@type": "Organization", name: "Botflow", url: "https://botflow-ia.fr" },
+    provider: { "@type": "Organization", name: "Botflow", url: "https://www.botflow-ia.fr" },
     areaServed: { "@type": "Country", name: "France" },
   };
 }

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Shell, Hero, Section, CTA, JsonLd, ORG_LD, breadcrumb } from "@/components/site/Shell";
 
-const URL = "https://botflow-ia.fr/cas-usage/onboarding-rh-ia";
+const URL = "https://www.botflow-ia.fr/cas-usage/onboarding-rh-ia";
 
 export const metadata: Metadata = {
   title: "Automatiser onboarding RH avec l'IA — Cas d'usage | Botflow",
@@ -17,8 +17,8 @@ export default function Page() {
       <JsonLd data={ORG_LD} />
       <JsonLd
         data={breadcrumb([
-          { name: "Accueil", url: "https://botflow-ia.fr/" },
-          { name: "Cas d'usage", url: "https://botflow-ia.fr/cas-usage/onboarding-rh-ia" },
+          { name: "Accueil", url: "https://www.botflow-ia.fr/" },
+          { name: "Cas d'usage", url: "https://www.botflow-ia.fr/cas-usage/onboarding-rh-ia" },
           { name: "Onboarding RH IA", url: URL },
         ])}
       />

@@ -4,7 +4,7 @@ import { Shell, Hero, Section } from "@/components/site/Shell";
 export const metadata: Metadata = {
   title: "Conditions générales de vente (CGV)",
   description: "Conditions générales de vente Botflow — agence d'automatisation IA.",
-  alternates: { canonical: "https://botflow-ia.fr/cgv" },
+  alternates: { canonical: "https://www.botflow-ia.fr/cgv" },
   robots: { index: true, follow: true },
 };
 

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Shell, Hero, Section, CTA, JsonLd, ORG_LD, breadcrumb } from "@/components/site/Shell";
 
-const URL = "https://botflow-ia.fr/cas-usage/automatiser-devis-ia";
+const URL = "https://www.botflow-ia.fr/cas-usage/automatiser-devis-ia";
 
 export const metadata: Metadata = {
   title: "Automatiser ses devis avec l'IA — Cas d'usage | Botflow",
@@ -17,8 +17,8 @@ export default function Page() {
       <JsonLd data={ORG_LD} />
       <JsonLd
         data={breadcrumb([
-          { name: "Accueil", url: "https://botflow-ia.fr/" },
-          { name: "Cas d'usage", url: "https://botflow-ia.fr/cas-usage/automatiser-devis-ia" },
+          { name: "Accueil", url: "https://www.botflow-ia.fr/" },
+          { name: "Cas d'usage", url: "https://www.botflow-ia.fr/cas-usage/automatiser-devis-ia" },
           { name: "Automatiser devis IA", url: URL },
         ])}
       />
@@ -28,7 +28,7 @@ export default function Page() {
           "@type": "Article",
           headline: "Automatiser ses devis avec l'IA — Pipeline n8n + Claude",
           author: { "@type": "Organization", name: "Botflow" },
-          publisher: { "@type": "Organization", name: "Botflow", logo: { "@type": "ImageObject", url: "https://botflow-ia.fr/logo.png" } },
+          publisher: { "@type": "Organization", name: "Botflow", logo: { "@type": "ImageObject", url: "https://www.botflow-ia.fr/logo.png" } },
           datePublished: "2026-05-10",
           mainEntityOfPage: URL,
         }}
