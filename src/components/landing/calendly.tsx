@@ -46,14 +46,21 @@ function loadCalendly(): Promise<void> {
   return loader;
 }
 
-/** Warm up the widget after the page is idle so the first click is instant. */
-function prefetchOnIdle() {
-  const warm = () => loadCalendly().catch(() => {});
-  if ("requestIdleCallback" in window) {
-    window.requestIdleCallback(warm, { timeout: 4000 });
-  } else {
-    setTimeout(warm, 2500);
-  }
+/**
+ * Warm up the widget on the FIRST user interaction (scroll, touch, key,
+ * pointer) so the first CTA click is near-instant — while keeping the
+ * initial page load free of third-party requests/cookies.
+ */
+let warmed = false;
+function prefetchOnFirstInteraction() {
+  if (warmed) return;
+  warmed = true;
+  const warm = () => {
+    loadCalendly().catch(() => {});
+    events.forEach((e) => window.removeEventListener(e, warm));
+  };
+  const events = ["scroll", "pointerdown", "touchstart", "keydown", "mousemove"] as const;
+  events.forEach((e) => window.addEventListener(e, warm, { once: true, passive: true }));
 }
 
 /**
@@ -72,7 +79,7 @@ export function CalendlyButton({
   ariaLabel?: string;
 }) {
   useEffect(() => {
-    prefetchOnIdle();
+    prefetchOnFirstInteraction();
   }, []);
 
   const open = useCallback(async () => {
@@ -155,6 +162,7 @@ export function CalendlyInline({ className }: { className?: string }) {
       ref={ref}
       className={className}
       style={{ minHeight: 680 }}
+      role="region"
       aria-label="Calendrier de réservation de l'audit gratuit de 30 minutes"
     />
   );
