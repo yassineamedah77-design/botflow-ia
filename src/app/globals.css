@@ -96,3 +96,63 @@ body {
 
 .scrollbar-hidden::-webkit-scrollbar { display: none; }
 .scrollbar-hidden { scrollbar-width: none; }
+
+/* ---------- Landing page ---------- */
+
+/* Short, non-blocking entrance: staggered rise, ~0.9s total */
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(22px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.hero-in {
+  animation: hero-rise 0.85s cubic-bezier(0.22, 0.9, 0.28, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-in {
+    animation: none;
+  }
+}
+
+.hero-aurora {
+  background:
+    radial-gradient(ellipse 70% 45% at 50% 0%, rgba(122, 252, 165, 0.10), transparent 60%),
+    radial-gradient(ellipse 45% 35% at 85% 25%, rgba(255, 150, 180, 0.05), transparent 60%),
+    radial-gradient(ellipse 45% 35% at 12% 30%, rgba(120, 180, 255, 0.05), transparent 60%);
+}
+
+.hero-grid {
+  background-image:
+    linear-gradient(rgba(122, 252, 165, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(122, 252, 165, 0.035) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(ellipse at 50% 0%, #000 25%, transparent 70%);
+  -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 25%, transparent 70%);
+}
+
+/* FAQ <details> open animation */
+.faq-item > p {
+  overflow: hidden;
+}
+.faq-item[open] > p {
+  animation: faq-open 0.35s ease both;
+}
+@keyframes faq-open {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
