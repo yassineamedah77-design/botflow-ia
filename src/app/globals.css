@@ -139,6 +139,34 @@ body {
   -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 25%, transparent 70%);
 }
 
+/* 3D tilt cards — glare layer follows the pointer */
+.tilt-card {
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.25s cubic-bezier(0.22, 0.9, 0.28, 1);
+  will-change: transform;
+}
+.tilt-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: radial-gradient(
+    420px circle at var(--gx, 50%) var(--gy, 50%),
+    rgba(122, 252, 165, 0.08),
+    transparent 55%
+  );
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.tilt-card:hover::after {
+  opacity: 1;
+}
+.tilt-card > * {
+  border-radius: inherit;
+}
+
 /* FAQ <details> open animation */
 .faq-item > p {
   overflow: hidden;

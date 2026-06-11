@@ -12,10 +12,13 @@ export function Reveal({
   children,
   className = "",
   delay = 0,
+  effect = "rise",
 }: {
   children: React.ReactNode;
   className?: string;
   delay?: number;
+  /** "rise" = translateY fade · "rise3d" = perspective rotateX entrance */
+  effect?: "rise" | "rise3d";
 }) {
   const ref = useRef<HTMLDivElement>(null);
 
@@ -32,15 +35,25 @@ export function Reveal({
       return; // already in view — no hide/flash
     }
 
+    const hidden =
+      effect === "rise3d"
+        ? "perspective(900px) rotateX(13deg) translateY(36px) scale(.98)"
+        : "translateY(24px)";
+    const shown =
+      effect === "rise3d"
+        ? "perspective(900px) rotateX(0deg) translateY(0) scale(1)"
+        : "translateY(0)";
+
     el.style.opacity = "0";
-    el.style.transform = "translateY(24px)";
-    el.style.transition = `opacity .7s cubic-bezier(.22,.9,.28,1) ${delay}ms, transform .7s cubic-bezier(.22,.9,.28,1) ${delay}ms`;
+    el.style.transform = hidden;
+    if (effect === "rise3d") el.style.transformOrigin = "50% 100%";
+    el.style.transition = `opacity .8s cubic-bezier(.22,.9,.28,1) ${delay}ms, transform .8s cubic-bezier(.22,.9,.28,1) ${delay}ms`;
 
     const io = new IntersectionObserver(
       (entries) => {
         if (entries.some((e) => e.isIntersecting)) {
           el.style.opacity = "1";
-          el.style.transform = "translateY(0)";
+          el.style.transform = shown;
           io.disconnect();
         }
       },
@@ -48,7 +61,7 @@ export function Reveal({
     );
     io.observe(el);
     return () => io.disconnect();
-  }, [delay]);
+  }, [delay, effect]);
 
   return (
     <div ref={ref} className={className}>

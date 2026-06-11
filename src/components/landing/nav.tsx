@@ -1,10 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { copy } from "@/lib/landing";
+import { useCopy } from "./lang";
+import { LangSwitcher } from "./lang";
 import { CalendlyButton } from "./calendly";
 
 export function LandingNav() {
+  const copy = useCopy();
   const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
@@ -22,17 +24,20 @@ export function LandingNav() {
     >
       <nav
         aria-label="Navigation principale"
-        className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8"
+        className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-2 px-4 sm:px-8"
       >
-        <a href="#" className="flex items-center gap-2.5 font-semibold tracking-wide text-[15px]">
+        <a
+          href="#"
+          className="flex shrink-0 items-center gap-2.5 text-[15px] font-semibold tracking-wide"
+        >
           <span
             aria-hidden
             className="h-2.5 w-2.5 rounded-full bg-[var(--accent)] shadow-[0_0_14px_var(--accent)]"
           />
-          {copy.nav.brand}
+          <span className="hidden min-[400px]:inline">{copy.nav.brand}</span>
         </a>
 
-        <ul className="hidden items-center gap-1 md:flex">
+        <ul className="hidden items-center gap-1 lg:flex">
           {copy.nav.links.map((l) => (
             <li key={l.href}>
               <a
@@ -45,13 +50,16 @@ export function LandingNav() {
           ))}
         </ul>
 
-        <CalendlyButton
-          utm="utm_source=landing&utm_medium=nav"
-          ariaLabel="Réserver mon audit gratuit de 30 minutes"
-          className="cursor-pointer rounded-full border border-[var(--accent)]/30 bg-gradient-to-b from-[var(--accent)]/20 to-[var(--accent)]/5 px-5 py-2.5 text-[13.5px] font-semibold text-[var(--fg)] transition hover:border-[var(--accent)]/60 hover:shadow-[0_0_24px_-6px_var(--accent)]"
-        >
-          {copy.nav.cta} <span aria-hidden>↗</span>
-        </CalendlyButton>
+        <div className="flex items-center gap-2">
+          <LangSwitcher />
+          <CalendlyButton
+            utm="utm_source=landing&utm_medium=nav"
+            ariaLabel="Réserver mon audit gratuit de 30 minutes"
+            className="cursor-pointer whitespace-nowrap rounded-full border border-[var(--accent)]/30 bg-gradient-to-b from-[var(--accent)]/20 to-[var(--accent)]/5 px-4 py-2.5 text-[13px] font-semibold text-[var(--fg)] transition hover:border-[var(--accent)]/60 hover:shadow-[0_0_24px_-6px_var(--accent)] sm:px-5 sm:text-[13.5px]"
+          >
+            {copy.nav.cta} <span aria-hidden>↗</span>
+          </CalendlyButton>
+        </div>
       </nav>
     </header>
   );
@@ -62,6 +70,7 @@ export function LandingNav() {
  * final inline-Calendly section is on screen (no double CTA).
  */
 export function StickyCta() {
+  const copy = useCopy();
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
@@ -103,7 +112,7 @@ export function StickyCta() {
         utm="utm_source=landing&utm_medium=sticky"
         className="w-full cursor-pointer rounded-2xl bg-[var(--accent)] px-6 py-4 text-[15px] font-bold text-[#062013] shadow-[0_0_40px_-8px_var(--accent)] active:scale-[.98] transition"
       >
-        Réserver mon audit gratuit (30 min)
+        {copy.hero.ctaPrimary}
       </CalendlyButton>
     </div>
   );

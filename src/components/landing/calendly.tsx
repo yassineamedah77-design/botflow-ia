@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { CALENDLY_URL } from "@/lib/landing";
+import { useCopy } from "./lang";
 
 declare global {
   interface Window {
@@ -104,6 +105,7 @@ export function CalendlyButton({
  * Lazy: only initializes when the section approaches the viewport.
  */
 export function CalendlyInline({ className }: { className?: string }) {
+  const copy = useCopy();
   const ref = useRef<HTMLDivElement>(null);
   const [failed, setFailed] = useState(false);
 
@@ -151,7 +153,7 @@ export function CalendlyInline({ className }: { className?: string }) {
           rel="noopener"
           className="inline-flex items-center gap-2 rounded-2xl border border-[var(--accent)]/40 bg-[var(--accent)]/10 px-6 py-4 font-medium text-[var(--accent)]"
         >
-          Ouvrir le calendrier de réservation ↗
+          {copy.ui.openCalendar}
         </a>
       </div>
     );
@@ -163,7 +165,7 @@ export function CalendlyInline({ className }: { className?: string }) {
       className={className}
       style={{ minHeight: 680 }}
       role="region"
-      aria-label="Calendrier de réservation de l'audit gratuit de 30 minutes"
+      aria-label={copy.ui.calendarAria}
     />
   );
 }

@@ -1,11 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { copy } from "@/lib/landing";
+import { useCopy } from "./lang";
 import { CalendlyInline } from "./calendly";
 import { Reveal } from "./reveal";
 
 export function FinalCta() {
+  const copy = useCopy();
   return (
     <section id="audit" aria-labelledby="audit-title" className="relative scroll-mt-20 py-20 sm:py-28">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
@@ -49,6 +50,7 @@ const inputCls =
   "w-full rounded-xl border border-white/10 bg-[#0b0d0a] px-4 py-3 text-[14.5px] text-[var(--fg)] placeholder:text-[#5f675f] outline-none transition focus:border-[var(--accent)]/60 focus:ring-2 focus:ring-[var(--accent)]/20";
 
 function LeadForm() {
+  const copy = useCopy();
   const [status, setStatus] = useState<"idle" | "sending" | "ok" | "error">("idle");
   const f = copy.form;
 
@@ -118,7 +120,7 @@ function LeadForm() {
         </label>
         <select id="lead-type" name="establishment" required defaultValue="" className={inputCls}>
           <option value="" disabled>
-            Sélectionnez…
+            {copy.ui.select}
           </option>
           {f.establishmentOptions.map((o) => (
             <option key={o}>{o}</option>
@@ -131,7 +133,7 @@ function LeadForm() {
         </label>
         <select id="lead-size" name="practitioners" required defaultValue="" className={inputCls}>
           <option value="" disabled>
-            Sélectionnez…
+            {copy.ui.select}
           </option>
           {f.practitionersOptions.map((o) => (
             <option key={o}>{o}</option>
@@ -161,7 +163,7 @@ function LeadForm() {
         disabled={status === "sending"}
         className="cursor-pointer rounded-xl bg-[var(--accent)] px-7 py-3.5 text-[14.5px] font-bold text-[#062013] transition hover:brightness-105 active:scale-[.98] disabled:opacity-60 sm:col-span-2 sm:justify-self-start"
       >
-        {status === "sending" ? "Envoi…" : f.submit} →
+        {status === "sending" ? copy.ui.sending : f.submit} →
       </button>
     </form>
   );

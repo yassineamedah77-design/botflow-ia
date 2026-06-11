@@ -1,7 +1,6 @@
 /**
- * Landing page copy & data — single source of truth.
- * FR only for now; every string lives here so a PT-PT dictionary
- * can be added later without touching components.
+ * Landing page copy & data — single source of truth (FR).
+ * PT-PT and EN dictionaries live in landing-i18n.ts and share this shape.
  */
 
 export const CALENDLY_URL =
@@ -371,6 +370,21 @@ export const copy = {
       "Une erreur est survenue. Écrivez-nous directement : contact.botflow@gmail.com",
   },
 
+  ui: {
+    select: "Sélectionnez…",
+    sending: "Envoi…",
+    mostChosen: "Le plus choisi",
+    emailLabel: "Email",
+    locationLabel: "Localisation",
+    legalLabel: "Légal",
+    euHosting:
+      "🇪🇺 Données hébergées en Europe — Scaleway · OVH · Hetzner — DPA signé, RGPD natif",
+    openCalendar: "Ouvrir le calendrier de réservation ↗",
+    calendarAria: "Calendrier de réservation de l'audit gratuit de 30 minutes",
+    setupLabel: "HT setup",
+    perMonth: "HT / mois",
+  },
+
   footer: {
     cta: "Parlons-en.",
     email: "contact.botflow@gmail.com",
@@ -383,4 +397,6 @@ export const copy = {
     copyright: "© 2026 BotFlow IA — Tous droits réservés",
     compliance: "Conforme RGPD · Hébergement 100 % Europe · Art. R4127-13 CSP respecté",
   },
-} as const;
+};
+
+export type LandingCopy = typeof copy;

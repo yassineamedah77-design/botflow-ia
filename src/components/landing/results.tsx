@@ -1,8 +1,12 @@
-import { copy } from "@/lib/landing";
+"use client";
+
+import { useCopy } from "./lang";
 import { Counter } from "./counter";
 import { Reveal } from "./reveal";
+import { Tilt } from "./tilt";
 
 export function Results() {
+  const copy = useCopy();
   return (
     <section id="resultats" aria-labelledby="results-title" className="relative scroll-mt-20 py-20 sm:py-28">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
@@ -46,8 +50,9 @@ export function Results() {
 
         <div className="grid gap-4 sm:gap-5 md:grid-cols-2">
           {copy.results.cases.map((c, i) => (
-            <Reveal key={c.title} delay={(i % 2) * 110}>
-              <article className="group h-full rounded-3xl border border-white/[0.07] bg-gradient-to-b from-white/[0.04] to-transparent p-7 transition hover:border-[var(--accent)]/25 sm:p-8">
+            <Reveal key={c.title} delay={(i % 2) * 110} effect="rise3d" className="h-full">
+              <Tilt className="h-full rounded-3xl">
+              <article className="group h-full rounded-3xl border border-white/[0.07] bg-gradient-to-b from-white/[0.04] to-transparent p-7 transition-colors hover:border-[var(--accent)]/25 sm:p-8">
                 <div className="flex flex-wrap items-center justify-between gap-2 text-[12px]">
                   <span className="rounded-full border border-[var(--accent)]/25 bg-[var(--accent)]/10 px-3 py-1 font-medium text-[#d8f5c5]">
                     {c.tag}
@@ -65,6 +70,7 @@ export function Results() {
                   ))}
                 </dl>
               </article>
+              </Tilt>
             </Reveal>
           ))}
         </div>

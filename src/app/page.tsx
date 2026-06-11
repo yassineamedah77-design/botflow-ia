@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { copy, SITE_URL } from "@/lib/landing";
+import { LangProvider } from "@/components/landing/lang";
 import { LandingNav, StickyCta } from "@/components/landing/nav";
 import { Hero } from "@/components/landing/hero";
 import { TrustBar, Problem, Solution, Offers, Process } from "@/components/landing/sections";
@@ -98,21 +99,23 @@ export default function LandingPage() {
           __html: JSON.stringify(jsonLd).replace(/</g, "\\u003c"),
         }}
       />
-      <LandingNav />
-      <main>
-        <Hero />
-        <TrustBar />
-        <Problem />
-        <Solution />
-        <Offers />
-        <Process />
-        <Results />
-        <Pricing />
-        <Faq />
-        <FinalCta />
-      </main>
-      <LandingFooter />
-      <StickyCta />
+      <LangProvider>
+        <LandingNav />
+        <main>
+          <Hero />
+          <TrustBar />
+          <Problem />
+          <Solution />
+          <Offers />
+          <Process />
+          <Results />
+          <Pricing />
+          <Faq />
+          <FinalCta />
+        </main>
+        <LandingFooter />
+        <StickyCta />
+      </LangProvider>
     </>
   );
 }

@@ -1,8 +1,12 @@
-import { copy } from "@/lib/landing";
+"use client";
+
+import { useCopy } from "./lang";
 import { CalendlyButton } from "./calendly";
 import { Reveal } from "./reveal";
+import { Tilt } from "./tilt";
 
 export function Pricing() {
+  const copy = useCopy();
   return (
     <section id="tarifs" aria-labelledby="pricing-title" className="relative scroll-mt-20 py-20 sm:py-28">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
@@ -25,7 +29,8 @@ export function Pricing() {
 
         <div className="mt-12 grid gap-4 md:grid-cols-3 md:items-stretch">
           {copy.pricing.packs.map((p, i) => (
-            <Reveal key={p.name} delay={i * 110} className="h-full">
+            <Reveal key={p.name} delay={i * 110} effect="rise3d" className="h-full">
+              <Tilt max={4} className="h-full rounded-3xl">
               <article
                 className={`relative flex h-full flex-col rounded-3xl border p-7 sm:p-8 ${
                   p.featured
@@ -35,7 +40,7 @@ export function Pricing() {
               >
                 {p.featured && (
                   <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[var(--accent)] px-4 py-1 text-[11px] font-bold uppercase tracking-wider text-[#062013]">
-                    Le plus choisi
+                    {copy.ui.mostChosen}
                   </span>
                 )}
                 <h3 className="text-[20px] font-semibold">{p.name}</h3>
@@ -46,10 +51,10 @@ export function Pricing() {
                   <span className="text-[clamp(32px,3.5vw,40px)] font-semibold tracking-tight">
                     {p.setup}
                   </span>
-                  <span className="text-[13px] text-[var(--fg-muted)]"> HT setup</span>
+                  <span className="text-[13px] text-[var(--fg-muted)]"> {copy.ui.setupLabel}</span>
                 </p>
                 <p className="text-[14px] text-[#cfd6cd]">
-                  + {p.monthly} <span className="text-[var(--fg-muted)]">HT / mois</span>
+                  + {p.monthly} <span className="text-[var(--fg-muted)]">{copy.ui.perMonth}</span>
                 </p>
                 <p className="mt-2 text-[12px] font-medium uppercase tracking-wider text-[var(--accent)]">
                   {p.deploy}
@@ -72,9 +77,10 @@ export function Pricing() {
                       : "border border-white/12 bg-white/[0.04] text-[var(--fg)] hover:border-[var(--accent)]/40"
                   }`}
                 >
-                  Réserver mon audit gratuit (30 min)
+                  {copy.faq.sideCta}
                 </CalendlyButton>
               </article>
+              </Tilt>
             </Reveal>
           ))}
         </div>

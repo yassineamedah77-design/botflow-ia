@@ -1,9 +1,12 @@
-import { copy } from "@/lib/landing";
+"use client";
+
+import { useCopy } from "./lang";
 import { CalendlyButton } from "./calendly";
 import { Reveal } from "./reveal";
 
 /** FAQ — native <details>/<summary>: zero JS, keyboard accessible. */
 export function Faq() {
+  const copy = useCopy();
   return (
     <section id="faq" aria-labelledby="faq-title" className="relative scroll-mt-20 py-20 sm:py-28">
       <div className="mx-auto max-w-6xl px-5 sm:px-8">
