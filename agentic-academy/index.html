@@ -1,0 +1,1017 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BotFlow.IA Academy · Deviens freelance en automatisation IA, sans coder</title>
+  <meta name="description" content="Le programme qui t'apprend à construire des agents IA et des automatisations n8n vendables, à utiliser Claude Code, puis à décrocher tes premiers clients freelance. Même si tu pars de zéro." />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="BotFlow.IA Academy · Deviens freelance en automatisation IA" />
+  <meta property="og:description" content="Construis des agents IA & des automatisations n8n vendables, maîtrise Claude Code, et décroche tes premiers clients." />
+  <meta property="og:url" content="https://academy.botflow-ia.fr/" />
+  <meta property="og:image" content="https://academy.botflow-ia.fr/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="BotFlow.IA Academy · Deviens freelance en automatisation IA" />
+  <meta name="twitter:description" content="Construis des agents IA & des automatisations n8n vendables, maîtrise Claude Code, et décroche tes premiers clients." />
+  <meta name="twitter:image" content="https://academy.botflow-ia.fr/og-image.png" />
+  <meta name="theme-color" content="#07090a" />
+  <link rel="canonical" href="https://academy.botflow-ia.fr/" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="apple-touch-icon" href="favicon.svg" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+
+  <script>document.documentElement.classList.add('js');</script>
+  <style>
+    :root {
+      --bg: #07090a;
+      --bg-elevated: #0e1112;
+      --fg: #f5f5f0;
+      --fg-muted: #8a8f8a;
+      --accent: #7fe3a1;
+      --accent-2: #7afca5;
+      --accent-glow: rgba(127, 227, 161, 0.35);
+      --red: #ff4d4d;
+      --red-glow: rgba(255, 77, 77, 0.35);
+      --border: rgba(255, 255, 255, 0.08);
+      --border-strong: rgba(255, 255, 255, 0.14);
+      --maxw: 1120px;
+    }
+    * { box-sizing: border-box; border-color: var(--border); }
+    html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+    body { margin: 0; background: var(--bg); color: var(--fg); font-family: "Geist", system-ui, -apple-system, sans-serif; -webkit-font-smoothing: antialiased; line-height: 1.5; overflow-x: hidden; }
+    ::selection { background: var(--accent); color: var(--bg); }
+    a { color: inherit; text-decoration: none; }
+    img { max-width: 100%; display: block; }
+    h1, h2, h3 { font-weight: 600; letter-spacing: -0.03em; line-height: 1.08; margin: 0; }
+    p { margin: 0; }
+
+    .wrap { width: 100%; max-width: var(--maxw); margin: 0 auto; padding: 0 24px; }
+    .serif { font-family: "Instrument Serif", serif; font-style: italic; font-weight: 400; letter-spacing: -0.02em; }
+    .accent { color: var(--accent); }
+    .muted { color: var(--fg-muted); }
+    .grain { background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.04) 1px, transparent 0); background-size: 24px 24px; }
+    .glow { box-shadow: 0 0 60px -16px var(--accent-glow); }
+    .glass { background: rgba(14,17,18,0.6); backdrop-filter: blur(20px) saturate(140%); -webkit-backdrop-filter: blur(20px) saturate(140%); border: 1px solid var(--border); }
+
+    /* reveal animations */
+    .reveal { opacity: 1; transform: none; }
+    .js .reveal { opacity: 0; transform: translateY(26px); transition: opacity .75s cubic-bezier(.22,.9,.28,1), transform .75s cubic-bezier(.22,.9,.28,1); }
+    .js .reveal.in { opacity: 1; transform: none; }
+
+    .btn { display: inline-flex; align-items: center; gap: 8px; cursor: pointer; border: none; font-family: inherit; font-size: 16px; font-weight: 700; border-radius: 16px; padding: 17px 30px; transition: all .2s ease; }
+    .btn-primary { background: var(--accent); color: #062013; box-shadow: 0 0 50px -10px var(--accent); }
+    .btn-primary:hover { filter: brightness(1.05); box-shadow: 0 0 72px -8px var(--accent); transform: translateY(-1px); }
+    .btn-primary:active { transform: scale(.98); }
+    .btn-primary .arr { transition: transform .2s ease; }
+    .btn-primary:hover .arr { transform: translateX(4px); }
+    .btn-ghost { background: rgba(7,8,6,0.5); color: var(--fg); border: 1px solid var(--border-strong); font-weight: 500; font-size: 15px; backdrop-filter: blur(6px); }
+    .btn-ghost:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.24); }
+
+    nav.top { position: sticky; top: 0; z-index: 50; border-bottom: 1px solid var(--border); }
+    nav.top .bar { display: flex; align-items: center; justify-content: space-between; height: 66px; }
+    .logo { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: 17px; letter-spacing: -0.02em; }
+    .logo .mark { width: 28px; height: 28px; border-radius: 8px; display: grid; place-items: center; background: var(--accent); color: #062013; font-weight: 800; font-size: 16px; box-shadow: 0 0 24px -6px var(--accent); }
+    .navlinks { display: flex; align-items: center; gap: 26px; }
+    .navlinks a { font-size: 14px; color: var(--fg-muted); transition: color .15s; }
+    .navlinks a:hover { color: var(--fg); }
+    .nav-cta { font-size: 14px; font-weight: 600; color: #062013; background: var(--accent); padding: 9px 16px; border-radius: 11px; }
+
+    .badge { display: inline-flex; align-items: center; gap: 9px; border: 1px solid rgba(127,227,161,0.3); background: rgba(7,8,6,0.6); color: #d8f5c5; border-radius: 999px; padding: 8px 16px; font-size: 12.5px; font-weight: 500; letter-spacing: .02em; backdrop-filter: blur(6px); }
+    .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); animation: pulse 1.8s ease-in-out infinite; }
+    .badge-full { border-color: rgba(255,77,77,0.45); background: rgba(28,7,7,0.6); color: #ffdada; }
+    .badge-full .dot { background: var(--red); box-shadow: 0 0 10px var(--red); }
+    .btn-full, .nav-cta.is-full { background: var(--red); color: #2a0606; box-shadow: 0 0 50px -10px var(--red); cursor: not-allowed; pointer-events: none; }
+    .btn-full:hover, .nav-cta.is-full:hover { filter: none; transform: none; box-shadow: 0 0 50px -10px var(--red); }
+    @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:.4 } }
+
+    .hero { position: relative; overflow: hidden; padding: 120px 0 90px; text-align: center; }
+    .hero .aurora { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 70% 45% at 50% 0%, rgba(122,252,165,0.12), transparent 60%), radial-gradient(ellipse 45% 35% at 85% 20%, rgba(120,80,200,0.10), transparent 60%), radial-gradient(ellipse 45% 35% at 12% 28%, rgba(80,140,255,0.08), transparent 60%); }
+    .hero .grid { position: absolute; inset: 0; pointer-events: none; background-image: linear-gradient(rgba(122,252,165,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(122,252,165,0.035) 1px, transparent 1px); background-size: 64px 64px; -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 25%, transparent 70%); mask-image: radial-gradient(ellipse at 50% 0%, #000 25%, transparent 70%); }
+    .hero-anim { animation: heroRise .9s cubic-bezier(.22,.9,.28,1) both; }
+    @keyframes heroRise { from { opacity: 0; transform: translateY(22px); filter: blur(6px); } to { opacity: 1; transform: none; filter: blur(0); } }
+    .hero h1 { font-size: clamp(36px, 7.2vw, 74px); text-shadow: 0 2px 24px rgba(0,0,0,.85); }
+    .hero h1 .ln { display: block; }
+    .hero h1 .em { display: block; color: var(--accent); text-shadow: 0 0 40px rgba(122,252,165,.35); }
+    .hero .sub { max-width: 640px; margin: 26px auto 0; font-size: clamp(16px,2.4vw,19px); color: #cfd6cd; line-height: 1.6; }
+    .hero .cta-row { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin-top: 38px; }
+    .hero .micro { margin-top: 26px; font-size: 13px; color: var(--fg-muted); display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; }
+    .hero .micro span { display: inline-flex; align-items: center; gap: 6px; }
+    .tick { color: var(--accent); }
+
+    section.blk { padding: 92px 0; position: relative; }
+    .eyebrow { font-size: 13px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 16px; }
+    .h2 { font-size: clamp(28px, 4.4vw, 46px); }
+    .lead { max-width: 620px; font-size: 17px; color: #cfd6cd; line-height: 1.6; margin-top: 18px; }
+    .center { text-align: center; }
+    .center .lead { margin-left: auto; margin-right: auto; }
+
+    .marquee-wrap { border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); padding: 22px 0; overflow: hidden; }
+    .marquee { display: flex; gap: 56px; white-space: nowrap; width: max-content; animation: scroll 28s linear infinite; }
+    .marquee span { font-size: 15px; color: var(--fg-muted); display: inline-flex; align-items: center; gap: 10px; font-weight: 500; }
+    @keyframes scroll { to { transform: translateX(-50%); } }
+
+    .cards { display: grid; gap: 18px; margin-top: 48px; }
+    .g2 { grid-template-columns: repeat(2, 1fr); }
+    .g3 { grid-template-columns: repeat(3, 1fr); }
+    .g4 { grid-template-columns: repeat(4, 1fr); }
+    .card { background: linear-gradient(180deg, rgba(255,255,255,0.025), rgba(255,255,255,0)); border: 1px solid var(--border); border-radius: 20px; padding: 28px; transition: border-color .25s, transform .25s; }
+    .card:hover { border-color: rgba(127,227,161,0.28); transform: translateY(-3px); }
+    .card .ico { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; font-size: 20px; background: rgba(127,227,161,0.1); border: 1px solid rgba(127,227,161,0.2); color: var(--accent); margin-bottom: 18px; }
+    .card h3 { font-size: 19px; margin-bottom: 9px; }
+    .card p { font-size: 14.5px; color: var(--fg-muted); line-height: 1.55; }
+
+    .mod { display: grid; grid-template-columns: 64px 1fr; gap: 20px; align-items: start; border: 1px solid var(--border); border-radius: 18px; padding: 24px 26px; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)); transition: border-color .25s, transform .25s; }
+    .mod:hover { border-color: rgba(127,227,161,0.28); }
+    .mod .num { font-family: "Instrument Serif", serif; font-style: italic; font-size: 40px; color: var(--accent); line-height: 1; opacity: .9; }
+    .mod h3 { font-size: 20px; margin-bottom: 8px; }
+    .mod p { font-size: 14.5px; color: var(--fg-muted); line-height: 1.55; }
+    .mod .tags { margin-top: 12px; display: flex; flex-wrap: wrap; gap: 7px; }
+    .tag { font-size: 12px; color: #bfe9ca; background: rgba(127,227,161,0.08); border: 1px solid rgba(127,227,161,0.16); padding: 4px 10px; border-radius: 8px; }
+
+    /* claude code highlight */
+    .cc { display: grid; grid-template-columns: 1.1fr 1fr; gap: 36px; align-items: center; border: 1px solid rgba(127,227,161,0.22); border-radius: 26px; padding: 44px; background: linear-gradient(135deg, rgba(127,227,161,0.07), rgba(14,17,18,0.3)); }
+    .cc h2 { font-size: clamp(26px,3.6vw,38px); margin-bottom: 16px; }
+    .cc p.lead { margin-top: 0; }
+    .cc ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+    .cc li { display: flex; gap: 12px; font-size: 15.5px; color: #d7ddd5; line-height: 1.45; }
+    .cc li::before { content: "→"; color: var(--accent); font-weight: 800; }
+    .cc .term { border: 1px solid var(--border-strong); border-radius: 16px; background: #050606; padding: 0; overflow: hidden; box-shadow: 0 0 60px -24px var(--accent-glow); }
+    .cc .term .tb { display: flex; gap: 7px; padding: 12px 16px; border-bottom: 1px solid var(--border); }
+    .cc .term .tb i { width: 11px; height: 11px; border-radius: 50%; background: #2a2e2a; display: inline-block; }
+    .cc .term pre { margin: 0; padding: 20px; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 13px; line-height: 1.7; color: #cfe9d4; white-space: pre-wrap; }
+    .cc .term .c1 { color: var(--fg-muted); }
+    .cc .term .c2 { color: var(--accent); }
+
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 48px; }
+    .panel { border: 1px solid var(--border); border-radius: 20px; padding: 30px; }
+    .panel.yes { background: rgba(127,227,161,0.05); border-color: rgba(127,227,161,0.22); }
+    .panel.no { background: rgba(255,255,255,0.015); }
+    .panel h3 { font-size: 19px; margin-bottom: 18px; display: flex; align-items: center; gap: 10px; }
+    .panel ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 13px; }
+    .panel li { display: flex; gap: 12px; font-size: 15px; color: #d7ddd5; line-height: 1.45; }
+    .panel.yes li::before { content: "✓"; color: var(--accent); font-weight: 800; }
+    .panel.no li::before { content: "✕"; color: #8a8f8a; font-weight: 700; }
+    .panel.no li { color: var(--fg-muted); }
+
+    .checklist { list-style: none; margin: 28px 0 0; padding: 0; display: grid; gap: 14px; grid-template-columns: 1fr 1fr; }
+    .checklist li { display: flex; gap: 12px; font-size: 15px; color: #d7ddd5; align-items: flex-start; }
+    .checklist li::before { content: "✓"; color: var(--accent); font-weight: 800; }
+
+    /* program facts strip */
+    .facts { margin-top: 44px; display: grid; grid-template-columns: repeat(4,1fr); gap: 1px; border: 1px solid rgba(255,255,255,0.07); border-radius: 24px; overflow: hidden; background: rgba(255,255,255,0.06); }
+    .facts > div { background: #0b0d0a; padding: 32px 18px; text-align: center; }
+    .facts b { display: block; font-size: clamp(30px,4.5vw,46px); font-weight: 600; color: var(--accent); letter-spacing: -.02em; }
+    .facts span { display: block; margin-top: 6px; font-size: 13px; color: var(--fg-muted); }
+
+    /* mentor */
+    .bio { max-width: 860px; }
+    .bio .ph { width: 200px; height: 230px; border-radius: 24px; border: 1px solid var(--border-strong); background: linear-gradient(160deg, rgba(127,227,161,0.18), rgba(14,17,18,0.9)); display: grid; place-items: center; color: var(--fg-muted); font-size: 13px; text-align: center; padding: 12px; }
+    .bio h3 { font-size: 28px; margin-bottom: 16px; }
+    .bio p { font-size: 16px; color: #cfd6cd; line-height: 1.68; margin-bottom: 16px; }
+    .bio .mindset { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 24px; }
+    .chip { font-size: 13.5px; color: #d8f5c5; background: rgba(127,227,161,0.08); border: 1px solid rgba(127,227,161,0.2); padding: 9px 15px; border-radius: 999px; }
+
+    /* founding */
+    .founding { border: 1px solid rgba(127,227,161,0.25); border-radius: 26px; padding: 44px; text-align: center; background: linear-gradient(180deg, rgba(127,227,161,0.06), rgba(14,17,18,0.3)); }
+    .founding .seal { width: 60px; height: 60px; border-radius: 16px; display: grid; place-items: center; margin: 0 auto 20px; font-size: 26px; background: rgba(127,227,161,0.1); border: 1px solid rgba(127,227,161,0.3); color: var(--accent); }
+    .founding h2 { font-size: clamp(26px,3.6vw,40px); margin-bottom: 16px; }
+
+    /* offers */
+    .offers { display: grid; grid-template-columns: 1fr 1fr; gap: 22px; margin-top: 48px; align-items: stretch; }
+    .offer { position: relative; border: 1px solid var(--border); border-radius: 26px; padding: 38px; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)); display: flex; flex-direction: column; }
+    .offer.feat { border-color: rgba(127,227,161,0.4); background: linear-gradient(180deg, rgba(127,227,161,0.06), rgba(14,17,18,0.4)); box-shadow: 0 0 80px -34px var(--accent-glow); }
+    .offer .pill { position: absolute; top: -13px; left: 50%; transform: translateX(-50%); background: var(--accent); color: #062013; font-size: 12px; font-weight: 700; padding: 6px 16px; border-radius: 999px; white-space: nowrap; }
+    .offer .kicker { font-size: 13px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+    .offer .name { font-size: 24px; font-weight: 600; margin: 8px 0 4px; letter-spacing: -.02em; }
+    .offer .desc { font-size: 14px; color: var(--fg-muted); min-height: 40px; }
+    .offer .price { font-size: 52px; font-weight: 700; letter-spacing: -.04em; line-height: 1; margin: 18px 0 2px; }
+    .offer .price small { font-size: 18px; font-weight: 500; color: var(--fg-muted); }
+    .offer .pay { font-size: 13px; color: var(--fg-muted); }
+    .offer ul { list-style: none; margin: 24px 0 28px; padding: 0; display: grid; gap: 12px; }
+    .offer li { display: flex; gap: 11px; font-size: 14.5px; color: #d7ddd5; line-height: 1.4; }
+    .offer li::before { content: "✓"; color: var(--accent); font-weight: 800; flex: none; }
+    .offer li.inc { color: var(--fg); font-weight: 500; }
+    .offer .spacer { flex: 1; }
+    .offer .btn { width: 100%; justify-content: center; }
+
+    .guarantee { display: flex; gap: 22px; align-items: center; max-width: 760px; margin: 40px auto 0; border: 1px solid rgba(127,227,161,0.22); border-radius: 22px; padding: 30px 34px; background: rgba(127,227,161,0.04); }
+    .guarantee .seal { flex: none; width: 70px; height: 70px; border-radius: 50%; display: grid; place-items: center; font-size: 30px; background: rgba(127,227,161,0.1); border: 1px solid rgba(127,227,161,0.3); color: var(--accent); }
+    .guarantee h3 { font-size: 20px; margin-bottom: 7px; }
+    .guarantee p { font-size: 15px; color: #cfd6cd; line-height: 1.55; }
+
+    .faq { max-width: 800px; margin: 44px auto 0; }
+    details.q { border-bottom: 1px solid var(--border); padding: 4px 0; }
+    details.q summary { list-style: none; cursor: pointer; padding: 22px 4px; font-size: 18px; font-weight: 500; display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+    details.q summary::-webkit-details-marker { display: none; }
+    details.q summary .chev { color: var(--accent); transition: transform .25s; font-size: 22px; flex: none; }
+    details.q[open] summary .chev { transform: rotate(45deg); }
+    details.q p { padding: 0 4px 22px; font-size: 15.5px; color: var(--fg-muted); line-height: 1.6; }
+    details.q[open] p { animation: fade .3s ease both; }
+    @keyframes fade { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: none; } }
+
+    .final { position: relative; text-align: center; padding: 110px 0; overflow: hidden; }
+    .final .aurora2 { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse 60% 60% at 50% 50%, rgba(122,252,165,0.14), transparent 60%); }
+    .final h2 { font-size: clamp(32px, 5.4vw, 58px); }
+    .final .sub { max-width: 560px; margin: 22px auto 0; font-size: 18px; color: #cfd6cd; }
+
+    footer { border-top: 1px solid var(--border); padding: 44px 0; }
+    footer .row { display: flex; justify-content: space-between; align-items: center; gap: 20px; flex-wrap: wrap; }
+    footer .links { display: flex; gap: 22px; flex-wrap: wrap; align-items: center; }
+    footer a { font-size: 13.5px; color: var(--fg-muted); display: inline-flex; align-items: center; gap: 7px; }
+    footer a:hover { color: var(--fg); }
+    footer .copy { font-size: 13px; color: var(--fg-muted); }
+
+    /* ===== Animated flow logo mark ===== */
+    .logo .mark { width: 30px; height: 30px; background: transparent; box-shadow: none; border-radius: 0; }
+    .lmark { width: 100%; height: 100%; overflow: visible; }
+    .lmark-link { fill: none; stroke: var(--accent); stroke-width: 1.8; stroke-linecap: round; opacity: .5; stroke-dasharray: 22; stroke-dashoffset: 22; animation: lmarkDraw .9s cubic-bezier(.4,0,.2,1) forwards; }
+    .lmark-link.l2 { animation-delay: .08s; }
+    .lmark-link.l3 { animation-delay: .16s; }
+    .lmark-link.l4 { animation-delay: .24s; }
+    @keyframes lmarkDraw { to { stroke-dashoffset: 0; } }
+    .lmark-node { fill: var(--accent); opacity: 1; transform-box: fill-box; transform-origin: center; animation: lmarkPop .5s cubic-bezier(.3,1.4,.5,1) both; filter: drop-shadow(0 0 3px var(--accent-glow)); }
+    .lmark-node.b { animation-delay: .1s; }
+    .lmark-node.c { animation-delay: .18s; }
+    .lmark-node.core { fill: var(--accent-2); animation-delay: .3s; }
+    @keyframes lmarkPop { from { opacity: 0; transform: scale(0); } }
+    .logo:hover .lmark-link { stroke-dasharray: 4 6; stroke-dashoffset: 0; opacity: .95; animation: lmarkFlow 1s linear infinite; }
+    @keyframes lmarkFlow { to { stroke-dashoffset: -20; } }
+    .logo:hover .lmark-node { animation: lmarkPulse 1.3s ease-in-out infinite; }
+    .logo:hover .lmark-node.b { animation-delay: .15s; }
+    .logo:hover .lmark-node.c { animation-delay: .3s; }
+    .logo:hover .lmark-node.core { animation-delay: .08s; }
+    @keyframes lmarkPulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.4); } }
+
+    /* ===== ASCII flow-field background ===== */
+    .ascii-bg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; }
+    .hero .ascii-bg { -webkit-mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, #000 30%, transparent 80%); mask-image: radial-gradient(ellipse 80% 70% at 50% 30%, #000 30%, transparent 80%); }
+    .final .ascii-bg { -webkit-mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, #000 20%, transparent 75%); mask-image: radial-gradient(ellipse 70% 70% at 50% 50%, #000 20%, transparent 75%); }
+
+    /* ===== Magnetic card glare ===== */
+    .card, .mod, .offer { position: relative; }
+    .card::after, .mod::after, .offer::after { content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none; opacity: 0; transition: opacity .35s; background: radial-gradient(240px circle at var(--mx,50%) var(--my,50%), rgba(127,227,161,0.13), transparent 62%); }
+    .card:hover::after, .mod:hover::after, .offer:hover::after { opacity: 1; }
+
+    /* ===== Curriculum connector rail ===== */
+    #curri { position: relative; padding-left: 56px; }
+    #curri::before { content: ""; position: absolute; left: 20px; top: 10px; bottom: 10px; width: 2px; border-radius: 2px; background: linear-gradient(180deg, var(--accent), rgba(127,227,161,0.12)); transform: scaleY(0); transform-origin: top; transition: transform 1.5s cubic-bezier(.4,0,.1,1); }
+    #curri.drawn::before { transform: scaleY(1); }
+    #curri .flow-pulse { position: absolute; left: 17px; top: 10px; width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 14px 3px var(--accent-glow); opacity: 0; pointer-events: none; }
+    #curri.drawn .flow-pulse { animation: railFlow 3.4s cubic-bezier(.5,0,.5,1) infinite; }
+    @keyframes railFlow { 0% { opacity: 0; top: 10px; } 12% { opacity: .9; } 88% { opacity: .9; } 100% { opacity: 0; top: calc(100% - 18px); } }
+    .mod::before { content: ""; position: absolute; left: -41px; top: 36px; width: 12px; height: 12px; border-radius: 50%; background: var(--bg-elevated); border: 2px solid rgba(127,227,161,0.35); transition: background .4s, border-color .4s, box-shadow .4s; z-index: 2; }
+    .mod.in::before { background: var(--accent); border-color: var(--accent); box-shadow: 0 0 12px var(--accent-glow); }
+
+    /* ===== Level / energy bars ===== */
+    .mod .lvl { margin-top: 14px; display: flex; align-items: center; gap: 11px; }
+    .mod .lvl-cap { font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--fg-muted); flex: none; }
+    .mod .lvl-bar { flex: 1; height: 4px; border-radius: 4px; background: rgba(255,255,255,0.08); overflow: hidden; }
+    .mod .lvl-bar i { display: block; height: 100%; width: 0; border-radius: 4px; background: linear-gradient(90deg, var(--accent), var(--accent-2)); box-shadow: 0 0 10px var(--accent-glow); transition: width 1.1s cubic-bezier(.4,0,.1,1); }
+    .mod.in .lvl-bar i { width: var(--lvl); }
+    .mod .lvl-num { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12.5px; color: var(--accent); flex: none; min-width: 40px; text-align: right; }
+
+    /* ===== Interactive marquee ===== */
+    .marquee.live { animation: none; will-change: transform; }
+    .marquee span { transition: color .25s, transform .25s, text-shadow .25s; }
+    .marquee span.hot { color: var(--accent); transform: translateY(-3px) scale(1.14); text-shadow: 0 0 18px var(--accent-glow); }
+
+    /* ===== Terminal typing caret ===== */
+    .term pre .caret { display: inline-block; width: 8px; height: 1.05em; vertical-align: -2px; background: var(--accent); margin-left: 2px; box-shadow: 0 0 8px var(--accent-glow); animation: caretBlink 1s steps(1) infinite; }
+    @keyframes caretBlink { 50% { opacity: 0; } }
+
+    /* ===== Floating social widget ===== */
+    .fab { position: fixed; right: 22px; bottom: 22px; z-index: 60; display: flex; flex-direction: column-reverse; align-items: flex-end; gap: 12px; }
+    .fab-toggle { width: 56px; height: 56px; border-radius: 50%; border: 1px solid rgba(127,227,161,0.45); background: var(--accent); color: #062013; display: grid; place-items: center; cursor: pointer; box-shadow: 0 10px 34px -10px var(--accent); transition: transform .35s cubic-bezier(.3,1.4,.5,1), filter .2s; }
+    .fab-toggle:hover { filter: brightness(1.05); }
+    .fab.open .fab-toggle { transform: rotate(135deg); }
+    .fab-toggle svg { width: 24px; height: 24px; }
+    .fab-toggle::after { content: ""; position: absolute; inset: 0; border-radius: 50%; box-shadow: 0 0 0 0 var(--accent-glow); animation: fabRing 2.6s ease-out infinite; pointer-events: none; }
+    .fab.open .fab-toggle::after { animation: none; }
+    @keyframes fabRing { 0% { box-shadow: 0 0 0 0 rgba(127,227,161,0.4); } 70%,100% { box-shadow: 0 0 0 16px rgba(127,227,161,0); } }
+    .fab-item { display: flex; align-items: center; gap: 10px; transform: translateY(14px) scale(.7); opacity: 0; pointer-events: none; transition: transform .3s cubic-bezier(.3,1.4,.5,1), opacity .25s; }
+    .fab.open .fab-item { transform: none; opacity: 1; pointer-events: auto; }
+    .fab.open .fab-item:nth-child(2) { transition-delay: .12s; }
+    .fab.open .fab-item:nth-child(3) { transition-delay: .08s; }
+    .fab.open .fab-item:nth-child(4) { transition-delay: .04s; }
+    .fab-item .lbl { font-size: 13px; font-weight: 600; color: var(--fg); background: rgba(14,17,18,0.88); border: 1px solid var(--border); padding: 7px 12px; border-radius: 10px; backdrop-filter: blur(8px); white-space: nowrap; opacity: 0; transform: translateX(8px); transition: opacity .2s, transform .2s; }
+    .fab-item:hover .lbl { opacity: 1; transform: none; }
+    .fab-btn { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; flex: none; background: var(--bg-elevated); border: 1px solid var(--border-strong); color: var(--fg); transition: border-color .2s, color .2s, transform .2s; }
+    .fab-btn:hover { border-color: var(--accent); color: var(--accent); transform: translateY(-2px); }
+    .fab-btn svg { width: 20px; height: 20px; }
+
+    /* ===== n8n-style workflow schematic ===== */
+    .wf-shell { margin-top: 48px; border: 1px solid var(--border); border-radius: 22px; overflow: hidden; background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0)); }
+    .wf-bar { display: flex; align-items: center; gap: 14px; padding: 13px 18px; border-bottom: 1px solid var(--border); background: rgba(255,255,255,0.02); }
+    .wf-dotrow { display: flex; gap: 6px; flex: none; }
+    .wf-dotrow i { width: 11px; height: 11px; border-radius: 50%; background: #2a2e2a; }
+    .wf-bar-title { font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 12.5px; color: var(--fg-muted); letter-spacing: .01em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .wf-status { margin-left: auto; display: inline-flex; align-items: center; gap: 7px; font-size: 12px; color: var(--accent); font-family: ui-monospace, Menlo, monospace; flex: none; }
+    .wf-live { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); animation: pulse 1.8s ease-in-out infinite; }
+    .wf-scroll { overflow-x: auto; overflow-y: hidden; }
+    .wf-scroll::-webkit-scrollbar { height: 8px; }
+    .wf-scroll::-webkit-scrollbar-thumb { background: rgba(127,227,161,0.22); border-radius: 8px; }
+    .wf-scroll::-webkit-scrollbar-track { background: transparent; }
+    .wf-canvas { position: relative; min-width: 900px; display: grid; grid-template-columns: 232px 1fr 256px; gap: 0 64px; align-items: center; padding: 38px 32px; background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0); background-size: 22px 22px; }
+    .wf-wires { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; z-index: 0; }
+    .wf-wire { fill: none; stroke: rgba(255,255,255,0.13); stroke-width: 1.6; }
+    .wf-wire-flow { fill: none; stroke: var(--accent); stroke-width: 1.6; stroke-linecap: round; stroke-dasharray: 3 11; opacity: .55; animation: wfFlow 1.4s linear infinite; }
+    @keyframes wfFlow { to { stroke-dashoffset: -14; } }
+    .wf-col { position: relative; z-index: 1; }
+    .wf-mid { display: flex; flex-direction: column; gap: 13px; }
+    .wf-start, .wf-end { display: flex; }
+    .wf-node { position: relative; display: flex; align-items: center; gap: 12px; background: #0d1011; border: 1px solid var(--border-strong); border-radius: 12px; padding: 12px 15px; transition: border-color .25s, transform .2s, box-shadow .25s; }
+    .wf-node:hover { border-color: rgba(127,227,161,0.45); box-shadow: 0 0 28px -12px var(--accent-glow); transform: translateY(-2px); }
+    .wf-node::before, .wf-node::after { content: ""; position: absolute; top: 50%; width: 9px; height: 9px; border-radius: 50%; background: var(--bg-elevated); border: 1.5px solid rgba(127,227,161,0.5); transform: translateY(-50%); z-index: 2; }
+    .wf-node::before { left: -5px; }
+    .wf-node::after { right: -5px; }
+    .wf-trigger::before, .wf-output::after { display: none; }
+    .wf-ico { flex: none; width: 38px; height: 38px; border-radius: 9px; display: grid; place-items: center; font-size: 18px; background: rgba(127,227,161,0.1); border: 1px solid rgba(127,227,161,0.22); }
+    .wf-tx { display: flex; flex-direction: column; gap: 2px; line-height: 1.2; min-width: 0; }
+    .wf-tx b { font-size: 14.5px; font-weight: 600; letter-spacing: -.01em; }
+    .wf-tx i { font-style: normal; font-size: 12px; color: var(--fg-muted); }
+    .wf-trigger { border-color: rgba(127,227,161,0.4); background: linear-gradient(135deg, rgba(127,227,161,0.1), #0d1011); border-radius: 22px 12px 12px 22px; }
+    .wf-trigger .wf-ico, .wf-output .wf-ico { background: var(--accent); border-color: var(--accent); }
+    .wf-output { border-color: rgba(127,227,161,0.45); background: linear-gradient(135deg, rgba(127,227,161,0.13), #0d1011); box-shadow: 0 0 50px -22px var(--accent-glow); }
+
+    /* ===== Cursor orb (petite bille verte brillante) ===== */
+    .cursor-orb { position: fixed; top: 0; left: 0; width: 15px; height: 15px; border-radius: 50%; pointer-events: none; z-index: 9998; transform: translate(-50%, -50%); opacity: 0; transition: opacity .35s ease, width .2s ease, height .2s ease; background: radial-gradient(circle at 34% 30%, #eafff1 0%, var(--accent-2) 42%, #2fae63 100%); box-shadow: 0 0 14px 3px var(--accent-glow), 0 0 34px 8px rgba(127,227,161,0.2); mix-blend-mode: screen; }
+    .cursor-orb.on { opacity: 1; }
+    .cursor-orb.big { width: 30px; height: 30px; box-shadow: 0 0 22px 6px var(--accent-glow), 0 0 52px 14px rgba(127,227,161,0.28); }
+
+    @media (max-width: 880px) {
+      .g3, .g4 { grid-template-columns: 1fr 1fr; }
+      .split, .checklist, .offers, .cc { grid-template-columns: 1fr; }
+      .facts { grid-template-columns: 1fr 1fr; }
+      .bio { grid-template-columns: 1fr; }
+      .bio .ph { width: 100%; max-width: 320px; }
+      .navlinks { display: none; }
+      .nav-cta { display: none; }
+    }
+    @media (max-width: 560px) {
+      .g2, .g3, .g4 { grid-template-columns: 1fr; }
+      .mod { grid-template-columns: 1fr; gap: 6px; }
+      section.blk { padding: 70px 0; }
+      .hero { padding: 92px 0 70px; }
+      .cc, .offer, .founding { padding: 30px 22px; }
+      .guarantee { flex-direction: column; text-align: center; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, .hero-anim, .marquee, .dot { animation: none !important; scroll-behavior: auto; }
+      .js .reveal { opacity: 1; transform: none; }
+      .lmark-link { stroke-dashoffset: 0 !important; }
+      .lmark-node { opacity: 1 !important; }
+      #curri::before { transform: scaleY(1) !important; }
+      .mod.in .lvl-bar i { transition: none !important; }
+    }
+  </style>
+</head>
+<body class="grain">
+
+  <nav class="top glass">
+    <div class="wrap bar">
+      <a class="logo" href="#top"><span class="mark" aria-hidden="true"><svg viewBox="0 0 32 32" class="lmark"><path class="lmark-link l1" d="M6 16C6 10 10 6.5 16 6.5"/><path class="lmark-link l2" d="M6 16C6 22 10 25.5 16 25.5"/><path class="lmark-link l3" d="M16 6.5C22 6.5 26 10 26 16"/><path class="lmark-link l4" d="M16 25.5C22 25.5 26 22 26 16"/><circle class="lmark-node a" cx="6" cy="16" r="2.6"/><circle class="lmark-node b" cx="16" cy="6.5" r="2.6"/><circle class="lmark-node c" cx="16" cy="25.5" r="2.6"/><circle class="lmark-node core" cx="26" cy="16" r="3"/></svg></span> BotFlow.IA&nbsp;Academy</a>
+      <div class="navlinks">
+        <a href="#curriculum">Curriculum</a>
+        <a href="#claude-code">Claude Code</a>
+        <a href="#mentor">Mentor</a>
+        <a href="#offres">Offres</a>
+        <a href="#faq">FAQ</a>
+      </div>
+      <span class="nav-cta is-full" aria-disabled="true">Academy complet</span>
+    </div>
+  </nav>
+
+  <header class="hero" id="top">
+    <div class="aurora"></div>
+    <div class="grid"></div>
+    <canvas class="ascii-bg" data-ascii="hero" aria-hidden="true"></canvas>
+    <div class="wrap" style="position:relative;z-index:2">
+      <span class="badge badge-full hero-anim"><span class="dot"></span>Cohorte complète ce mois-ci · réouverture prochainement</span>
+      <h1 class="hero-anim" style="margin-top:26px;animation-delay:.06s">
+        <span class="ln">Deviens freelance en</span>
+        <span class="em serif">automatisation IA</span>
+        <span class="ln">en partant de zéro.</span>
+      </h1>
+      <p class="sub hero-anim" style="animation-delay:.2s">
+        Apprends à construire des agents IA et des automatisations <b style="color:#eafff0">n8n</b> vendables,
+        à utiliser <b style="color:#eafff0">Claude Code</b> comme un pro, puis à décrocher tes premiers clients.
+        Sans diplôme, sans coder.
+      </p>
+      <div class="cta-row hero-anim" style="animation-delay:.34s">
+        <span class="btn btn-full" aria-disabled="true">Academy complet</span>
+        <a class="btn btn-ghost" href="#curriculum">Voir le programme ↓</a>
+      </div>
+      <div class="micro hero-anim" style="animation-delay:.48s">
+        <span><span class="tick">✓</span> 100% en ligne</span>
+        <span><span class="tick">✓</span> Garantie résultat</span>
+        <span><span class="tick">✓</span> Aucun code requis</span>
+      </div>
+    </div>
+  </header>
+
+  <div class="marquee-wrap">
+    <div class="marquee">
+      <span>n8n</span><span>Claude</span><span>Claude Code</span><span>GPT</span><span>RAG</span><span>Agents IA</span><span>Make</span><span>Airtable</span><span>Webhooks</span><span>APIs</span><span>Supabase</span>
+      <span>n8n</span><span>Claude</span><span>Claude Code</span><span>GPT</span><span>RAG</span><span>Agents IA</span><span>Make</span><span>Airtable</span><span>Webhooks</span><span>APIs</span><span>Supabase</span>
+    </div>
+  </div>
+
+  <section class="blk" id="programme">
+    <div class="wrap center reveal">
+      <p class="eyebrow">Le piège du débutant</p>
+      <h2 class="h2">Tu regardes des tutos depuis des mois.<br /><span class="serif accent">Toujours zéro client.</span></h2>
+      <p class="lead">Le problème n'est pas le manque d'infos : c'est l'absence de méthode. Voilà où tout le monde se bloque :</p>
+    </div>
+    <div class="wrap">
+      <div class="cards g3">
+        <div class="card reveal"><div class="ico">🧩</div><h3>Des tutos éparpillés</h3><p>Tu sautes de vidéo en vidéo, tu copies des workflows sans comprendre, et rien ne tient debout une fois seul.</p></div>
+        <div class="card reveal" style="transition-delay:.1s"><div class="ico">🎯</div><h3>Aucune offre claire</h3><p>Tu sais bricoler deux-trois automatisations, mais tu ne sais ni quoi vendre, ni à qui, ni à quel prix.</p></div>
+        <div class="card reveal" style="transition-delay:.2s"><div class="ico">💸</div><h3>Tu n'oses pas facturer</h3><p>Sans cadre de vente ni preuve, tu travailles gratuitement « pour te faire la main », et ça ne décolle jamais.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="blk" style="border-top:1px solid var(--border)">
+    <div class="wrap center reveal">
+      <p class="eyebrow">Ce que tu sais faire à la fin</p>
+      <h2 class="h2">Tu repars avec un <span class="serif accent">métier</span>, pas juste des notes.</h2>
+    </div>
+    <div class="wrap reveal">
+      <ul class="checklist">
+        <li>Construire un agent IA de A à Z dans n8n, connecté à Claude ou GPT.</li>
+        <li>Utiliser Claude Code pour livrer plus vite, du débutant à l'expert.</li>
+        <li>Déployer 5 automatisations « bestsellers » que les entreprises paient.</li>
+        <li>Packager une offre freelance claire : positionnement, prix, livrables.</li>
+        <li>Trouver des prospects via la prospection et ton contenu social.</li>
+        <li>Mener un appel de vente et closer ton premier contrat.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="blk" id="curriculum" style="border-top:1px solid var(--border)">
+    <div class="wrap center reveal">
+      <p class="eyebrow">Le curriculum · 9 modules</p>
+      <h2 class="h2">De zéro à freelance opérationnel.</h2>
+      <p class="lead">Un module par étape. Chaque module = théorie courte + build guidé + template prêt à réutiliser.</p>
+    </div>
+    <div class="wrap">
+      <div class="cards" id="curri" style="margin-top:48px">
+        <div class="mod reveal"><div class="num">01</div><div><h3>Fondations &amp; niche rentable</h3><p>Le paysage de l'automatisation IA, comment l'argent circule, et comment choisir une niche où les gens paient déjà.</p><div class="tags"><span class="tag">Mindset</span><span class="tag">Marché</span><span class="tag">Niche</span></div><div class="lvl"><span class="lvl-cap">Niveau</span><span class="lvl-bar"><i style="--lvl:12%"></i></span><span class="lvl-num"><b data-count="12">0</b>%</span></div></div></div>
+        <div class="mod reveal" style="transition-delay:.06s"><div class="num">02</div><div><h3>n8n de zéro</h3><p>Installe ton environnement et construis ton premier workflow automatisé de bout en bout : déclencheurs, nœuds, logique, déploiement.</p><div class="tags"><span class="tag">n8n</span><span class="tag">Webhooks</span><span class="tag">No-code</span></div><div class="lvl"><span class="lvl-cap">Niveau</span><span class="lvl-bar"><i style="--lvl:26%"></i></span><span class="lvl-num"><b data-count="26">0</b>%</span></div></div></div>
+        <div class="mod reveal" style="transition-delay:.12s"><div class="num">03</div><div><h3>Ton premier agent IA</h3><p>Branche un LLM (Claude / GPT) dans n8n : prompts système, outils, sorties structurées. L'agent qui comprend et agit.</p><div class="tags"><span class="tag">Claude</span><span class="tag">GPT</span><span class="tag">Prompting</span></div><div class="lvl"><span class="lvl-cap">Niveau</span><span class="lvl-bar"><i style="--lvl:42%"></i></span><span class="lvl-num"><b data-count="42">0</b>%</span></div></div></div>
+        <div class="mod reveal"><div class="num">04</div><div><h3>Agents avancés : RAG, mémoire, multi-agents</h3><p>Donne à ton agent une base de connaissances (RAG), de la mémoire, et fais collaborer plusieurs agents sur une même tâche.</p><div class="tags"><span class="tag">RAG</span><span class="tag">Vector DB</span><span class="tag">Mémoire</span></div><div class="lvl"><span class="lvl-cap">Niveau</span><span class="lvl-bar"><i style="--lvl:56%"></i></span><span class="lvl-num"><b data-count="56">0</b>%</span></div></div></div>
+        <div class="mod reveal" style="transition-delay:.06s"><div class="num">05</div><div><h3>Maîtrise Claude Code</h3><p>Ton copilote en terminal : du premier prompt à la construction d'outils et de scripts complets. Débutant à expert.</p><div class="tags"><span class="tag">Claude Code</span><span class="tag">CLI</span><span class="tag">Productivité</span></div><div class="lvl"><span class="lvl-cap">Niveau</span><span class="lvl-bar"><i style="--lvl:64%"></i></span><span class="lvl-num"><b data-count="64">0</b>%</span></div></div></div>
+        <div class="mod reveal" style="transition-delay:.12s"><div class="num">06</div><div><h3>Les 5 automatisations qui se vendent</h3><p>Lead-gen, support client 24/7, génération de contenu, reporting auto, scraping. Cinq systèmes réutilisables d'un client à l'autre.</p><div class="tags"><span class="tag">Lead-gen</span><span class="tag">Support</span><span class="tag">Scraping</span></div><div class="lvl"><span class="lvl-cap">Niveau</span><span class="lvl-bar"><i style="--lvl:78%"></i></span><span class="lvl-num"><b data-count="78">0</b>%</span></div></div></div>
+        <div class="mod reveal"><div class="num">07</div><div><h3>Packager &amp; vendre ton offre</h3><p>Positionnement, grille de prix, livrables, contrat type, puis prospection et contenu (Insta, TikTok, LinkedIn) pour attirer les clients.</p><div class="tags"><span class="tag">Offre</span><span class="tag">Pricing</span><span class="tag">Prospection</span></div><div class="lvl"><span class="lvl-cap">Niveau</span><span class="lvl-bar"><i style="--lvl:90%"></i></span><span class="lvl-num"><b data-count="90">0</b>%</span></div></div></div>
+        <div class="mod reveal" style="transition-delay:.06s"><div class="num">08</div><div><h3>Closer &amp; livrer</h3><p>Script d'appel de vente, onboarding client, facturation, et la méthode pour transformer un client en récurrence.</p><div class="tags"><span class="tag">Vente</span><span class="tag">Closing</span><span class="tag">Facturation</span></div><div class="lvl"><span class="lvl-cap">Niveau</span><span class="lvl-bar"><i style="--lvl:92%"></i></span><span class="lvl-num"><b data-count="92">0</b>%</span></div></div></div>
+        <div class="mod reveal" style="transition-delay:.12s"><div class="num">09</div><div><h3>Mindset &amp; posture de freelance</h3><p>Le nerf de la guerre : discipline, régularité, gestion du doute. Construire un peu chaque jour, parler à des clients sans complexe, et tenir dans la durée. Le mindset avant la technique : le reste suit.</p><div class="tags"><span class="tag">Discipline</span><span class="tag">Régularité</span><span class="tag">Posture pro</span></div><div class="lvl"><span class="lvl-cap">Niveau</span><span class="lvl-bar"><i style="--lvl:100%"></i></span><span class="lvl-num"><b data-count="100">0</b>%</span></div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="blk" id="claude-code" style="border-top:1px solid var(--border)">
+    <div class="wrap">
+      <div class="cc reveal">
+        <div>
+          <p class="eyebrow">Inclus dans les 2 offres</p>
+          <h2>Maîtrise <span class="serif accent">Claude Code</span>, de débutant à expert.</h2>
+          <p class="lead">L'outil qui change la donne : un agent de développement dans ton terminal. Tu n'as pas besoin d'être développeur pour t'en servir : tu apprends à lui faire construire, débugger et automatiser à ta place.</p>
+          <ul style="margin-top:24px">
+            <li>Installation &amp; premiers pas, même sans background technique.</li>
+            <li>Bien prompter Claude Code : contexte, itération, validation.</li>
+            <li>Construire des outils, scripts et intégrations pour tes clients.</li>
+            <li>L'intégrer à ton workflow n8n pour livrer 3× plus vite.</li>
+            <li>Passer du « je copie-colle » au « je pilote » : niveau expert.</li>
+          </ul>
+        </div>
+        <div class="term">
+          <div class="tb"><i></i><i></i><i></i></div>
+          <pre data-typer><span class="c1"># ton terminal, ton copilote</span>
+<span class="c2">$</span> claude
+<span class="c1">&gt;</span> construis-moi un workflow n8n
+  qui qualifie mes leads entrants
+<span class="c2">✓</span> agent créé
+<span class="c2">✓</span> connecté à Claude
+<span class="c2">✓</span> prêt à déployer</pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="blk" style="border-top:1px solid var(--border)">
+    <div class="wrap center reveal">
+      <p class="eyebrow">Tout ce qui est inclus</p>
+      <h2 class="h2">De notre premier appel à ta <span class="serif accent">garantie résultat</span>.</h2>
+      <p class="lead">Tout l'accompagnement, branché comme un workflow n8n : un déclencheur, les systèmes prêts à l'emploi, et une seule sortie : tu vends.</p>
+    </div>
+    <div class="wrap">
+      <div class="wf-shell reveal">
+        <div class="wf-bar">
+          <span class="wf-dotrow"><i></i><i></i><i></i></span>
+          <span class="wf-bar-title">accompagnement.workflow · appel → garantie résultat</span>
+          <span class="wf-status"><span class="wf-live"></span>active</span>
+        </div>
+        <div class="wf-scroll">
+          <div class="wf-canvas" id="wf">
+            <svg class="wf-wires" aria-hidden="true"></svg>
+            <div class="wf-col wf-start">
+              <div class="wf-node wf-trigger" data-wf="call"><span class="wf-ico">📞</span><span class="wf-tx"><b>Appel découverte</b><i>30 min · sans engagement</i></span></div>
+            </div>
+            <div class="wf-col wf-mid">
+              <div class="wf-node" data-wf="m"><span class="wf-ico">🎯</span><span class="wf-tx"><b>Plan sur ta niche</b><i>positionnement &amp; offre</i></span></div>
+              <div class="wf-node" data-wf="m"><span class="wf-ico">⚙️</span><span class="wf-tx"><b>Templates n8n</b><i>workflows prêts à déployer</i></span></div>
+              <div class="wf-node" data-wf="m"><span class="wf-ico">🤖</span><span class="wf-tx"><b>Formation Claude Code</b><i>débutant → expert</i></span></div>
+              <div class="wf-node" data-wf="m"><span class="wf-ico">🔍</span><span class="wf-tx"><b>Review de tes workflows</b><i>je te débloque quand tu coinces</i></span></div>
+              <div class="wf-node" data-wf="m"><span class="wf-ico">📄</span><span class="wf-tx"><b>Modèles de vente</b><i>scripts, contrats, onboarding</i></span></div>
+              <div class="wf-node" data-wf="m"><span class="wf-ico">📞</span><span class="wf-tx"><b>Appels &amp; suivi 1:1</b><i>selon ton offre</i></span></div>
+              <div class="wf-node" data-wf="m"><span class="wf-ico">♾️</span><span class="wf-tx"><b>Accès à vie</b><i>à ton rythme, pour toujours</i></span></div>
+            </div>
+            <div class="wf-col wf-end">
+              <div class="wf-node wf-output" data-wf="out"><span class="wf-ico">🛡️</span><span class="wf-tx"><b>Garantie résultat</b><i>1er workflow vendable, ou je continue gratuitement</i></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="blk" style="border-top:1px solid var(--border)">
+    <div class="wrap center reveal">
+      <p class="eyebrow">Pour qui</p>
+      <h2 class="h2">C'est pour toi (ou pas).</h2>
+    </div>
+    <div class="wrap reveal">
+      <div class="split">
+        <div class="panel yes">
+          <h3>✦ C'est pour toi si…</h3>
+          <ul>
+            <li>Tu es débutant motivé et prêt à investir au moins 2 h par jour.</li>
+            <li>Tu veux vivre de l'automatisation IA, pas juste « voir comment ça marche ».</li>
+            <li>Tu préfères une méthode encadrée à des centaines d'onglets ouverts.</li>
+            <li>Tu es prêt à construire, te tromper, et recommencer.</li>
+          </ul>
+        </div>
+        <div class="panel no">
+          <h3>✕ Ce n'est pas pour toi si…</h3>
+          <ul>
+            <li>Tu cherches une recette de revenu passif sans effort.</li>
+            <li>Tu veux juste des tutos gratuits et tu ne passeras pas à l'action.</li>
+            <li>Tu n'es pas prêt à parler à des clients pour vendre.</li>
+            <li>Tu attends que quelqu'un construise tout à ta place.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="blk" id="mentor" style="border-top:1px solid var(--border)">
+    <div class="wrap">
+      <div class="bio reveal">
+        <div>
+          <p class="eyebrow" style="margin-bottom:10px">Ton mentor</p>
+          <h3>Moi c'est Yassine.</h3>
+          <p>Il y a quelques années, je n'avais quasiment jamais touché un ordinateur. Je bossais dans la supply chain, un autre monde. Expatrié de France, puis la Suisse, et aujourd'hui installé au Portugal, j'ai tout repris à zéro.</p>
+          <p>Pas de diplôme tech, pas de réseau, pas de raccourci. J'ai commencé par observer : ce que font les meilleurs, où est l'argent, quelle place reste à prendre. J'ai analysé mes concurrents, testé, raté, recommencé, et de fil en aiguille j'ai trouvé ma niche et mon positionnement.</p>
+          <p>C'est comme ça que je suis entré dans le monde de l'IA. À force de construire un peu tous les jours, je suis devenu expert dans mon domaine. Aujourd'hui, j'en vis pleinement et j'installe des systèmes IA au quotidien.</p>
+          <p>Si je te raconte ça, ce n'est pas pour l'étalage. C'est parce qu'il y a deux ans, j'étais exactement là où tu es : curieux, un peu perdu, sans savoir par où commencer. La seule différence, c'est que je m'y suis mis, sérieusement, tous les jours. <b style="color:#eafff0">Le mindset avant la technique. Le reste suit.</b></p>
+          <p style="font-size:18px;color:#eafff0;border-left:2px solid var(--accent);padding-left:18px;margin:24px 0 4px;line-height:1.5">Résultat : de zéro à <span class="accent" style="font-weight:600">10k+ / mois</span> avec seulement <b style="color:#eafff0">4 clients par mois</b>, grâce à une offre high-ticket, sans jamais coder une ligne.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="blk" style="border-top:1px solid var(--border)">
+    <div class="wrap center reveal">
+      <p class="eyebrow">Le programme en bref</p>
+      <h2 class="h2">Des faits, pas des promesses.</h2>
+      <p class="lead">Pas de chiffres de résultats inventés. Juste ce que le programme est, concrètement.</p>
+    </div>
+    <div class="wrap reveal">
+      <div class="facts">
+        <div><b data-count="8">8</b><span>semaines de programme</span></div>
+        <div><b data-count="2">2</b><span>heures de travail / jour min</span></div>
+        <div><b>1:1</b><span>coaching privé (offre Pro)</span></div>
+        <div><b>∞</b><span>accès à vie au contenu</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="blk" style="border-top:1px solid var(--border)">
+    <div class="wrap reveal">
+      <div class="founding">
+        <div class="seal">★</div>
+        <h2>Tu fais partie des <span class="serif accent">fondateurs</span>.</h2>
+        <p class="lead" style="margin-left:auto;margin-right:auto">La première cohorte vient d'ouvrir. Concrètement, ça veut dire : le prix le plus bas que ce programme aura jamais, un accès direct à moi, et ton retour qui façonne la suite. En échange, je te demande de jouer le jeu : t'investir et me faire tes retours honnêtes.</p>
+        <p class="lead" style="margin:14px auto 0;max-width:640px">La communauté privée ouvre bientôt : en tant que fondateur, l'accès t'est offert dès le lancement.</p>
+        <p class="muted" style="margin-top:18px;font-size:14px">Les témoignages des premiers élèves apparaîtront ici. Rien d'inventé : seulement de vrais retours, dès qu'on les aura.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="blk" id="offres" style="border-top:1px solid var(--border)">
+    <div class="wrap center reveal">
+      <p class="eyebrow">Les offres</p>
+      <h2 class="h2">Choisis ton niveau d'accompagnement.</h2>
+      <p class="lead">Prix fondateur, première cohorte. Deux formules, le même objectif : que tu vives de l'automatisation IA.</p>
+    </div>
+    <div class="wrap">
+      <div class="offers">
+        <div class="offer reveal">
+          <p class="kicker">Autonome</p>
+          <p class="name">L'essentiel pour démarrer</p>
+          <p class="desc">Tout le contenu + le cadre pour avancer seul, à ton rythme.</p>
+          <p class="price">490 €</p>
+          <p class="pay">Paiement unique</p>
+          <ul>
+            <li>Les 9 modules du programme, accès à vie</li>
+            <li>2 appels avec moi (démarrage + bilan)</li>
+            <li>Bibliothèque complète de templates n8n</li>
+            <li>Review de tes workflows par moi</li>
+            <li>Formation Claude Code (débutant → expert)</li>
+            <li>Modèles de vente, contrats &amp; onboarding</li>
+          </ul>
+          <div class="spacer"></div>
+          <span class="btn btn-full" aria-disabled="true">Academy complet</span>
+        </div>
+
+        <div class="offer feat reveal" style="transition-delay:.08s">
+          <span class="pill">★ Le plus complet</span>
+          <p class="kicker">Coaching 1:1</p>
+          <p class="name">Accompagnement rapproché</p>
+          <p class="desc">Tout l'Autonome + 2 mois de coaching privé avec moi.</p>
+          <p class="price">1 490 €</p>
+          <p class="pay">Paiement unique</p>
+          <ul>
+            <li class="inc">Tout ce qu'il y a dans l'offre Autonome, plus :</li>
+            <li>1 appel 1:1 privé / semaine pendant 2 mois (8 sessions)</li>
+            <li>Plan d'action personnalisé sur ta niche</li>
+            <li>Accès direct à moi entre les appels (par message)</li>
+            <li>Priorité sur les reviews de tes workflows</li>
+            <li>On construit ton offre et tes premiers clients ensemble</li>
+          </ul>
+          <div class="spacer"></div>
+          <span class="btn btn-full" aria-disabled="true">Academy complet</span>
+        </div>
+      </div>
+      <p class="center muted reveal" style="margin-top:22px;font-size:14px">Un échange de 30 min d'abord : on vérifie ensemble quelle formule est faite pour toi.</p>
+    </div>
+  </section>
+
+  <section class="blk" style="padding-top:0">
+    <div class="wrap reveal">
+      <div class="guarantee">
+        <div class="seal">🛡️</div>
+        <div>
+          <h3>La garantie « premier workflow vendable »</h3>
+          <p>Si à la fin des 8 semaines tu n'as pas construit ton premier workflow vendable, je continue à t'accompagner gratuitement jusqu'à ce que ce soit fait. Le risque est pour moi, pas pour toi.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="blk" id="faq" style="border-top:1px solid var(--border)">
+    <div class="wrap center reveal">
+      <p class="eyebrow">FAQ</p>
+      <h2 class="h2">Les questions qu'on me pose.</h2>
+    </div>
+    <div class="wrap reveal">
+      <div class="faq">
+        <details class="q"><summary>J'ai besoin de savoir coder ?<span class="chev">+</span></summary><p>Non. Tout passe par n8n (no-code / low-code), les LLM et Claude Code. Si tu sais utiliser un navigateur et suivre une logique, tu peux suivre. On code zéro ligne à la main pour démarrer.</p></details>
+        <details class="q"><summary>Combien de temps par jour ?<span class="chev">+</span></summary><p>Compte au minimum 2 heures par jour : le contenu + tes builds. Plus tu mets, plus vite tu avances. Tout est aussi en accès à vie, donc tu adaptes à ton rythme et à ton fuseau horaire.</p></details>
+        <details class="q"><summary>Quelle est la différence entre les 2 offres ?<span class="chev">+</span></summary><p>L'offre Autonome (490 €) te donne tout le contenu, les templates, la formation Claude Code et 2 appels. L'offre Coaching 1:1 (1 490 €) ajoute un suivi privé hebdomadaire avec moi pendant 2 mois, pour qu'on construise ton activité ensemble, pas à pas.</p></details>
+        <details class="q"><summary>Il y a des outils payants en plus ?<span class="chev">+</span></summary><p>n8n a une version gratuite suffisante pour apprendre. Pour les LLM et Claude Code, quelques euros de crédits suffisent au début. On t'indique le strict nécessaire, rien d'inutile.</p></details>
+        <details class="q"><summary>Je débute vraiment de zéro, c'est grave ?<span class="chev">+</span></summary><p>Non, le programme est conçu pour partir de zéro, c'est exactement mon parcours. Le seul prérequis, c'est la motivation et le passage à l'action tous les jours.</p></details>
+        <details class="q"><summary>Je peux suivre depuis le Portugal / l'étranger ?<span class="chev">+</span></summary><p>Oui, c'est 100% en ligne. Les appels peuvent se tenir en français ou en portugais. Le contenu reste accessible partout, à vie.</p></details>
+      </div>
+    </div>
+  </section>
+
+  <section class="final" style="border-top:1px solid var(--border)">
+    <div class="aurora2"></div>
+    <canvas class="ascii-bg" data-ascii="final" aria-hidden="true"></canvas>
+    <div class="wrap reveal" style="position:relative;z-index:2">
+      <h2>Prêt à lancer <span class="serif accent">ton activité</span> ?</h2>
+      <p class="sub">Réserve un échange de 30 minutes. On regarde où tu en es et quelle formule est faite pour toi.</p>
+      <div style="margin-top:36px"><span class="btn btn-full" aria-disabled="true">Academy complet</span></div>
+      <p class="micro" style="margin-top:22px;justify-content:center"><span class="muted">Sans engagement · réponse honnête, même si c'est non</span></p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="wrap row">
+      <a class="logo" href="#top"><span class="mark" aria-hidden="true"><svg viewBox="0 0 32 32" class="lmark"><path class="lmark-link l1" d="M6 16C6 10 10 6.5 16 6.5"/><path class="lmark-link l2" d="M6 16C6 22 10 25.5 16 25.5"/><path class="lmark-link l3" d="M16 6.5C22 6.5 26 10 26 16"/><path class="lmark-link l4" d="M16 25.5C22 25.5 26 22 26 16"/><circle class="lmark-node a" cx="6" cy="16" r="2.6"/><circle class="lmark-node b" cx="16" cy="6.5" r="2.6"/><circle class="lmark-node c" cx="16" cy="25.5" r="2.6"/><circle class="lmark-node core" cx="26" cy="16" r="3"/></svg></span> BotFlow.IA Academy</a>
+      <div class="links">
+        <a href="#curriculum">Curriculum</a>
+        <a href="#offres">Offres</a>
+        <a href="https://www.instagram.com/yass.automat/" target="_blank" rel="noopener">📸 Instagram</a>
+        <a href="https://www.linkedin.com/in/yassine-amedah-395143318" target="_blank" rel="noopener">in LinkedIn</a>
+        <a href="mentions-legales.html">Mentions légales</a>
+      </div>
+      <p class="copy">© 2026 BotFlow.IA Academy</p>
+    </div>
+  </footer>
+
+  <div class="fab" id="fab">
+    <button class="fab-toggle" id="fabToggle" aria-label="Ouvrir les liens" aria-expanded="false">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+    </button>
+    <a class="fab-item" href="https://www.instagram.com/yass.automat/" target="_blank" rel="noopener" aria-label="Instagram">
+      <span class="lbl">Instagram</span>
+      <span class="fab-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none"/></svg></span>
+    </a>
+    <a class="fab-item" href="https://www.linkedin.com/in/yassine-amedah-395143318" target="_blank" rel="noopener" aria-label="LinkedIn">
+      <span class="lbl">LinkedIn</span>
+      <span class="fab-btn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM0 8h5v16H0V8zm7.5 0H12v2.2h.07c.63-1.2 2.17-2.46 4.46-2.46C21.2 7.74 24 10.2 24 15v9h-5v-8c0-1.9-.03-4.35-2.65-4.35-2.65 0-3.06 2.07-3.06 4.2V24h-5V8z"/></svg></span>
+    </a>
+    <a class="fab-item" href="#" data-cal aria-label="Réserver un appel">
+      <span class="lbl">Réserver un appel</span>
+      <span class="fab-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4.5" width="18" height="16" rx="3"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg></span>
+    </a>
+  </div>
+
+  <link rel="stylesheet" href="https://assets.calendly.com/assets/external/widget.css" />
+  <script src="https://assets.calendly.com/assets/external/widget.js" async></script>
+  <script>
+    (function () {
+      var CAL = "https://calendly.com/yass_automat-ia/new-meeting"
+        + "?hide_gdpr_banner=1&background_color=0b0d0a&text_color=f5f5f0&primary_color=7afca5"
+        + "&utm_source=botflow-academy&utm_medium=landing";
+      document.querySelectorAll("[data-cal]").forEach(function (el) {
+        el.addEventListener("click", function (e) {
+          e.preventDefault();
+          if (window.Calendly) { window.Calendly.initPopupWidget({ url: CAL }); }
+          else { window.open(CAL, "_blank", "noopener"); }
+        });
+      });
+
+      var reduce = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      var reveals = document.querySelectorAll(".reveal");
+      function countUp(el) {
+        var target = parseInt(el.getAttribute("data-count"), 10);
+        if (isNaN(target)) return;
+        var t0 = null, dur = 1100;
+        function step(ts) {
+          if (!t0) t0 = ts;
+          var p = Math.min((ts - t0) / dur, 1);
+          el.textContent = Math.round(target * (1 - Math.pow(1 - p, 3)));
+          if (p < 1) requestAnimationFrame(step);
+        }
+        requestAnimationFrame(step);
+      }
+      if (!("IntersectionObserver" in window) || reduce) {
+        reveals.forEach(function (e) { e.classList.add("in"); });
+        document.querySelectorAll("[data-count]").forEach(countUp);
+      } else {
+        var io = new IntersectionObserver(function (entries) {
+          entries.forEach(function (en) {
+            if (en.isIntersecting) {
+              en.target.classList.add("in");
+              en.target.querySelectorAll && en.target.querySelectorAll("[data-count]").forEach(countUp);
+              io.unobserve(en.target);
+            }
+          });
+        }, { rootMargin: "0px 0px -10% 0px", threshold: 0.12 });
+        reveals.forEach(function (e) { io.observe(e); });
+      }
+
+      // ===== Magnetic cards + glare =====
+      if (!reduce && window.matchMedia("(pointer: fine)").matches) {
+        document.querySelectorAll(".offer, .card, .mod").forEach(function (el) {
+          el.addEventListener("pointermove", function (e) {
+            var r = el.getBoundingClientRect();
+            var px = (e.clientX - r.left) / r.width;
+            var py = (e.clientY - r.top) / r.height;
+            el.style.setProperty("--mx", (px * 100).toFixed(1) + "%");
+            el.style.setProperty("--my", (py * 100).toFixed(1) + "%");
+            el.style.transform = "perspective(900px) rotateX(" + (-(py - 0.5) * 6).toFixed(2) + "deg) rotateY(" + ((px - 0.5) * 6).toFixed(2) + "deg) translateY(-4px)";
+          });
+          el.addEventListener("pointerleave", function () { el.style.transform = ""; });
+        });
+      }
+
+      // ===== Floating social widget =====
+      var fab = document.getElementById("fab"), fabT = document.getElementById("fabToggle");
+      if (fab && fabT) {
+        fabT.addEventListener("click", function () {
+          var open = fab.classList.toggle("open");
+          fabT.setAttribute("aria-expanded", open ? "true" : "false");
+        });
+        document.addEventListener("click", function (e) {
+          if (fab.classList.contains("open") && !fab.contains(e.target)) {
+            fab.classList.remove("open"); fabT.setAttribute("aria-expanded", "false");
+          }
+        });
+      }
+
+      // ===== Curriculum connector rail =====
+      var curri = document.getElementById("curri");
+      if (curri) {
+        var fp = document.createElement("div"); fp.className = "flow-pulse"; curri.appendChild(fp);
+        if (reduce || !("IntersectionObserver" in window)) { curri.classList.add("drawn"); }
+        else {
+          var cio = new IntersectionObserver(function (es) {
+            es.forEach(function (en) { if (en.isIntersecting) { curri.classList.add("drawn"); cio.disconnect(); } });
+          }, { threshold: 0.12 });
+          cio.observe(curri);
+        }
+      }
+
+      // ===== Claude Code terminal — self-typing (source = the static markup) =====
+      var term = document.querySelector(".term pre[data-typer]");
+      if (term && !reduce) {
+        var segs = [];
+        term.childNodes.forEach(function (n) {
+          if (n.nodeType === 3) segs.push({ t: n.textContent, c: null });
+          else if (n.nodeType === 1) segs.push({ t: n.textContent, c: n.className || null });
+        });
+        var chars = [];
+        segs.forEach(function (s) { for (var i = 0; i < s.t.length; i++) chars.push({ ch: s.t[i], c: s.c }); });
+        function esc(s) { return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+        function render(n) {
+          var html = "", curC = "\u0000", buf = "";
+          function flush() { if (buf) { html += curC ? '<span class="' + curC + '">' + esc(buf) + "</span>" : esc(buf); buf = ""; } }
+          for (var i = 0; i < n; i++) { var c = chars[i]; if (c.c !== curC) { flush(); curC = c.c; } buf += c.ch; }
+          flush(); return html;
+        }
+        var typed = false;
+        function startType() {
+          if (typed) return; typed = true;
+          var n = 0, total = chars.length;
+          (function tick() {
+            n++;
+            term.innerHTML = render(n) + '<span class="caret"></span>';
+            if (n < total) {
+              var d = chars[n - 1].ch === "\n" ? 90 : 16 + Math.random() * 26;
+              setTimeout(function () { requestAnimationFrame(tick); }, d);
+            }
+          })();
+        }
+        if ("IntersectionObserver" in window) {
+          var tio = new IntersectionObserver(function (es) {
+            es.forEach(function (en) { if (en.isIntersecting) { startType(); tio.disconnect(); } });
+          }, { threshold: 0.4 });
+          tio.observe(term);
+        } else { startType(); }
+      }
+
+      // ===== Interactive marquee (reacts to pointer) =====
+      var mq = document.querySelector(".marquee");
+      if (mq && !reduce) {
+        var half = 0, offset = 0, vel = 0.6, target = 0.6;
+        function measure() { half = mq.scrollWidth / 2; }
+        mq.classList.add("live");
+        var spans = Array.prototype.slice.call(mq.querySelectorAll("span"));
+        var wrap = mq.parentElement;
+        wrap.addEventListener("pointermove", function (e) {
+          var r = wrap.getBoundingClientRect();
+          target = 0.2 + ((e.clientX - r.left) / r.width) * 2.6;
+          spans.forEach(function (s) {
+            var sr = s.getBoundingClientRect();
+            if (Math.abs((sr.left + sr.right) / 2 - e.clientX) < 64) s.classList.add("hot"); else s.classList.remove("hot");
+          });
+        });
+        wrap.addEventListener("pointerleave", function () { target = 0.6; spans.forEach(function (s) { s.classList.remove("hot"); }); });
+        (function loop() {
+          vel += (target - vel) * 0.06;
+          offset -= vel;
+          if (half && offset <= -half) offset += half;
+          mq.style.transform = "translateX(" + offset + "px)";
+          requestAnimationFrame(loop);
+        })();
+        setTimeout(measure, 80); window.addEventListener("resize", measure);
+      }
+
+      // ===== ASCII flow-field background =====
+      function AsciiField(canvas) {
+        var ctx = canvas.getContext("2d");
+        var DPR = Math.min(window.devicePixelRatio || 1, 2);
+        var W = 0, H = 0, cols = 0, rows = 0, cell = 18;
+        var ramp = " .\u00b7:-=+*o#%@";
+        var glyphs = "01<>/\\|+*=".split("");
+        var mouse = { x: -9999, y: -9999, on: false };
+        function resize() {
+          var r = canvas.getBoundingClientRect();
+          W = r.width; H = r.height;
+          canvas.width = Math.max(1, W * DPR); canvas.height = Math.max(1, H * DPR);
+          ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+          cell = W < 560 ? 14 : 18;
+          cols = Math.ceil(W / cell) + 1; rows = Math.ceil(H / cell) + 1;
+          ctx.font = (cell - 3) + "px ui-monospace, 'SF Mono', Menlo, monospace";
+          ctx.textBaseline = "top";
+        }
+        resize(); window.addEventListener("resize", resize);
+        var t = 0, running = false, raf = null, last = 0;
+        function frame(ts) {
+          if (!running) return;
+          raf = requestAnimationFrame(frame);
+          if (ts - last < 33) return; last = ts;
+          t += 0.05;
+          ctx.clearRect(0, 0, W, H);
+          for (var gy = 0; gy < rows; gy++) {
+            for (var gx = 0; gx < cols; gx++) {
+              var x = gx * cell, y = gy * cell;
+              var v = Math.sin(gx * 0.30 + t * 0.9) + Math.sin(gy * 0.42 - t * 0.7) + Math.sin((gx + gy) * 0.22 + t * 0.6);
+              v = (v + 3) / 6;
+              if (mouse.on) {
+                var dx = x - mouse.x, dy = y - mouse.y;
+                v += Math.max(0, 1 - Math.sqrt(dx * dx + dy * dy) / 170) * 0.95;
+              }
+              if (v <= 0.22) continue;
+              var ch = ramp[Math.min(ramp.length - 1, Math.floor(v * ramp.length))];
+              var alpha = Math.min(0.8, v * 0.48);
+              if (mouse.on && Math.abs(x - mouse.x) < 120 && Math.abs(y - mouse.y) < 120) {
+                ch = glyphs[(gx + gy + Math.floor(t * 6)) % glyphs.length];
+                alpha = Math.min(1, v * 0.72);
+              }
+              ctx.fillStyle = "rgba(127,227,161," + alpha.toFixed(3) + ")";
+              ctx.fillText(ch, x, y);
+            }
+          }
+        }
+        this.start = function () { if (running) return; running = true; last = 0; raf = requestAnimationFrame(frame); };
+        this.stop = function () { running = false; if (raf) cancelAnimationFrame(raf); };
+        window.addEventListener("pointermove", function (e) {
+          var r = canvas.getBoundingClientRect();
+          if (e.clientX >= r.left && e.clientX <= r.right && e.clientY >= r.top && e.clientY <= r.bottom) {
+            mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; mouse.on = true;
+          } else { mouse.on = false; }
+        });
+      }
+      if (!reduce) {
+        document.querySelectorAll(".ascii-bg").forEach(function (cv) {
+          var field = new AsciiField(cv);
+          if ("IntersectionObserver" in window) {
+            var aio = new IntersectionObserver(function (es) {
+              es.forEach(function (en) { if (en.isIntersecting) field.start(); else field.stop(); });
+            }, { threshold: 0 });
+            aio.observe(cv);
+          } else { field.start(); }
+        });
+      }
+
+      // ===== n8n workflow wires =====
+      var SVGNS = "http://www.w3.org/2000/svg";
+      function buildWires() {
+        var canvas = document.getElementById("wf");
+        if (!canvas) return;
+        var svg = canvas.querySelector(".wf-wires");
+        var rect = canvas.getBoundingClientRect();
+        svg.setAttribute("width", rect.width);
+        svg.setAttribute("height", rect.height);
+        while (svg.firstChild) svg.removeChild(svg.firstChild);
+        function edge(el, side) {
+          var r = el.getBoundingClientRect();
+          return { x: (side === "out" ? r.right : r.left) - rect.left, y: r.top - rect.top + r.height / 2 };
+        }
+        function wire(a, b, idx) {
+          var s = edge(a, "out"), e = edge(b, "in");
+          var dx = Math.max(40, (e.x - s.x) * 0.5);
+          var d = "M" + s.x + "," + s.y + " C" + (s.x + dx) + "," + s.y + " " + (e.x - dx) + "," + e.y + " " + e.x + "," + e.y;
+          var base = document.createElementNS(SVGNS, "path");
+          base.setAttribute("d", d); base.setAttribute("class", "wf-wire");
+          svg.appendChild(base);
+          var flow = document.createElementNS(SVGNS, "path");
+          flow.setAttribute("d", d); flow.setAttribute("class", "wf-wire-flow");
+          flow.style.animationDelay = (-(idx % 7) * 0.18).toFixed(2) + "s";
+          svg.appendChild(flow);
+        }
+        var call = canvas.querySelector('[data-wf="call"]');
+        var out = canvas.querySelector('[data-wf="out"]');
+        var mids = canvas.querySelectorAll('[data-wf="m"]');
+        mids.forEach(function (m, i) { wire(call, m, i); wire(m, out, i); });
+      }
+      buildWires();
+      window.addEventListener("resize", buildWires);
+      window.addEventListener("load", buildWires);
+      setTimeout(buildWires, 400);
+      if (document.fonts && document.fonts.ready) document.fonts.ready.then(buildWires);
+
+      // ===== Cursor orb — petite bille verte brillante =====
+      if (!reduce && window.matchMedia("(pointer: fine)").matches) {
+        var orb = document.createElement("div");
+        orb.className = "cursor-orb";
+        document.body.appendChild(orb);
+        var ox = window.innerWidth / 2, oy = window.innerHeight / 2, tx = ox, ty = oy, shown = false;
+        document.addEventListener("pointermove", function (e) {
+          tx = e.clientX; ty = e.clientY;
+          if (!shown) { ox = tx; oy = ty; shown = true; orb.classList.add("on"); }
+          var hot = e.target.closest && e.target.closest("a, button, .wf-node, .btn, summary, [data-cal]");
+          orb.classList.toggle("big", !!hot);
+        });
+        document.addEventListener("pointerleave", function () { orb.classList.remove("on"); shown = false; });
+        (function orbLoop() {
+          ox += (tx - ox) * 0.18; oy += (ty - oy) * 0.18;
+          orb.style.transform = "translate(" + ox.toFixed(1) + "px," + oy.toFixed(1) + "px) translate(-50%,-50%)";
+          requestAnimationFrame(orbLoop);
+        })();
+      }
+    })();
+  </script>
+</body>
+</html>
