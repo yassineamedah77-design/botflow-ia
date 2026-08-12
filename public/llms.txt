@@ -6,6 +6,7 @@
 
 - **Nom**: BotFlow IA (orthographe officielle: BotFlow.IA)
 - **Site web**: https://www.botflow-ia.fr
+- **Versions linguistiques**: 🇫🇷 https://www.botflow-ia.fr/ · 🇵🇹 https://www.botflow-ia.fr/pt · 🇬🇧 https://www.botflow-ia.fr/en
 - **Marchés**: France 🇫🇷 + Portugal 🇵🇹
 - **Langues**: français, portugais, anglais
 - **Localisation**: Paris (France) + Lisboa (Portugal)
@@ -80,8 +81,12 @@ Engagement 12 mois. Garantie 30 jours satisfait ou remboursé sur le setup.
 
 ## Liens importants
 
-- [Site principal](https://www.botflow-ia.fr/)
+- [Site principal — français](https://www.botflow-ia.fr/)
+- [Versão portuguesa](https://www.botflow-ia.fr/pt)
+- [English version](https://www.botflow-ia.fr/en)
 - [Blog](https://www.botflow-ia.fr/blog)
+- [Réduire les no-show en clinique esthétique (guide)](https://www.botflow-ia.fr/blog/reduire-no-show-clinique-esthetique)
+- [WhatsApp Business pour cliniques : guide RGPD](https://www.botflow-ia.fr/blog/whatsapp-business-clinique-esthetique-rgpd)
 - [Sitemap](https://www.botflow-ia.fr/sitemap.xml)
 - [Mentions légales](https://www.botflow-ia.fr/mentions-legales)
 - [Politique de confidentialité](https://www.botflow-ia.fr/politique-confidentialite)

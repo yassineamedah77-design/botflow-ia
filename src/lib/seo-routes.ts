@@ -12,6 +12,9 @@ export type RouteEntry = {
 export const staticRoutes: RouteEntry[] = [
   // Core
   { path: "/", priority: 1.0, changeFrequency: "weekly" },
+  // Server-rendered locale variants (reciprocal hreflang set with "/")
+  { path: "/pt", priority: 0.9, changeFrequency: "weekly" },
+  { path: "/en", priority: 0.8, changeFrequency: "weekly" },
   // Blog (hub)
   { path: "/blog", priority: 0.7, changeFrequency: "weekly" },
   // Legal

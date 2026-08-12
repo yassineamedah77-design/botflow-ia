@@ -20,9 +20,9 @@ export const copyPt: LandingCopy = {
 
   hero: {
     badge: "2 vagas de onboarding disponíveis este mês",
-    h1Line1: "As suas DM, as chamadas perdidas,",
-    h1Accent: "as suas horas vazias,",
-    h1Line2: "tornam-se marcações.",
+    h1Line1: "Cada DM,",
+    h1Accent: "mesmo às 22 h,",
+    h1Line2: "torna-se uma marcação.",
     sub: "A BotFlow IA instala a Sofia, a sua assistente de IA trilingue PT · FR · EN. Responde 24/7 no WhatsApp e Instagram, qualifica as suas clientes, reserva no Treatwell ou Zolmi, recupera as faltas e faz voltar as antigas clientes.",
     ctaPrimary: "Reservar a minha auditoria gratuita (30 min)",
     ctaSecondary: "Conhecer a Sofia",
@@ -387,9 +387,9 @@ export const copyEn: LandingCopy = {
 
   hero: {
     badge: "2 onboarding slots available this month",
-    h1Line1: "Your DMs, your missed calls,",
-    h1Accent: "your empty hours,",
-    h1Line2: "become appointments.",
+    h1Line1: "Every DM,",
+    h1Accent: "even at 10pm,",
+    h1Line2: "becomes a booking.",
     sub: "BotFlow IA deploys Sofia, your trilingual AI assistant (EN · FR · PT). She answers 24/7 on WhatsApp and Instagram, qualifies your clients, books into Planity or Treatwell, recovers no-shows and brings back past clients.",
     ctaPrimary: "Book my free audit (30 min)",
     ctaSecondary: "Meet Sofia",

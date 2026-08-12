@@ -25,9 +25,9 @@ export const copy = {
 
   hero: {
     badge: "2 places d'onboarding disponibles ce mois-ci",
-    h1Line1: "Vos DM, vos appels manqués,",
-    h1Accent: "vos heures creuses,",
-    h1Line2: "deviennent des rendez-vous.",
+    h1Line1: "Chaque DM,",
+    h1Accent: "même à 22 h,",
+    h1Line2: "devient un rendez-vous.",
     sub: "BotFlow IA installe Sofia, votre assistante IA bilingue FR · PT · EN. Elle répond 24/7 sur WhatsApp et Instagram, qualifie vos clientes, réserve dans Planity ou Treatwell, relance les no-show et fait revenir vos anciennes clientes.",
     ctaPrimary: AUDIT_LABEL,
     ctaSecondary: "Découvrir Sofia",
