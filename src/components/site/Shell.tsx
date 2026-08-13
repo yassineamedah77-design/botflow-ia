@@ -89,18 +89,14 @@ function Nav() {
         transform: "translateX(-50%)",
         display: "flex",
         alignItems: "center",
-        justifyContent: "center",
-        flexWrap: "wrap",
         gap: 6,
         padding: "7px 8px",
-        borderRadius: 24,
+        borderRadius: 999,
         background: "rgba(15,16,14,.6)",
         backdropFilter: "blur(24px)",
         WebkitBackdropFilter: "blur(24px)",
         border: "1px solid rgba(255,255,255,.08)",
         zIndex: 50,
-        // Never wider than the phone screen — the pill wraps instead of overflowing.
-        maxWidth: "calc(100vw - 24px)",
       }}
     >
       {items.map((it) => (
@@ -127,9 +123,7 @@ function Nav() {
 function Foot() {
   return (
     <footer style={{ position: "relative", zIndex: 2, borderTop: "1px solid rgba(255,255,255,.08)", padding: "60px 32px 40px", marginTop: 80 }}>
-      {/* auto-fit keeps the footer readable on phones without a media query:
-          3 columns on desktop, stacking down to 1 as the viewport narrows. */}
-      <div style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))", gap: 40, color: "#8a948a", fontSize: 14 }}>
+      <div style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "2fr 1fr 1fr", gap: 40, color: "#8a948a", fontSize: 14 }}>
         <div>
           <div style={{ fontSize: 28, color: "#e9efe5", fontWeight: 600 }}>
             Botflow<span style={{ color: ACCENT }}>.</span>
