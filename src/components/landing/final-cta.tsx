@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useCopy } from "./lang";
-import { CalendlyButton } from "./calendly";
+import { CalendlyInline } from "./calendly";
 import { Reveal } from "./reveal";
 
 export function FinalCta() {
@@ -26,18 +26,10 @@ export function FinalCta() {
           </p>
         </Reveal>
 
-        {/* Primary action — Calendly popup */}
+        {/* Inline Calendly — booking without an extra click */}
         <Reveal delay={120}>
-          <div className="mt-10 flex justify-center">
-            <CalendlyButton
-              utm="utm_source=landing&utm_medium=final"
-              className="group w-full cursor-pointer rounded-2xl bg-[var(--accent)] px-10 py-5 text-[17px] font-bold text-[#062013] shadow-[0_0_60px_-10px_var(--accent)] transition hover:shadow-[0_0_80px_-8px_var(--accent)] hover:brightness-105 active:scale-[.98] sm:w-auto"
-            >
-              {copy.hero.ctaPrimary}{" "}
-              <span aria-hidden className="inline-block transition-transform group-hover:translate-x-1">
-                →
-              </span>
-            </CalendlyButton>
+          <div className="mt-10 overflow-hidden rounded-3xl border border-white/[0.08] bg-[#0b0d0a]">
+            <CalendlyInline className="w-full" />
           </div>
         </Reveal>
 

@@ -74,11 +74,11 @@ function Brand() {
 
 function Nav() {
   const items = [
-    { href: "/#offres", label: "Offres" },
-    { href: "/#tarifs", label: "Tarifs" },
-    { href: "/#faq", label: "FAQ" },
+    { href: "/services/automatisation-workflow-ia", label: "Workflows IA" },
+    { href: "/services/agent-ia-chatbot", label: "Agents IA" },
+    { href: "/services/formation-ia-entreprise", label: "Formation" },
     { href: "/blog", label: "Blog" },
-    { href: "/#audit", label: "Audit gratuit ↗", cta: true },
+    { href: "/#contact", label: "Contact ↗", cta: true },
   ];
   return (
     <nav
@@ -129,26 +129,29 @@ function Foot() {
             Botflow<span style={{ color: ACCENT }}>.</span>
           </div>
           <p style={{ marginTop: 12, maxWidth: 360 }}>
-            Agence IA pour cliniques esthétiques, instituts de beauté et spas en France et au Portugal. Sofia, l&apos;assistante virtuelle trilingue qui remplit votre agenda.
+            Agence d&apos;automatisation IA pour PME et startups en France. Workflows n8n, agents Claude sur-mesure, formation IA.
           </p>
         </div>
         <div>
-          <strong style={{ color: "#e9efe5" }}>Offres</strong>
+          <strong style={{ color: "#e9efe5" }}>Services</strong>
           <ul style={{ listStyle: "none", padding: 0, margin: "12px 0 0", display: "flex", flexDirection: "column", gap: 6 }}>
-            <li><Link style={l} href="/#offres">Sofia — Agent d&apos;accueil 24/7</Link></li>
-            <li><Link style={l} href="/#offres">Visibilité IA locale (AEO)</Link></li>
-            <li><Link style={l} href="/#offres">Machine à contenus Instagram</Link></li>
-            <li><Link style={l} href="/#offres">Réactivation &amp; suivi client</Link></li>
-            <li><Link style={l} href="/#tarifs">Tarifs &amp; packs</Link></li>
-            <li><Link style={l} href="/#procede">Notre procédé</Link></li>
+            <li><Link style={l} href="/services/automatisation-workflow-ia">Workflows IA</Link></li>
+            <li><Link style={l} href="/services/agent-ia-chatbot">Agents IA & chatbots</Link></li>
+            <li><Link style={l} href="/services/formation-ia-entreprise">Formation IA</Link></li>
+            <li><Link style={l} href="/services/automatisation-pme">Automatisation PME</Link></li>
+            <li><Link style={l} href="/services/prospection-ia">Prospection IA</Link></li>
+            <li><Link style={l} href="/services/support-client-ia">Support client IA</Link></li>
+            <li><Link style={l} href="/services/crm-ia">CRM IA</Link></li>
+            <li><Link style={l} href="/services/ia-pour-ecommerce">IA e-commerce</Link></li>
+            <li><Link style={l} href="/agence-automatisation-ia-paris">Agence IA Paris</Link></li>
           </ul>
         </div>
         <div>
           <strong style={{ color: "#e9efe5" }}>Ressources</strong>
           <ul style={{ listStyle: "none", padding: 0, margin: "12px 0 0", display: "flex", flexDirection: "column", gap: 6 }}>
             <li><Link style={l} href="/blog">Blog</Link></li>
-            <li><Link style={l} href="/blog/reduire-no-show-clinique-esthetique">Réduire les no-show</Link></li>
-            <li><Link style={l} href="/blog/whatsapp-business-clinique-esthetique-rgpd">WhatsApp Business &amp; RGPD</Link></li>
+            <li><Link style={l} href="/cas-usage/automatiser-devis-ia">Cas : automatiser devis</Link></li>
+            <li><Link style={l} href="/cas-usage/onboarding-rh-ia">Cas : onboarding RH</Link></li>
           </ul>
           <div style={{ marginTop: 18 }}>
             <strong style={{ color: "#e9efe5" }}>Légal</strong>
@@ -161,7 +164,7 @@ function Foot() {
           <div style={{ marginTop: 18 }}>
             <strong style={{ color: "#e9efe5" }}>Contact</strong>
             <div style={{ marginTop: 6 }}>contact.botflow@gmail.com</div>
-            <div>🇫🇷 Paris · 🇵🇹 Lisboa</div>
+            <div>Paris, France</div>
           </div>
         </div>
       </div>
