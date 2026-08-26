@@ -12,6 +12,8 @@ export type RouteEntry = {
 export const staticRoutes: RouteEntry[] = [
   // Core
   { path: "/", priority: 1.0, changeFrequency: "weekly" },
+  // Outils
+  { path: "/calculateur", priority: 0.8, changeFrequency: "monthly" },
   // Blog (hub)
   { path: "/blog", priority: 0.7, changeFrequency: "weekly" },
   // Legal

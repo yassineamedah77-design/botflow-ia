@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 export function Contact() {
@@ -57,14 +58,14 @@ export function Contact() {
           className="flex items-center justify-center gap-3 flex-wrap"
         >
           <Button
-            href="mailto:contact@botflow.ia"
+            href="https://calendly.com/yass_automat-ia/new-meeting"
             variant="primary"
             external
           >
             Réserver un audit gratuit
           </Button>
-          <Button href="mailto:contact@botflow.ia" variant="ghost" external>
-            contact@botflow.ia
+          <Button href="mailto:contact.botflow@gmail.com" variant="ghost" external>
+            contact.botflow@gmail.com
           </Button>
         </motion.div>
 
@@ -79,15 +80,28 @@ export function Contact() {
             BotFlow<span className="text-[var(--accent)]">.IA</span> · 2026
           </div>
           <div className="flex gap-6">
-            <a href="#" className="hover:text-[var(--fg)] transition-colors">
+            <a
+              href="https://www.linkedin.com/in/yassine-amedah-395143318"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-[var(--fg)] transition-colors"
+            >
               LinkedIn
             </a>
-            <a href="#" className="hover:text-[var(--fg)] transition-colors">
-              X / Twitter
+            <a
+              href="https://www.instagram.com/yass.automat/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-[var(--fg)] transition-colors"
+            >
+              Instagram
             </a>
-            <a href="#" className="hover:text-[var(--fg)] transition-colors">
+            <Link
+              href="/mentions-legales"
+              className="hover:text-[var(--fg)] transition-colors"
+            >
               Mentions légales
-            </a>
+            </Link>
           </div>
         </motion.div>
       </div>

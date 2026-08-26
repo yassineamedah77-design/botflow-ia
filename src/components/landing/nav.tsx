@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { useCopy } from "./lang";
 import { LangSwitcher } from "./lang";
 import { CalendlyButton } from "./calendly";
@@ -26,8 +27,8 @@ export function LandingNav() {
         aria-label="Navigation principale"
         className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-2 px-4 sm:px-8"
       >
-        <a
-          href="#"
+        <Link
+          href="/"
           className="flex shrink-0 items-center gap-2.5 text-[15px] font-semibold tracking-wide"
         >
           <span
@@ -35,7 +36,7 @@ export function LandingNav() {
             className="h-2.5 w-2.5 rounded-full bg-[var(--accent)] shadow-[0_0_14px_var(--accent)]"
           />
           <span className="hidden min-[400px]:inline">{copy.nav.brand}</span>
-        </a>
+        </Link>
 
         <ul className="hidden items-center gap-1 lg:flex">
           {copy.nav.links.map((l) => (
