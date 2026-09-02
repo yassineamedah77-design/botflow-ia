@@ -41,6 +41,8 @@
   .montant input{padding-right:96px}
   .montant span{position:absolute;right:18px;top:50%;transform:translateY(-50%);color:var(--fg-muted);font-size:15px;pointer-events:none}
   .hp{position:absolute;left:-9999px}
+  .btn-discret{background:none;color:var(--fg-muted);border:1px solid var(--border);box-shadow:none;font-weight:400}
+  .btn-discret:hover{color:var(--fg);border-color:var(--border-strong)}
   .end h1{margin-bottom:14px}
   .end p{color:var(--fg-muted);font-size:16px;margin:0 0 10px}
 </style>
@@ -180,31 +182,58 @@ function renderContact() {
   });
 }
 
+function urlCalendly(p) {
+  return 'https://calendly.com/yass_automat-ia/new-meeting'
+    + '?hide_gdpr_banner=1&background_color=07090a&text_color=f5f5f0&primary_color=7fe3a1'
+    + '&name=' + encodeURIComponent(p.prenom || '') + '&email=' + encodeURIComponent(p.email || '');
+}
+
+// Le script Calendly n'auto-scanne la page qu'à son chargement : pour un widget inséré
+// après coup (segments B et C, sur clic), il faut l'initialiser explicitement.
+function afficherCalendly(p, cible) {
+  cible.innerHTML = '<div id="cal-embed" style="min-width:300px;height:680px;margin-top:20px"></div>';
+  const init = () => window.Calendly && window.Calendly.initInlineWidget({
+    url: urlCalendly(p), parentElement: document.getElementById('cal-embed'),
+  });
+  if (window.Calendly) return init();
+  const css = document.createElement('link');
+  css.rel = 'stylesheet';
+  css.href = 'https://assets.calendly.com/assets/external/widget.css';
+  document.head.appendChild(css);
+  const sc = document.createElement('script');
+  sc.src = 'https://assets.calendly.com/assets/external/widget.js';
+  sc.async = true;
+  sc.onload = init;
+  document.body.appendChild(sc);
+}
+
+const FINS = {
+  A: (n) => ['<h1>' + n + ', <span class="serif">on se parle</span>.</h1>',
+    '<p>Ton profil correspond à ce que je cherche. Choisis un créneau de 30 minutes ci-dessous — on regarde ta situation et je te dis franchement si je peux t’aider.</p>'],
+  B: (n) => ['<h1>Reçu, ' + n + '.</h1>',
+    '<p>Je lis ta candidature moi-même et je te reviens sous 48 h avec un retour concret sur ta situation.</p>' +
+    '<p>Tu préfères qu’on se parle de vive voix ? Prends un créneau, c’est plus rapide que l’écrit.</p>'],
+  C: (n) => ['<h1>Merci ' + n + '.</h1>',
+    '<p>Au vu de là où tu en es aujourd’hui, un accompagnement 1-1 serait prématuré — et je préfère te le dire plutôt que de te vendre quelque chose qui ne te servirait pas.</p>' +
+    '<p>Je te garde dans ma liste et je te préviens dès que j’ouvre un format adapté. En attendant, tout ce que je publie sur Instagram est gratuit.</p>'],
+};
+
 function renderFin(segment, p) {
   progress(QUESTIONS.length + 1);
-  if (segment === 'A') {
-    const url = 'https://calendly.com/yass_automat-ia/new-meeting'
-      + '?hide_gdpr_banner=1&background_color=07090a&text_color=f5f5f0&primary_color=7fe3a1'
-      + '&name=' + encodeURIComponent(p.prenom || '') + '&email=' + encodeURIComponent(p.email || '');
-    card.innerHTML = '<div class="end">' +
-      '<h1>' + esc(p.prenom || '') + ', <span class="serif">on se parle</span>.</h1>' +
-      '<p>Ton profil correspond à ce que je cherche. Choisis un créneau de 30 minutes ci-dessous — on regarde ta situation et je te dis franchement si je peux t’aider.</p>' +
-      '<div class="calendly-inline-widget" data-url="' + url + '" style="min-width:300px;height:680px;margin-top:20px"></div></div>';
-    const s = document.createElement('script');
-    s.src = 'https://assets.calendly.com/assets/external/widget.js';
-    s.async = true;
-    document.body.appendChild(s);
-  } else if (segment === 'B') {
-    card.innerHTML = '<div class="end">' +
-      '<h1>Reçu, ' + esc(p.prenom || '') + '.</h1>' +
-      '<p>Je lis ta candidature moi-même et je te reviens sous 48 h avec un retour concret sur ta situation.</p>' +
-      '<p>Si tu veux gagner du temps d’ici là, réponds-moi en DM sur Instagram — je répondrai plus vite.</p></div>';
-  } else {
-    card.innerHTML = '<div class="end">' +
-      '<h1>Merci ' + esc(p.prenom || '') + '.</h1>' +
-      '<p>Au vu de là où tu en es aujourd’hui, un accompagnement 1-1 serait prématuré — et je préfère te le dire plutôt que de te vendre quelque chose qui ne te servirait pas.</p>' +
-      '<p>Je te garde dans ma liste : je te préviens dès que j’ouvre un format adapté. En attendant, tout ce que je publie sur Instagram est gratuit.</p></div>';
-  }
+  const [titre, texte] = (FINS[segment] || FINS.B)(esc(p.prenom || ''));
+  const bouton = segment === 'A' ? ''
+    : '<button type="button" class="btn' + (segment === 'C' ? ' btn-discret' : '') + '" id="book" style="margin-top:18px">' +
+      (segment === 'C' ? 'Je veux quand même réserver un appel' : 'Réserver un créneau de 30 min') + '</button>';
+
+  card.innerHTML = '<div class="end">' + titre + texte + bouton + '<div id="cal-slot"></div></div>';
+  const slot = document.getElementById('cal-slot');
+
+  if (segment === 'A') return afficherCalendly(p, slot);
+  document.getElementById('book').addEventListener('click', (e) => {
+    e.target.remove();
+    afficherCalendly(p, slot);
+    slot.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  });
 }
 
 render();

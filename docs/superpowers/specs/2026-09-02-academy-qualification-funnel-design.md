@@ -49,7 +49,7 @@ Non-objectifs (hors périmètre de cette spec) :
 | Filtre budget | **Indirect, sans chiffre.** « Si le plan te convient, t'es prêt(e) à investir pour aller plus vite ? » |
 | Hébergement | Page standalone dans `agentic-academy/` + fonction serverless dans le **même projet Vercel** (`botflow-academy`, `prj_6M5R1hAeXp0mTqN0nvEvEx78Gdvv`) |
 | Stockage | Nouvelle table `LEADS_ACADEMY` dans la base Airtable **CRM yass_IA** (`app7l6qJCDoWebj8s`) |
-| Sortie de funnel | Calendly **uniquement si qualifié**, liste d'attente sinon |
+| Sortie de funnel | Calendly **intégré d'office pour les qualifiés**, accessible sur bouton pour les autres (décision du 2026-09-02 : personne ne doit être empêché de réserver s'il le veut) |
 | URL | `academy.botflow-ia.fr/candidature` (`/start` redirige) |
 
 ## 4. Architecture
@@ -71,9 +71,9 @@ Story / réel CTA ──┘              │
                                   │
                                   ▼
                      écran de fin conditionnel
-              A ≥55 → Calendly inline
-              B 35-54 → « je te reviens sous 48h »
-              C <35 → liste d'attente
+              A ≥55 → Calendly intégré d'office
+              B 35-54 → « je te reviens sous 48 h » + bouton de réservation
+              C <35 → liste d'attente + bouton discret de réservation
 ```
 
 Le scoring tourne **côté serveur** : le client n'envoie que les réponses brutes. Rien
@@ -134,8 +134,8 @@ Maximum : 100.
 | Segment | Score | Écran de fin | Action |
 |---|---|---|---|
 | **A** | ≥ 55 | Calendly inline, « on se cale un appel » | notif email immédiate à Yassine |
-| **B** | 35-54 | « Je regarde ton profil et je te reviens sous 48h » | rappel manuel depuis la vue Airtable |
-| **C** | < 35 | Liste d'attente, « je te préviens quand j'ouvre des places » | aucun appel, nurture ultérieur |
+| **B** | 35-54 | « Je te reviens sous 48 h » + bouton « Réserver un créneau de 30 min » | rappel manuel depuis la vue Airtable, ou il réserve lui-même |
+| **C** | < 35 | Liste d'attente + bouton discret « Je veux quand même réserver un appel » | pas d'appel poussé, mais jamais bloqué |
 
 Seuils volontairement bas au démarrage (volume faible). À remonter vers 65 / 45 quand le
 flux dépassera ~10 candidatures par semaine.
