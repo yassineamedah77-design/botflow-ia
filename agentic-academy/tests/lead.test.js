@@ -102,11 +102,42 @@ test('écrit dans Airtable les champs attendus par la table', async () => {
     assert.strictEqual(f.Score, 95);
     assert.strictEqual(f.Segment, 'A');
     assert.strictEqual(f.Statut, 'Nouveau');
-    assert.strictEqual(f.Source, 'dm');
+    assert.strictEqual(f.Source, 'DM');
     assert.strictEqual(f.Deja_Formation, true);
     assert.strictEqual(f.Consentement_RGPD, true);
     assert.deepStrictEqual(f.Blocages, []);
+    assert.strictEqual(f.Situation, 'Salarié');
+    assert.strictEqual(f.Delai, '< 3 mois');
+    assert.strictEqual(f.Temps_Dispo, '+ 20 h');
+    assert.strictEqual(f.Niveau_Tech, 'Zéro');
+    assert.strictEqual(f.Pret_A_Investir, 'Oui');
     assert.match(f.Date_Soumission, /^\d{4}-\d{2}-\d{2}$/);
+  } finally {
+    globalThis.fetch = vrai;
+    delete process.env.AIRTABLE_TOKEN;
+    delete process.env.AIRTABLE_BASE;
+    delete process.env.AIRTABLE_TABLE;
+  }
+});
+
+test('traduit les blocages et garde les valeurs inconnues telles quelles', async () => {
+  process.env.AIRTABLE_TOKEN = 'fake';
+  process.env.AIRTABLE_BASE = 'appFAKE';
+  process.env.AIRTABLE_TABLE = 'tblFAKE';
+  const vrai = globalThis.fetch;
+  let envoye = null;
+  globalThis.fetch = async (url, opts) => {
+    if (String(url).includes('airtable')) envoye = JSON.parse(opts.body);
+    return { ok: true, status: 200, json: async () => ({}) };
+  };
+  try {
+    await handler({ method: 'POST', body: {
+      ...VALIDE, blocages: ['par_ou', 'clients'], situation: 'pirate', src: 'inconnu',
+    } }, mockRes());
+    const f = envoye.records[0].fields;
+    assert.deepStrictEqual(f.Blocages, ['Sait pas par où commencer', 'Peur de pas trouver de clients']);
+    assert.strictEqual(f.Situation, 'pirate');
+    assert.strictEqual(f.Source, 'inconnu');
   } finally {
     globalThis.fetch = vrai;
     delete process.env.AIRTABLE_TOKEN;

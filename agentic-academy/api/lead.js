@@ -7,6 +7,23 @@ const MAX_COURT = 200;
 
 const coupe = (v, n = MAX_COURT) => (v == null ? '' : String(v).slice(0, n));
 
+// Les réponses arrivent sous forme de clés techniques (elles doivent correspondre au
+// barème). Airtable, lui, est lu à la main pour closer : on y écrit du français.
+const LIBELLES = {
+  situation: { salarie: 'Salarié', freelance: 'Freelance', entrepreneur: 'A déjà une activité', etudiant: 'Étudiant', sans_emploi: 'Sans emploi' },
+  destination: { portugal: 'Portugal', espagne: 'Espagne', dubai: 'Dubaï', asie: 'Asie', autre: 'Ailleurs', rester: 'Reste sur place' },
+  delai: { '<3m': '< 3 mois', '3-6m': '3-6 mois', '6-12m': '6-12 mois', '+12m': '+ 12 mois', nsp: 'Ne sait pas' },
+  niveau_tech: { zero: 'Zéro', chatgpt: 'A testé ChatGPT', nocode: 'No-code', code: 'Code' },
+  blocages: { par_ou: 'Sait pas par où commencer', temps: 'Pas le temps', clients: 'Peur de pas trouver de clients', tech: 'Pas de compétence tech', stagne: 'Stagne', argent: 'Argent' },
+  temps_dispo: { '<5h': '< 5 h', '5-10h': '5-10 h', '10-20h': '10-20 h', '+20h': '+ 20 h' },
+  objectif_revenu: { '1-2k': '1-2 k€', '2-4k': '2-4 k€', '4k+': '4 k€ +', nsp: 'Ne sait pas' },
+  pret_a_investir: { oui: 'Oui', plus_tard: 'Plus tard', non: 'Non' },
+  src: { dm: 'DM', bio: 'Bio', story: 'Story', page: 'Page academy', direct: 'Direct' },
+};
+
+// Valeur inconnue : on écrit la valeur brute plutôt que rien, pour ne pas perdre l'info.
+const lib = (champ, v) => (v == null || v === '' ? '' : (LIBELLES[champ][v] || String(v).slice(0, MAX_COURT)));
+
 function versAirtable(body, score, segment) {
   return {
     Prenom: coupe(body.prenom),
@@ -14,19 +31,19 @@ function versAirtable(body, score, segment) {
     Email: coupe(body.email),
     Telephone: coupe(body.telephone, 50),
     Pays: coupe(body.pays),
-    Destination: coupe(body.destination),
-    Situation: coupe(body.situation),
-    Delai: coupe(body.delai),
+    Destination: lib('destination', body.destination),
+    Situation: lib('situation', body.situation),
+    Delai: lib('delai', body.delai),
     Motivation: coupe(body.motivation, MAX_LONG),
-    Niveau_Tech: coupe(body.niveau_tech),
-    Blocages: Array.isArray(body.blocages) ? body.blocages.map((b) => coupe(b, 60)) : [],
-    Temps_Dispo: coupe(body.temps_dispo),
-    Objectif_Revenu: coupe(body.objectif_revenu),
+    Niveau_Tech: lib('niveau_tech', body.niveau_tech),
+    Blocages: Array.isArray(body.blocages) ? body.blocages.map((b) => lib('blocages', b)) : [],
+    Temps_Dispo: lib('temps_dispo', body.temps_dispo),
+    Objectif_Revenu: lib('objectif_revenu', body.objectif_revenu),
     Deja_Formation: body.deja_formation === true,
-    Pret_A_Investir: coupe(body.pret_a_investir),
+    Pret_A_Investir: lib('pret_a_investir', body.pret_a_investir),
     Score: score,
     Segment: segment,
-    Source: coupe(body.src, 30) || 'Direct',
+    Source: lib('src', body.src) || 'Direct',
     Date_Soumission: new Date().toISOString().slice(0, 10),
     Statut: 'Nouveau',
     Consentement_RGPD: true,
