@@ -111,6 +111,7 @@ test('écrit dans Airtable les champs attendus par la table', async () => {
     assert.strictEqual(f.Temps_Dispo, '+ 20 h');
     assert.strictEqual(f.Niveau_Tech, 'Zéro');
     assert.strictEqual(f.Pret_A_Investir, 'Oui');
+    assert.strictEqual(f.Deja_Formation, 'Oui');
     assert.match(f.Date_Soumission, /^\d{4}-\d{2}-\d{2}$/);
   } finally {
     globalThis.fetch = vrai;

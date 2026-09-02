@@ -40,7 +40,7 @@ function versAirtable(body, score, segment) {
     Blocages: Array.isArray(body.blocages) ? body.blocages.map((b) => lib('blocages', b)) : [],
     Temps_Dispo: lib('temps_dispo', body.temps_dispo),
     Objectif_Revenu: nombre(body.objectif_revenu),
-    Deja_Formation: body.deja_formation === true,
+    Deja_Formation: body.deja_formation === true ? 'Oui' : 'Non',
     Pret_A_Investir: lib('pret_a_investir', body.pret_a_investir),
     Score: score,
     Segment: segment,
