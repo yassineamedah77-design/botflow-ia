@@ -175,24 +175,3 @@ test('le champ objectif de revenu accepte un chiffre libre et refuse le reste', 
   }
 });
 
-test('sans Airtable configuré, toutes les candidatures partent par mail', async () => {
-  process.env.NOTIFY_EMAIL = 'inbox@example.com';
-  delete process.env.AIRTABLE_TOKEN;
-  const vrai = globalThis.fetch;
-  const sujets = [];
-  globalThis.fetch = async (url, opts) => {
-    if (String(url).includes('formsubmit')) sujets.push(JSON.parse(opts.body)._subject);
-    return { ok: true, status: 200, json: async () => ({}) };
-  };
-  try {
-    // Profil faible : segment C, notifié quand même faute de CRM.
-    await handler({ method: 'POST', body: {
-      prenom: 'Tiède', email: 't@d.fr', rgpd: true, situation: 'etudiant', temps_dispo: '<5h',
-    } }, mockRes());
-    assert.strictEqual(sujets.length, 1);
-    assert.match(sujets[0], /Candidature Academy C \(\d+\/100\) — Tiède \[CRM non branché\]/);
-  } finally {
-    globalThis.fetch = vrai;
-    delete process.env.NOTIFY_EMAIL;
-  }
-});

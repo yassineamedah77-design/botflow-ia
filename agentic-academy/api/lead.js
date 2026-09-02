@@ -52,14 +52,9 @@ function versAirtable(body, score, segment) {
   };
 }
 
-const airtableConfigure = () => {
-  const { AIRTABLE_TOKEN, AIRTABLE_BASE, AIRTABLE_TABLE } = process.env;
-  return Boolean(AIRTABLE_TOKEN && AIRTABLE_BASE && AIRTABLE_TABLE);
-};
-
 async function ecrireAirtable(fields) {
   const { AIRTABLE_TOKEN, AIRTABLE_BASE, AIRTABLE_TABLE } = process.env;
-  if (!airtableConfigure()) return;
+  if (!AIRTABLE_TOKEN || !AIRTABLE_BASE || !AIRTABLE_TABLE) return;
   const r = await fetch(`${AIRTABLE_API}/${AIRTABLE_BASE}/${AIRTABLE_TABLE}`, {
     method: 'POST',
     headers: {
@@ -73,20 +68,6 @@ async function ecrireAirtable(fields) {
   if (!r.ok) throw new Error(`airtable ${r.status}`);
 }
 
-// Alerte mail — même relais que src/app/api/lead/route.ts.
-async function notifier(fields, raison) {
-  const to = process.env.NOTIFY_EMAIL;
-  if (!to) return;
-  await fetch(`https://formsubmit.co/ajax/${to}`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-    body: JSON.stringify({
-      _subject: `Candidature Academy ${fields.Segment} (${fields.Score}/100) — ${fields.Prenom}${raison}`,
-      ...fields,
-    }),
-    signal: AbortSignal.timeout(8000),
-  });
-}
 
 module.exports = async (req, res) => {
   if (req.method !== 'POST') {
@@ -129,16 +110,6 @@ module.exports = async (req, res) => {
     await ecrireAirtable(fields);
   } catch (err) {
     console.error('[candidature] airtable KO', err && err.message);
-  }
-  // Sans CRM branché, le mail est la seule copie exploitable : on notifie alors tout le
-  // monde, pas seulement les profils chauds.
-  const sansCrm = !airtableConfigure();
-  try {
-    if (segment === 'A' || sansCrm) {
-      await notifier(fields, sansCrm ? ' [CRM non branché]' : '');
-    }
-  } catch (err) {
-    console.error('[candidature] notif KO', err && err.message);
   }
 
   return res.status(200).json({ ok: true, segment });
