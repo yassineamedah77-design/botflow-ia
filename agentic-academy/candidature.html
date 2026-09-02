@@ -26,7 +26,7 @@
   .opt{display:flex;align-items:center;gap:12px;padding:15px 18px;border:1px solid var(--border);border-radius:14px;background:var(--bg-elevated);cursor:pointer;transition:border-color .15s,background .15s;font-size:16px;text-align:left;color:inherit;font-family:inherit;width:100%}
   .opt:hover{border-color:var(--border-strong)}
   .opt[aria-pressed="true"]{border-color:var(--accent);background:rgba(127,227,161,.07)}
-  input[type=text],input[type=email],input[type=tel],textarea{width:100%;padding:15px 18px;border:1px solid var(--border);border-radius:14px;background:var(--bg-elevated);color:var(--fg);font:inherit;font-size:16px}
+  input[type=text],input[type=email],input[type=tel],input[type=number],textarea{width:100%;padding:15px 18px;border:1px solid var(--border);border-radius:14px;background:var(--bg-elevated);color:var(--fg);font:inherit;font-size:16px}
   input:focus,textarea:focus{outline:none;border-color:var(--accent)}
   textarea{min-height:130px;resize:vertical}
   .row{display:flex;gap:12px;align-items:center;margin-top:22px}
@@ -35,6 +35,11 @@
   .back{background:none;border:none;color:var(--fg-muted);font:inherit;cursor:pointer;padding:14px 4px}
   .legal{color:var(--fg-muted);font-size:13px;margin-top:18px;display:flex;gap:10px;align-items:flex-start}
   .legal a{color:var(--accent)}
+  input[type=number]{-moz-appearance:textfield}
+  input[type=number]::-webkit-outer-spin-button,input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+  .montant{position:relative}
+  .montant input{padding-right:96px}
+  .montant span{position:absolute;right:18px;top:50%;transform:translateY(-50%);color:var(--fg-muted);font-size:15px;pointer-events:none}
   .hp{position:absolute;left:-9999px}
   .end h1{margin-bottom:14px}
   .end p{color:var(--fg-muted);font-size:16px;margin:0 0 10px}
@@ -50,11 +55,6 @@ const QUESTIONS = [
   {k:'instagram', t:'Ton @ Instagram ?', h:'Pour que je relie ta candidature à notre conversation.', type:'text', ph:'@'},
   {k:'situation', t:'Tu fais quoi en ce moment ?', type:'choice', opts:[
     ['salarie','Salarié(e)'],['freelance','Freelance / indépendant(e)'],['entrepreneur','J’ai déjà une activité'],['etudiant','Étudiant(e)'],['sans_emploi','Sans emploi actuellement']]},
-  {k:'pays', t:'T’es où aujourd’hui ?', type:'text', ph:'Ville, pays', required:true},
-  {k:'destination', t:'Et tu veux aller où ?', type:'choice', opts:[
-    ['portugal','Le Portugal'],['espagne','L’Espagne'],['dubai','Dubaï'],['asie','L’Asie'],['autre','Ailleurs'],['rester','Rester ici, mais bosser d’où je veux']]},
-  {k:'delai', t:'Dans quel délai tu veux que ça bouge ?', h:'Sois honnête, c’est ce qui change tout.', type:'choice', opts:[
-    ['<3m','Moins de 3 mois'],['3-6m','3 à 6 mois'],['6-12m','6 à 12 mois'],['+12m','Plus de 12 mois'],['nsp','Je sais pas encore']]},
   {k:'motivation', t:'Pourquoi tu veux ce changement ?', h:'En 2 phrases, avec tes mots. C’est la question que je lis en premier.', type:'textarea', ph:'Parce que…'},
   {k:'niveau_tech', t:'T’en es où techniquement ?', h:'Zéro n’est pas un problème — c’est d’où je suis parti.', type:'choice', opts:[
     ['zero','Zéro, je pars de rien'],['chatgpt','J’ai testé ChatGPT'],['nocode','J’ai touché à Make / Zapier / n8n'],['code','Je code']]},
@@ -62,8 +62,7 @@ const QUESTIONS = [
     ['par_ou','Je sais pas par où commencer'],['temps','Pas le temps'],['clients','Peur de pas trouver de clients'],['tech','Pas de compétence technique'],['stagne','J’ai commencé et je stagne'],['argent','L’argent']]},
   {k:'temps_dispo', t:'Combien d’heures par semaine tu peux y mettre ?', type:'choice', opts:[
     ['<5h','Moins de 5 h'],['5-10h','5 à 10 h'],['10-20h','10 à 20 h'],['+20h','Plus de 20 h']]},
-  {k:'objectif_revenu', t:'Ton objectif de revenu mensuel ?', type:'choice', opts:[
-    ['1-2k','1 000 à 2 000 €'],['2-4k','2 000 à 4 000 €'],['4k+','Plus de 4 000 €'],['nsp','Je sais pas encore']]},
+  {k:'objectif_revenu', t:'Ton objectif de revenu mensuel ?', h:'Un chiffre, même approximatif. C’est lui qui dit si ton objectif est atteignable dans le délai que tu imagines.', type:'number', ph:'2500', suffixe:'€ / mois'},
   {k:'deja_formation', t:'T’as déjà investi dans une formation en ligne ?', type:'choice', opts:[
     ['oui','Oui'],['non','Non, jamais']]},
   {k:'pret_a_investir', t:'Si le plan te convient, t’es prêt(e) à investir pour aller plus vite ?', h:'Il n’y a pas de mauvaise réponse — ça me dit juste comment t’aider.', type:'choice', opts:[
@@ -87,6 +86,7 @@ function render() {
   const val = R[q.k];
   let champ = '';
   if (q.type === 'text') champ = '<input type="text" id="f" placeholder="' + esc(q.ph||'') + '" value="' + esc(val||'') + '" />';
+  else if (q.type === 'number') champ = '<div class="montant"><input type="number" inputmode="numeric" min="0" step="100" id="f" placeholder="' + esc(q.ph||'') + '" value="' + esc(val||'') + '" /><span>' + esc(q.suffixe||'') + '</span></div>';
   else if (q.type === 'textarea') champ = '<textarea id="f" placeholder="' + esc(q.ph||'') + '">' + esc(val||'') + '</textarea>';
   else champ = '<div class="opts">' + q.opts.map(([v,l]) => {
     const on = q.type === 'multi' ? (val||[]).includes(v) : val === v;
@@ -104,7 +104,7 @@ function render() {
     '</div>';
 
   const suivant = () => {
-    if (q.type === 'text' || q.type === 'textarea') R[q.k] = document.getElementById('f').value.trim();
+    if (q.type !== 'choice' && q.type !== 'multi') R[q.k] = document.getElementById('f').value.trim();
     if (q.required && !R[q.k]) { document.getElementById('f').focus(); return; }
     i++; render();
   };
@@ -125,7 +125,7 @@ function render() {
   document.getElementById('next').addEventListener('click', suivant);
   if (document.getElementById('back')) document.getElementById('back').addEventListener('click', () => { i--; render(); });
   const f = document.getElementById('f');
-  if (f) { f.focus(); if (q.type === 'text') f.addEventListener('keydown', (e) => { if (e.key === 'Enter') suivant(); }); }
+  if (f) { f.focus(); if (q.type === 'text' || q.type === 'number') f.addEventListener('keydown', (e) => { if (e.key === 'Enter') suivant(); }); }
 }
 
 function renderContact() {

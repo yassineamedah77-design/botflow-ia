@@ -2,7 +2,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Mettre en ligne `academy.botflow-ia.fr/candidature` — un questionnaire de 14 écrans qui score les candidats côté serveur, les écrit dans Airtable, et n'ouvre Calendly qu'aux profils qualifiés.
+**Goal:** Mettre en ligne `academy.botflow-ia.fr/candidature` — un questionnaire de 11 écrans qui score les candidats côté serveur, les écrit dans Airtable, et n'ouvre Calendly qu'aux profils qualifiés.
 
 **Architecture:** Page statique vanilla dans le projet Vercel `botflow-academy` existant (aucun build), qui poste vers une fonction serverless du même projet. Le scoring est un module pur, testé isolément, appelé par la fonction — jamais par le navigateur. L'écriture Airtable est en best effort : un échec API ne fait jamais perdre un lead ni afficher une erreur au candidat.
 
@@ -386,7 +386,7 @@ git commit -m "feat(academy): add serverless intake for academy applications"
 
 ### Task 3: La page `/candidature`
 
-14 écrans, un par question, barre de progression, écran de fin conditionnel au segment renvoyé par le serveur.
+11 écrans, un par question, barre de progression, écran de fin conditionnel au segment renvoyé par le serveur.
 
 **Files:**
 - Create: `agentic-academy/candidature.html`
@@ -621,7 +621,7 @@ render();
 
 Run: `cd agentic-academy && python3 -m http.server 4321`
 
-Ouvrir `http://localhost:4321/candidature.html?src=dm` dans le panneau Browser, dérouler les 14 écrans, et vérifier : la barre progresse, le bouton Retour restaure les réponses saisies, le bouton d'envoi reste désactivé tant que l'email est invalide ou la case décochée. `/api/lead` renvoie 404 en local — c'est attendu, le `catch` doit afficher l'écran de fin segment B sans message d'erreur.
+Ouvrir `http://localhost:4321/candidature.html?src=dm` dans le panneau Browser, dérouler les 11 écrans, et vérifier : la barre progresse, le bouton Retour restaure les réponses saisies, le bouton d'envoi reste désactivé tant que l'email est invalide ou la case décochée. `/api/lead` renvoie 404 en local — c'est attendu, le `catch` doit afficher l'écran de fin segment B sans message d'erreur.
 
 - [ ] **Step 3: Vérifier qu'aucun montant ne traîne**
 

@@ -59,7 +59,7 @@ IG bio ────────────┐
 DM (séquence 3 msg)┼──→ /candidature?src={dm|bio|story}
 Story / réel CTA ──┘              │
                                   ▼
-                   14 écrans, une question par écran
+                   11 écrans, une question par écran
                                   │
                                   ▼
                     POST /api/lead  (fonction Vercel)
@@ -79,7 +79,7 @@ Story / réel CTA ──┘              │
 Le scoring tourne **côté serveur** : le client n'envoie que les réponses brutes. Rien
 d'exploitable depuis le navigateur, et la règle de scoring peut évoluer sans redéployer la page.
 
-## 5. Le questionnaire — 14 écrans
+## 5. Le questionnaire — 11 écrans
 
 Une question par écran, barre de progression, retour arrière possible, aucune question
 obligatoire sauf prénom / email / consentement. Chaque question fait un des trois jobs :
@@ -90,17 +90,19 @@ obligatoire sauf prénom / email / consentement. Chaque question fait un des tro
 | 1 | `prenom` | Comment tu t'appelles ? | texte | identité |
 | 2 | `instagram` | Ton @ Instagram | texte | rapprochement avec le DM |
 | 3 | `situation` | Tu fais quoi en ce moment ? | salarié · freelance · entrepreneur · étudiant · sans emploi | qualif |
-| 4 | `pays` | T’es où aujourd’hui ? | texte | segmentation |
-| 5 | `destination` | Et tu veux aller où ? | select : Portugal · Espagne · Dubaï · Asie · autre · rester mais bosser libre | segmentation |
-| 6 | `delai` | Dans quel délai tu veux que ça bouge ? | <3 mois · 3-6 mois · 6-12 mois · +12 mois · je sais pas | **qualif n°1** |
-| 7 | `motivation` | En 2 phrases : pourquoi tu veux ce changement ? | textarea | **munition de closing n°1** |
-| 8 | `niveau_tech` | Ton niveau aujourd'hui | zéro · j'ai testé ChatGPT · j'ai touché Make/Zapier/n8n · je code | personnalisation |
-| 9 | `blocages` | Qu'est-ce qui te bloque ? | multi : je sais pas par où commencer · pas le temps · peur de pas trouver de clients · pas de compétence tech · j'ai commencé et je stagne · l'argent | munition n°2 |
-| 10 | `temps_dispo` | Combien d'heures par semaine tu peux y mettre ? | <5h · 5-10h · 10-20h · +20h | qualif sérieux |
-| 11 | `objectif_revenu` | Ton objectif de revenu mensuel | 1-2k · 2-4k · 4k+ · je sais pas | calibrage de la promesse |
-| 12 | `deja_formation` | T'as déjà investi dans une formation en ligne ? | oui · non | **meilleur prédicteur d'achat** |
-| 13 | `pret_a_investir` | Si le plan te convient, t'es prêt(e) à investir pour aller plus vite ? | oui · oui mais dans quelques mois · non, je cherche du gratuit | **filtre budget** |
-| 14 | `email`, `telephone`, `rgpd` | Où je t'envoie ta réponse ? | email (requis) · WhatsApp (optionnel) · case consentement (requise) | contact + retarget |
+| 4 | `motivation` | En 2 phrases : pourquoi tu veux ce changement ? | textarea | **munition de closing n°1** |
+| 5 | `niveau_tech` | Ton niveau aujourd'hui | zéro · j'ai testé ChatGPT · Make/Zapier/n8n · je code | personnalisation |
+| 6 | `blocages` | Qu'est-ce qui te bloque ? | multi : par où commencer · le temps · trouver des clients · la tech · je stagne · l'argent | munition n°2 |
+| 7 | `temps_dispo` | Combien d'heures par semaine tu peux y mettre ? | <5h · 5-10h · 10-20h · +20h | qualif sérieux |
+| 8 | `objectif_revenu` | Ton objectif de revenu mensuel | **chiffre libre en € / mois** | calibrage de la promesse |
+| 9 | `deja_formation` | T'as déjà investi dans une formation en ligne ? | oui · non | **meilleur prédicteur d'achat** |
+| 10 | `pret_a_investir` | Si le plan te convient, t'es prêt(e) à investir pour aller plus vite ? | oui · oui mais dans quelques mois · non | **filtre budget** |
+| 11 | `email`, `telephone`, `rgpd` | Où je t'envoie ta réponse ? | email (requis) · WhatsApp (optionnel) · consentement (requis) | contact + retarget |
+
+Retirées le 2026-09-02 sur décision du user : le pays actuel, la destination visée et le
+délai. L'urgence que portait le délai est reprise par « oui mais dans quelques mois » sur la
+question d'investissement, et l'objectif de revenu est passé d'une liste de fourchettes à un
+chiffre libre — plus précis pour calibrer le discours en appel.
 
 Le niveau technique zéro n'est **jamais** éliminatoire : c'est l'histoire du fondateur
 (ex-supply chain, jamais touché un PC). Les vrais filtres sont délai, budget et heures dispo.
@@ -116,13 +118,14 @@ Le niveau technique zéro n'est **jamais** éliminatoire : c'est l'histoire du f
 
 | Signal | Barème |
 |---|---|
-| `delai` | <3 mois **25** · 3-6 mois **18** · 6-12 mois **9** · +12 mois **0** · je sais pas **4** |
-| `pret_a_investir` | oui **28** · plus tard **10** · non **0** |
-| `temps_dispo` | +20h **14** · 10-20h **11** · 5-10h **6** · <5h **2** |
-| `situation` | freelance **11** · salarié **10** · entrepreneur **9** · sans emploi **5** · étudiant **4** |
-| `deja_formation` | oui **10** · non **0** |
-| `niveau_tech` | no-code ou code **8** · testé ChatGPT **6** · zéro **4** |
-| `motivation` > 100 caractères | **4** |
+| `pret_a_investir` | oui **37** · plus tard **13** · non **0** |
+| `temps_dispo` | +20h **19** · 10-20h **15** · 5-10h **8** · <5h **3** |
+| `situation` | freelance **15** · salarié **13** · entrepreneur **12** · sans emploi **7** · étudiant **5** |
+| `deja_formation` | oui **13** · non **0** |
+| `niveau_tech` | no-code ou code **11** · testé ChatGPT **8** · zéro **5** |
+| `motivation` > 100 caractères | **5** |
+
+`objectif_revenu` ne rapporte aucun point : c'est une donnée d'appel, pas un filtre.
 
 Maximum : 100.
 
@@ -139,7 +142,9 @@ flux dépassera ~10 candidatures par semaine.
 
 ## 7. Airtable — table `LEADS_ACADEMY`
 
-Base **CRM yass_IA** = `app7l6qJCDoWebj8s`. Table créée le 2026-09-02 : **`tblXxZiRlfA9E3gZU`**. Table distincte de `PROSPECTS_B2B` (outbound B2B
+Base **CRM yass_IA** = `app7l6qJCDoWebj8s`. Table créée le 2026-09-02 : **`tblXxZiRlfA9E3gZU`**. Quatre champs devenus obsolètes y sont
+préfixés `zz_` (Pays, Destination, Delai, l'ancien Objectif_Revenu en liste) : l'API n'autorise
+pas leur suppression, à faire à la main. Table distincte de `PROSPECTS_B2B` (outbound B2B
 cliniques) : audience, cycle et champs n'ont rien en commun.
 
 | Champ | Type |
@@ -148,15 +153,12 @@ cliniques) : audience, cycle et champs n'ont rien en commun.
 | `Instagram` | single line |
 | `Email` | email |
 | `Telephone` | phone |
-| `Pays` | single line |
-| `Destination` | single select |
 | `Situation` | single select |
-| `Delai` | single select |
 | `Motivation` | long text |
 | `Niveau_Tech` | single select |
 | `Blocages` | multiple select |
 | `Temps_Dispo` | single select |
-| `Objectif_Revenu` | single select |
+| `Objectif_Revenu` | currency € (précision 0) |
 | `Deja_Formation` | checkbox |
 | `Pret_A_Investir` | single select |
 | `Score` | number (précision 0) |

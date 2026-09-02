@@ -4,7 +4,6 @@ const { scoreLead } = require('../api/_scoring.js');
 
 test('profil idéal atteint le maximum et tombe en segment A', () => {
   const { score, segment } = scoreLead({
-    delai: '<3m',
     pret_a_investir: 'oui',
     temps_dispo: '+20h',
     situation: 'freelance',
@@ -21,24 +20,38 @@ test('profil vide vaut zéro et tombe en segment C', () => {
 });
 
 test('les valeurs inconnues ne rapportent aucun point', () => {
-  const { score } = scoreLead({ delai: 'la semaine prochaine', situation: 'pirate' });
-  assert.strictEqual(score, 0);
+  assert.strictEqual(scoreLead({ situation: 'pirate', temps_dispo: 'la nuit' }).score, 0);
+});
+
+test('le délai retiré du formulaire ne rapporte plus rien', () => {
+  assert.strictEqual(scoreLead({ delai: '<3m' }).score, 0);
 });
 
 test('une motivation de 100 caractères ou moins ne rapporte pas le bonus', () => {
   assert.strictEqual(scoreLead({ motivation: 'x'.repeat(100) }).score, 0);
-  assert.strictEqual(scoreLead({ motivation: 'x'.repeat(101) }).score, 4);
+  assert.strictEqual(scoreLead({ motivation: 'x'.repeat(101) }).score, 5);
 });
 
 test('deja_formation ne compte que si strictement true', () => {
   assert.strictEqual(scoreLead({ deja_formation: 'oui' }).score, 0);
-  assert.strictEqual(scoreLead({ deja_formation: true }).score, 10);
+  assert.strictEqual(scoreLead({ deja_formation: true }).score, 13);
+});
+
+test('prêt à investir reste le signal dominant', () => {
+  // À lui seul il ne suffit pas : 37 < 55.
+  assert.strictEqual(scoreLead({ pret_a_investir: 'oui' }).segment, 'B');
+  // 37 + 19 (+20h) = 56 → A
+  assert.strictEqual(scoreLead({ pret_a_investir: 'oui', temps_dispo: '+20h' }).segment, 'A');
+  // Sans lui, il faut tout le reste : 19 + 15 + 13 + 11 + 5 = 63 → A
+  assert.strictEqual(scoreLead({
+    temps_dispo: '+20h', situation: 'freelance', deja_formation: true,
+    niveau_tech: 'code', motivation: 'x'.repeat(120),
+  }).segment, 'A');
 });
 
 test('les seuils de segment sont 55 et 35', () => {
-  assert.strictEqual(scoreLead({ pret_a_investir: 'oui', delai: '<3m' }).segment, 'B');
-  assert.strictEqual(
-    scoreLead({ pret_a_investir: 'oui', delai: '<3m', temps_dispo: '5-10h' }).segment, 'A');
-  assert.strictEqual(scoreLead({ delai: '<3m', situation: 'entrepreneur' }).segment, 'C');
-  assert.strictEqual(scoreLead({ delai: '<3m', situation: 'salarie' }).segment, 'B');
+  // 13 (plus tard) + 15 (10-20h) + 13 (salarié) = 41 → B
+  assert.strictEqual(scoreLead({ pret_a_investir: 'plus_tard', temps_dispo: '10-20h', situation: 'salarie' }).segment, 'B');
+  // 13 (plus tard) + 8 (5-10h) + 13 (salarié) = 34 → C, la borne est stricte
+  assert.strictEqual(scoreLead({ pret_a_investir: 'plus_tard', temps_dispo: '5-10h', situation: 'salarie' }).segment, 'C');
 });
