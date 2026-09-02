@@ -43,6 +43,8 @@
   .hp{position:absolute;left:-9999px}
   .btn-discret{background:none;color:var(--fg-muted);border:1px solid var(--border);box-shadow:none;font-weight:400}
   .btn-discret:hover{color:var(--fg);border-color:var(--border-strong)}
+  .secours{color:var(--fg-muted);font-size:13px;margin-top:14px;text-align:center}
+  .secours a{color:var(--accent);text-decoration:underline}
   .end h1{margin-bottom:14px}
   .end p{color:var(--fg-muted);font-size:16px;margin:0 0 10px}
 </style>
@@ -182,6 +184,12 @@ function renderContact() {
   });
 }
 
+// Version hors iframe : sans les paramètres d'embed, qui empêchent l'affichage en direct.
+function urlDirecteCalendly(p) {
+  return 'https://calendly.com/yass_automat-ia/new-meeting'
+    + '?name=' + encodeURIComponent(p.prenom || '') + '&email=' + encodeURIComponent(p.email || '');
+}
+
 function urlCalendly(p) {
   return 'https://calendly.com/yass_automat-ia/new-meeting'
     + '?hide_gdpr_banner=1&background_color=07090a&text_color=f5f5f0&primary_color=7fe3a1'
@@ -191,7 +199,11 @@ function urlCalendly(p) {
 // Le script Calendly n'auto-scanne la page qu'à son chargement : pour un widget inséré
 // après coup (segments B et C, sur clic), il faut l'initialiser explicitement.
 function afficherCalendly(p, cible) {
-  cible.innerHTML = '<div id="cal-embed" style="min-width:300px;height:680px;margin-top:20px"></div>';
+  // Lien de secours toujours visible : les bloqueurs de pub et l'anti-bot de Calendly
+  // font échouer l'iframe chez une partie des visiteurs, et c'est l'écran qui compte.
+  cible.innerHTML = '<div id="cal-embed" style="min-width:300px;height:680px;margin-top:20px"></div>'
+    + '<p class="secours">Le calendrier ne s’affiche pas ? '
+    + '<a href="' + urlDirecteCalendly(p) + '" target="_blank" rel="noopener">Ouvre-le dans un nouvel onglet</a>.</p>';
   const init = () => window.Calendly && window.Calendly.initInlineWidget({
     url: urlCalendly(p), parentElement: document.getElementById('cal-embed'),
   });
