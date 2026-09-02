@@ -46,9 +46,10 @@
   .accueil{text-align:center;padding:8px 0 24px}
   .portrait{width:200px;height:200px;border-radius:50%;object-fit:cover;margin:0 auto 32px;border:2px solid var(--accent);box-shadow:0 0 60px -12px var(--accent-glow),0 0 0 6px rgba(127,227,161,.08)}
   .portrait-placeholder{width:200px;height:200px;border-radius:50%;margin:0 auto 32px;background:linear-gradient(135deg,var(--bg-elevated),#111);border:2px dashed var(--border-strong);display:flex;align-items:center;justify-content:center;color:var(--fg-muted);font-size:13px;padding:20px}
-  .accueil h1{font-size:clamp(32px,7vw,52px);margin:0 0 8px}
-  .accueil h1 em{font-style:normal;font-family:"Instrument Serif",serif;font-style:italic;color:var(--accent);font-weight:400}
-  .accueil .pitch{color:var(--fg-muted);font-size:17px;margin:24px auto 0;max-width:440px;line-height:1.55}
+  .accueil .kicker{color:var(--fg-muted);font-size:14px;letter-spacing:.02em;margin:0 0 16px;text-transform:none}
+  .accueil h1{font-size:clamp(28px,6vw,42px);margin:0 auto;max-width:520px;line-height:1.18}
+  .accueil .punch{font-family:"Instrument Serif",serif;font-style:italic;font-weight:400;color:var(--accent);font-size:clamp(24px,5vw,34px);letter-spacing:-.01em;margin:22px auto 0;line-height:1.15;max-width:520px}
+  .accueil .punch em{font-style:italic}
   .accueil .meta{color:var(--fg-muted);font-size:13px;margin:28px 0 20px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
   .accueil .meta span::before{content:"·";margin-right:16px;color:var(--border-strong)}
   .accueil .meta span:first-child::before{display:none}
@@ -148,8 +149,9 @@ function renderAccueil() {
   card.innerHTML =
     '<div class="accueil">' +
       '<img src="portrait.jpg" alt="Yassine" class="portrait" onerror="this.outerHTML=\'<div class=&quot;portrait-placeholder&quot;>photo à déposer<br>portrait.jpg</div>\'" />' +
-      '<h1>Vivre de <em>l’IA</em>.<br><em>Depuis n’importe où.</em></h1>' +
-      '<p class="pitch">C’est ce que je fais depuis Braga. Dis-moi d’où tu pars — je te dis franchement si c’est jouable pour toi.</p>' +
+      '<p class="kicker">T’en a marre de subir ton taf ?</p>' +
+      '<h1>J’ai la méthode qui m’a sorti de là.</h1>' +
+      '<p class="punch"><em>Vivre de l’IA. Depuis n’importe où.</em></p>' +
       '<div class="meta"><span>10 questions</span><span>2 minutes</span><span>réponse sous 48 h</span></div>' +
       '<button type="button" class="btn cta" id="go">On y va</button>' +
     '</div>';
