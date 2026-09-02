@@ -373,7 +373,7 @@ module.exports = async (req, res) => {
 - [ ] **Step 4: Run test to verify it passes**
 
 Run: `node --test 'agentic-academy/tests/*.test.js'`
-Expected: PASS — 12 tests au total, 0 échec.
+Expected: PASS — 15 tests au total, 0 échec.
 
 - [ ] **Step 5: Commit**
 
