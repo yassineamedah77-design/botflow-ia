@@ -36,8 +36,6 @@
       --accent: #7fe3a1;
       --accent-2: #7afca5;
       --accent-glow: rgba(127, 227, 161, 0.35);
-      --red: #ff4d4d;
-      --red-glow: rgba(255, 77, 77, 0.35);
       --border: rgba(255, 255, 255, 0.08);
       --border-strong: rgba(255, 255, 255, 0.14);
       --maxw: 1120px;
@@ -84,10 +82,6 @@
 
     .badge { display: inline-flex; align-items: center; gap: 9px; border: 1px solid rgba(127,227,161,0.3); background: rgba(7,8,6,0.6); color: #d8f5c5; border-radius: 999px; padding: 8px 16px; font-size: 12.5px; font-weight: 500; letter-spacing: .02em; backdrop-filter: blur(6px); }
     .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 10px var(--accent); animation: pulse 1.8s ease-in-out infinite; }
-    .badge-full { border-color: rgba(255,77,77,0.45); background: rgba(28,7,7,0.6); color: #ffdada; }
-    .badge-full .dot { background: var(--red); box-shadow: 0 0 10px var(--red); }
-    .btn-full, .nav-cta.is-full { background: var(--red); color: #2a0606; box-shadow: 0 0 50px -10px var(--red); cursor: not-allowed; pointer-events: none; }
-    .btn-full:hover, .nav-cta.is-full:hover { filter: none; transform: none; box-shadow: 0 0 50px -10px var(--red); }
     @keyframes pulse { 0%,100% { opacity:1 } 50% { opacity:.4 } }
 
     .hero { position: relative; overflow: hidden; padding: 120px 0 90px; text-align: center; }
@@ -351,7 +345,6 @@
       .bio { grid-template-columns: 1fr; }
       .bio .ph { width: 100%; max-width: 320px; }
       .navlinks { display: none; }
-      .nav-cta { display: none; }
     }
     @media (max-width: 560px) {
       .g2, .g3, .g4 { grid-template-columns: 1fr; }
@@ -383,7 +376,7 @@
         <a href="#offres">Offres</a>
         <a href="#faq">FAQ</a>
       </div>
-      <a class="nav-cta" href="/candidature?src=page">Déposer ma candidature</a>
+      <a class="nav-cta" href="#" data-cal>Réserver ma place</a>
     </div>
   </nav>
 
@@ -392,7 +385,7 @@
     <div class="grid"></div>
     <canvas class="ascii-bg" data-ascii="hero" aria-hidden="true"></canvas>
     <div class="wrap" style="position:relative;z-index:2">
-      <span class="badge badge-full hero-anim"><span class="dot"></span>Cohorte complète ce mois-ci · réouverture prochainement</span>
+      <span class="badge hero-anim"><span class="dot"></span>Cohorte fondatrice · places limitées</span>
       <h1 class="hero-anim" style="margin-top:26px;animation-delay:.06s">
         <span class="ln">Deviens freelance en</span>
         <span class="em serif">automatisation IA</span>
@@ -404,7 +397,7 @@
         Sans diplôme, sans coder.
       </p>
       <div class="cta-row hero-anim" style="animation-delay:.34s">
-        <a class="btn" href="/candidature?src=page">Déposer ma candidature</a>
+        <a class="btn btn-primary" href="#" data-cal>Réserver ma place <span class="arr">→</span></a>
         <a class="btn btn-ghost" href="#curriculum">Voir le programme ↓</a>
       </div>
       <div class="micro hero-anim" style="animation-delay:.48s">
@@ -637,7 +630,7 @@
             <li>Modèles de vente, contrats &amp; onboarding</li>
           </ul>
           <div class="spacer"></div>
-          <span class="btn btn-full" aria-disabled="true">Academy complet</span>
+          <a class="btn btn-ghost" href="#" data-cal style="background:rgba(127,227,161,0.08);border-color:rgba(127,227,161,0.3);color:var(--accent)">Réserver ma place</a>
         </div>
 
         <div class="offer feat reveal" style="transition-delay:.08s">
@@ -645,8 +638,8 @@
           <p class="kicker">Coaching 1:1</p>
           <p class="name">Accompagnement rapproché</p>
           <p class="desc">Tout l'Autonome + 2 mois de coaching privé avec moi.</p>
-          <p class="price">Sur candidature</p>
-          <p class="pay">Places limitées, tarif communiqué en appel</p>
+          <p class="price">1 490 €</p>
+          <p class="pay">Paiement unique</p>
           <ul>
             <li class="inc">Tout ce qu'il y a dans l'offre Autonome, plus :</li>
             <li>1 appel 1:1 privé / semaine pendant 2 mois (8 sessions)</li>
@@ -656,7 +649,7 @@
             <li>On construit ton offre et tes premiers clients ensemble</li>
           </ul>
           <div class="spacer"></div>
-          <a class="btn btn-full" href="/candidature?src=page">Déposer ma candidature</a>
+          <a class="btn btn-primary" href="#" data-cal>Réserver mon coaching 1:1 <span class="arr">→</span></a>
         </div>
       </div>
       <p class="center muted reveal" style="margin-top:22px;font-size:14px">Un échange de 30 min d'abord : on vérifie ensemble quelle formule est faite pour toi.</p>
@@ -684,7 +677,7 @@
       <div class="faq">
         <details class="q"><summary>J'ai besoin de savoir coder ?<span class="chev">+</span></summary><p>Non. Tout passe par n8n (no-code / low-code), les LLM et Claude Code. Si tu sais utiliser un navigateur et suivre une logique, tu peux suivre. On code zéro ligne à la main pour démarrer.</p></details>
         <details class="q"><summary>Combien de temps par jour ?<span class="chev">+</span></summary><p>Compte au minimum 2 heures par jour : le contenu + tes builds. Plus tu mets, plus vite tu avances. Tout est aussi en accès à vie, donc tu adaptes à ton rythme et à ton fuseau horaire.</p></details>
-        <details class="q"><summary>Quelle est la différence entre les 2 offres ?<span class="chev">+</span></summary><p>L'offre Autonome (490 €) te donne tout le contenu, les templates, la formation Claude Code et 2 appels. Le Coaching 1:1 ajoute un suivi privé hebdomadaire avec moi pendant 2 mois — il se fait sur candidature, parce que je ne prends qu'un nombre limité de personnes à la fois. On en parle en appel.</p></details>
+        <details class="q"><summary>Quelle est la différence entre les 2 offres ?<span class="chev">+</span></summary><p>L'offre Autonome (490 €) te donne tout le contenu, les templates, la formation Claude Code et 2 appels. L'offre Coaching 1:1 (1 490 €) ajoute un suivi privé hebdomadaire avec moi pendant 2 mois, pour qu'on construise ton activité ensemble, pas à pas.</p></details>
         <details class="q"><summary>Il y a des outils payants en plus ?<span class="chev">+</span></summary><p>n8n a une version gratuite suffisante pour apprendre. Pour les LLM et Claude Code, quelques euros de crédits suffisent au début. On t'indique le strict nécessaire, rien d'inutile.</p></details>
         <details class="q"><summary>Je débute vraiment de zéro, c'est grave ?<span class="chev">+</span></summary><p>Non, le programme est conçu pour partir de zéro, c'est exactement mon parcours. Le seul prérequis, c'est la motivation et le passage à l'action tous les jours.</p></details>
         <details class="q"><summary>Je peux suivre depuis le Portugal / l'étranger ?<span class="chev">+</span></summary><p>Oui, c'est 100% en ligne. Les appels peuvent se tenir en français ou en portugais. Le contenu reste accessible partout, à vie.</p></details>
@@ -698,7 +691,7 @@
     <div class="wrap reveal" style="position:relative;z-index:2">
       <h2>Prêt à lancer <span class="serif accent">ton activité</span> ?</h2>
       <p class="sub">Réserve un échange de 30 minutes. On regarde où tu en es et quelle formule est faite pour toi.</p>
-      <div style="margin-top:36px"><a class="btn" href="/candidature?src=page">Déposer ma candidature</a></div>
+      <div style="margin-top:36px"><a class="btn btn-primary" href="#" data-cal>Réserver ma place <span class="arr">→</span></a></div>
       <p class="micro" style="margin-top:22px;justify-content:center"><span class="muted">Sans engagement · réponse honnête, même si c'est non</span></p>
     </div>
   </section>
@@ -729,8 +722,8 @@
       <span class="lbl">LinkedIn</span>
       <span class="fab-btn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5C4.98 4.88 3.87 6 2.5 6S0 4.88 0 3.5 1.12 1 2.5 1 4.98 2.12 4.98 3.5zM0 8h5v16H0V8zm7.5 0H12v2.2h.07c.63-1.2 2.17-2.46 4.46-2.46C21.2 7.74 24 10.2 24 15v9h-5v-8c0-1.9-.03-4.35-2.65-4.35-2.65 0-3.06 2.07-3.06 4.2V24h-5V8z"/></svg></span>
     </a>
-    <a class="fab-item" href="#" data-cal aria-label="Réserver un appel">
-      <span class="lbl">Réserver un appel</span>
+    <a class="fab-item" href="#" data-cal aria-label="R\u00e9server un appel">
+      <span class="lbl">R\u00e9server un appel</span>
       <span class="fab-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="4.5" width="18" height="16" rx="3"/><path d="M3 9h18M8 2.5v4M16 2.5v4"/></svg></span>
     </a>
   </div>

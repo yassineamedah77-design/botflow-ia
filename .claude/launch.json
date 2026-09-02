@@ -4,8 +4,26 @@
     {
       "name": "botflow-dev",
       "runtimeExecutable": "npm",
-      "runtimeArgs": ["run", "dev", "--", "--port", "3001"],
+      "runtimeArgs": [
+        "run",
+        "dev",
+        "--",
+        "--port",
+        "3001"
+      ],
       "port": 3001
+    },
+    {
+      "name": "academy-static",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": [
+        "-m",
+        "http.server",
+        "4321",
+        "--directory",
+        "agentic-academy"
+      ],
+      "port": 4321
     }
   ]
 }

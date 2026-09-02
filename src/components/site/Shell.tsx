@@ -97,6 +97,11 @@ function Nav() {
         WebkitBackdropFilter: "blur(24px)",
         border: "1px solid rgba(255,255,255,.08)",
         zIndex: 50,
+        // Sur mobile la barre (≈480px) dépassait la fenêtre et se faisait couper
+        // des deux côtés. On la contraint et on la rend défilable.
+        maxWidth: "calc(100vw - 24px)",
+        overflowX: "auto",
+        scrollbarWidth: "none",
       }}
     >
       {items.map((it) => (
@@ -111,6 +116,8 @@ function Nav() {
             background: it.cta ? "linear-gradient(180deg,rgba(122,252,165,.18),rgba(122,252,165,.04))" : "transparent",
             border: it.cta ? "1px solid rgba(122,252,165,.25)" : "1px solid transparent",
             textDecoration: "none",
+            whiteSpace: "nowrap",
+            flexShrink: 0,
           }}
         >
           {it.label}
@@ -149,6 +156,7 @@ function Foot() {
         <div>
           <strong style={{ color: "#e9efe5" }}>Ressources</strong>
           <ul style={{ listStyle: "none", padding: 0, margin: "12px 0 0", display: "flex", flexDirection: "column", gap: 6 }}>
+            <li><Link style={l} href="/calculateur">Calculateur : coût du silence</Link></li>
             <li><Link style={l} href="/blog">Blog</Link></li>
             <li><Link style={l} href="/cas-usage/automatiser-devis-ia">Cas : automatiser devis</Link></li>
             <li><Link style={l} href="/cas-usage/onboarding-rh-ia">Cas : onboarding RH</Link></li>
