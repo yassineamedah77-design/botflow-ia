@@ -92,7 +92,7 @@ test('les seuils de segment sont 55 et 35', () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `node --test agentic-academy/tests/`
+Run: `node --test 'agentic-academy/tests/*.test.js'`
 Expected: FAIL — `Cannot find module '../api/_scoring.js'`
 
 - [ ] **Step 3: Write minimal implementation**
@@ -132,7 +132,7 @@ module.exports = { scoreLead, SEUIL_A, SEUIL_B };
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `node --test agentic-academy/tests/`
+Run: `node --test 'agentic-academy/tests/*.test.js'`
 Expected: PASS — 6 tests, 0 échec.
 
 - [ ] **Step 5: Exclure les tests du déploiement**
@@ -245,7 +245,7 @@ test('renvoie quand même le segment quand Airtable échoue', async () => {
 
 - [ ] **Step 2: Run test to verify it fails**
 
-Run: `node --test agentic-academy/tests/`
+Run: `node --test 'agentic-academy/tests/*.test.js'`
 Expected: FAIL — `Cannot find module '../api/lead.js'`
 
 - [ ] **Step 3: Write minimal implementation**
@@ -372,7 +372,7 @@ module.exports = async (req, res) => {
 
 - [ ] **Step 4: Run test to verify it passes**
 
-Run: `node --test agentic-academy/tests/`
+Run: `node --test 'agentic-academy/tests/*.test.js'`
 Expected: PASS — 12 tests au total, 0 échec.
 
 - [ ] **Step 5: Commit**
