@@ -1,0 +1,213 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Candidature · BotFlow.IA Academy</title>
+<meta name="robots" content="noindex, nofollow" />
+<meta name="theme-color" content="#07090a" />
+<link rel="icon" type="image/svg+xml" href="favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
+<style>
+  :root{--bg:#07090a;--bg-elevated:#0e1112;--fg:#f5f5f0;--fg-muted:#8a8f8a;--accent:#7fe3a1;--accent-glow:rgba(127,227,161,.35);--border:rgba(255,255,255,.08);--border-strong:rgba(255,255,255,.14)}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font-family:"Geist",system-ui,-apple-system,sans-serif;-webkit-font-smoothing:antialiased;line-height:1.5;min-height:100dvh;display:flex;flex-direction:column}
+  .serif{font-family:"Instrument Serif",serif;font-style:italic;font-weight:400}
+  .bar{height:3px;background:rgba(255,255,255,.06)}
+  .bar i{display:block;height:100%;width:0;background:var(--accent);transition:width .35s cubic-bezier(.4,0,.2,1)}
+  main{flex:1;display:flex;align-items:center;justify-content:center;padding:32px 24px}
+  .card{width:100%;max-width:560px}
+  .step{color:var(--fg-muted);font-size:13px;letter-spacing:.08em;text-transform:uppercase;margin:0 0 14px}
+  h1{font-size:clamp(26px,5vw,36px);font-weight:600;letter-spacing:-.03em;line-height:1.12;margin:0 0 8px}
+  .hint{color:var(--fg-muted);font-size:15px;margin:0 0 24px}
+  .opts{display:grid;gap:10px}
+  .opt{display:flex;align-items:center;gap:12px;padding:15px 18px;border:1px solid var(--border);border-radius:14px;background:var(--bg-elevated);cursor:pointer;transition:border-color .15s,background .15s;font-size:16px;text-align:left;color:inherit;font-family:inherit;width:100%}
+  .opt:hover{border-color:var(--border-strong)}
+  .opt[aria-pressed="true"]{border-color:var(--accent);background:rgba(127,227,161,.07)}
+  input[type=text],input[type=email],input[type=tel],textarea{width:100%;padding:15px 18px;border:1px solid var(--border);border-radius:14px;background:var(--bg-elevated);color:var(--fg);font:inherit;font-size:16px}
+  input:focus,textarea:focus{outline:none;border-color:var(--accent)}
+  textarea{min-height:130px;resize:vertical}
+  .row{display:flex;gap:12px;align-items:center;margin-top:22px}
+  .btn{padding:14px 26px;border-radius:999px;border:none;background:var(--accent);color:#07090a;font:inherit;font-weight:600;font-size:16px;cursor:pointer;box-shadow:0 0 40px -12px var(--accent-glow)}
+  .btn[disabled]{opacity:.4;cursor:not-allowed;box-shadow:none}
+  .back{background:none;border:none;color:var(--fg-muted);font:inherit;cursor:pointer;padding:14px 4px}
+  .legal{color:var(--fg-muted);font-size:13px;margin-top:18px;display:flex;gap:10px;align-items:flex-start}
+  .legal a{color:var(--accent)}
+  .hp{position:absolute;left:-9999px}
+  .end h1{margin-bottom:14px}
+  .end p{color:var(--fg-muted);font-size:16px;margin:0 0 10px}
+</style>
+</head>
+<body>
+<div class="bar"><i id="bar"></i></div>
+<main><div class="card" id="card"></div></main>
+
+<script>
+const QUESTIONS = [
+  {k:'prenom', t:'On commence par le début.', h:'Comment tu t’appelles ?', type:'text', ph:'Ton prénom', required:true},
+  {k:'instagram', t:'Ton @ Instagram ?', h:'Pour que je relie ta candidature à notre conversation.', type:'text', ph:'@'},
+  {k:'situation', t:'Tu fais quoi en ce moment ?', type:'choice', opts:[
+    ['salarie','Salarié(e)'],['freelance','Freelance / indépendant(e)'],['entrepreneur','J’ai déjà une activité'],['etudiant','Étudiant(e)'],['sans_emploi','Sans emploi actuellement']]},
+  {k:'pays', t:'T’es où aujourd’hui ?', type:'text', ph:'Ville, pays', required:true},
+  {k:'destination', t:'Et tu veux aller où ?', type:'choice', opts:[
+    ['portugal','Le Portugal'],['espagne','L’Espagne'],['dubai','Dubaï'],['asie','L’Asie'],['autre','Ailleurs'],['rester','Rester ici, mais bosser d’où je veux']]},
+  {k:'delai', t:'Dans quel délai tu veux que ça bouge ?', h:'Sois honnête, c’est ce qui change tout.', type:'choice', opts:[
+    ['<3m','Moins de 3 mois'],['3-6m','3 à 6 mois'],['6-12m','6 à 12 mois'],['+12m','Plus de 12 mois'],['nsp','Je sais pas encore']]},
+  {k:'motivation', t:'Pourquoi tu veux ce changement ?', h:'En 2 phrases, avec tes mots. C’est la question que je lis en premier.', type:'textarea', ph:'Parce que…'},
+  {k:'niveau_tech', t:'T’en es où techniquement ?', h:'Zéro n’est pas un problème — c’est d’où je suis parti.', type:'choice', opts:[
+    ['zero','Zéro, je pars de rien'],['chatgpt','J’ai testé ChatGPT'],['nocode','J’ai touché à Make / Zapier / n8n'],['code','Je code']]},
+  {k:'blocages', t:'Qu’est-ce qui te bloque ?', h:'Plusieurs réponses possibles.', type:'multi', opts:[
+    ['par_ou','Je sais pas par où commencer'],['temps','Pas le temps'],['clients','Peur de pas trouver de clients'],['tech','Pas de compétence technique'],['stagne','J’ai commencé et je stagne'],['argent','L’argent']]},
+  {k:'temps_dispo', t:'Combien d’heures par semaine tu peux y mettre ?', type:'choice', opts:[
+    ['<5h','Moins de 5 h'],['5-10h','5 à 10 h'],['10-20h','10 à 20 h'],['+20h','Plus de 20 h']]},
+  {k:'objectif_revenu', t:'Ton objectif de revenu mensuel ?', type:'choice', opts:[
+    ['1-2k','1 000 à 2 000 €'],['2-4k','2 000 à 4 000 €'],['4k+','Plus de 4 000 €'],['nsp','Je sais pas encore']]},
+  {k:'deja_formation', t:'T’as déjà investi dans une formation en ligne ?', type:'choice', opts:[
+    ['oui','Oui'],['non','Non, jamais']]},
+  {k:'pret_a_investir', t:'Si le plan te convient, t’es prêt(e) à investir pour aller plus vite ?', h:'Il n’y a pas de mauvaise réponse — ça me dit juste comment t’aider.', type:'choice', opts:[
+    ['oui','Oui'],['plus_tard','Oui, mais dans quelques mois'],['non','Non, je cherche du gratuit']]},
+];
+
+const R = {};
+let i = 0;
+const card = document.getElementById('card');
+const bar = document.getElementById('bar');
+const params = new URLSearchParams(location.search);
+
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function progress(n) { bar.style.width = (n / (QUESTIONS.length + 1)) * 100 + '%'; }
+
+function render() {
+  progress(i);
+  if (i >= QUESTIONS.length) return renderContact();
+  const q = QUESTIONS[i];
+  const val = R[q.k];
+  let champ = '';
+  if (q.type === 'text') champ = '<input type="text" id="f" placeholder="' + esc(q.ph||'') + '" value="' + esc(val||'') + '" />';
+  else if (q.type === 'textarea') champ = '<textarea id="f" placeholder="' + esc(q.ph||'') + '">' + esc(val||'') + '</textarea>';
+  else champ = '<div class="opts">' + q.opts.map(([v,l]) => {
+    const on = q.type === 'multi' ? (val||[]).includes(v) : val === v;
+    return '<button type="button" class="opt" data-v="' + v + '" aria-pressed="' + on + '">' + esc(l) + '</button>';
+  }).join('') + '</div>';
+
+  card.innerHTML =
+    '<p class="step">Question ' + (i+1) + ' / ' + (QUESTIONS.length + 1) + '</p>' +
+    '<h1>' + esc(q.t) + '</h1>' +
+    (q.h ? '<p class="hint">' + esc(q.h) + '</p>' : '') +
+    champ +
+    '<div class="row">' +
+      (i > 0 ? '<button type="button" class="back" id="back">← Retour</button>' : '') +
+      '<button type="button" class="btn" id="next">Continuer</button>' +
+    '</div>';
+
+  const suivant = () => {
+    if (q.type === 'text' || q.type === 'textarea') R[q.k] = document.getElementById('f').value.trim();
+    if (q.required && !R[q.k]) { document.getElementById('f').focus(); return; }
+    i++; render();
+  };
+
+  card.querySelectorAll('.opt').forEach((b) => b.addEventListener('click', () => {
+    const v = b.dataset.v;
+    if (q.type === 'multi') {
+      const set = new Set(R[q.k] || []);
+      set.has(v) ? set.delete(v) : set.add(v);
+      R[q.k] = [...set];
+      b.setAttribute('aria-pressed', set.has(v));
+    } else {
+      R[q.k] = v;
+      card.querySelectorAll('.opt').forEach((o) => o.setAttribute('aria-pressed', o === b));
+      setTimeout(suivant, 160); // choix unique : on enchaîne tout seul
+    }
+  }));
+  document.getElementById('next').addEventListener('click', suivant);
+  if (document.getElementById('back')) document.getElementById('back').addEventListener('click', () => { i--; render(); });
+  const f = document.getElementById('f');
+  if (f) { f.focus(); if (q.type === 'text') f.addEventListener('keydown', (e) => { if (e.key === 'Enter') suivant(); }); }
+}
+
+function renderContact() {
+  card.innerHTML =
+    '<p class="step">Dernière étape</p>' +
+    '<h1>Où je t’envoie <span class="serif">ma réponse</span> ?</h1>' +
+    '<p class="hint">Je lis chaque candidature moi-même.</p>' +
+    '<div class="opts">' +
+      '<input type="email" id="email" placeholder="ton@email.com" />' +
+      '<input type="tel" id="tel" placeholder="WhatsApp (optionnel)" />' +
+    '</div>' +
+    '<input type="text" class="hp" id="hp" tabindex="-1" autocomplete="off" aria-hidden="true" />' +
+    '<label class="legal"><input type="checkbox" id="rgpd" />' +
+      '<span>J’accepte d’être recontacté(e) au sujet de ma candidature et des formations BotFlow.IA. ' +
+      '<a href="mentions-legales.html" target="_blank" rel="noopener">Mentions légales</a></span></label>' +
+    '<div class="row">' +
+      '<button type="button" class="back" id="back">← Retour</button>' +
+      '<button type="button" class="btn" id="send" disabled>Envoyer ma candidature</button>' +
+    '</div>';
+
+  const email = document.getElementById('email');
+  const rgpd = document.getElementById('rgpd');
+  const send = document.getElementById('send');
+  const check = () => { send.disabled = !(/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value) && rgpd.checked); };
+  email.addEventListener('input', check);
+  rgpd.addEventListener('change', check);
+  document.getElementById('back').addEventListener('click', () => { i--; render(); });
+
+  send.addEventListener('click', async () => {
+    send.disabled = true; send.textContent = 'Envoi…';
+    const payload = Object.assign({}, R, {
+      deja_formation: R.deja_formation === 'oui',
+      email: email.value.trim(),
+      telephone: document.getElementById('tel').value.trim(),
+      company_website: document.getElementById('hp').value,
+      rgpd: true,
+      src: params.get('src') || 'direct',
+    });
+    let segment = 'B';
+    try {
+      const r = await fetch('/api/lead', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const d = await r.json();
+      if (d && d.segment) segment = d.segment;
+    } catch (e) {
+      // Le lead est déjà côté serveur ou perdu — on ne montre jamais d'erreur au candidat.
+    }
+    renderFin(segment, payload);
+  });
+}
+
+function renderFin(segment, p) {
+  progress(QUESTIONS.length + 1);
+  if (segment === 'A') {
+    const url = 'https://calendly.com/yass_automat-ia/new-meeting'
+      + '?hide_gdpr_banner=1&background_color=07090a&text_color=f5f5f0&primary_color=7fe3a1'
+      + '&name=' + encodeURIComponent(p.prenom || '') + '&email=' + encodeURIComponent(p.email || '');
+    card.innerHTML = '<div class="end">' +
+      '<h1>' + esc(p.prenom || '') + ', <span class="serif">on se parle</span>.</h1>' +
+      '<p>Ton profil correspond à ce que je cherche. Choisis un créneau de 30 minutes ci-dessous — on regarde ta situation et je te dis franchement si je peux t’aider.</p>' +
+      '<div class="calendly-inline-widget" data-url="' + url + '" style="min-width:300px;height:680px;margin-top:20px"></div></div>';
+    const s = document.createElement('script');
+    s.src = 'https://assets.calendly.com/assets/external/widget.js';
+    s.async = true;
+    document.body.appendChild(s);
+  } else if (segment === 'B') {
+    card.innerHTML = '<div class="end">' +
+      '<h1>Reçu, ' + esc(p.prenom || '') + '.</h1>' +
+      '<p>Je lis ta candidature moi-même et je te reviens sous 48 h avec un retour concret sur ta situation.</p>' +
+      '<p>Si tu veux gagner du temps d’ici là, réponds-moi en DM sur Instagram — je répondrai plus vite.</p></div>';
+  } else {
+    card.innerHTML = '<div class="end">' +
+      '<h1>Merci ' + esc(p.prenom || '') + '.</h1>' +
+      '<p>Au vu de là où tu en es aujourd’hui, un accompagnement 1-1 serait prématuré — et je préfère te le dire plutôt que de te vendre quelque chose qui ne te servirait pas.</p>' +
+      '<p>Je te garde dans ma liste : je te préviens dès que j’ouvre un format adapté. En attendant, tout ce que je publie sur Instagram est gratuit.</p></div>';
+  }
+}
+
+render();
+</script>
+</body>
+</html>
