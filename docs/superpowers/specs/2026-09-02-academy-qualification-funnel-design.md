@@ -59,7 +59,7 @@ IG bio ────────────┐
 DM (séquence 3 msg)┼──→ /candidature?src={dm|bio|story}
 Story / réel CTA ──┘              │
                                   ▼
-                   12 écrans, une question par écran
+                   14 écrans, une question par écran
                                   │
                                   ▼
                     POST /api/lead  (fonction Vercel)
@@ -79,7 +79,7 @@ Story / réel CTA ──┘              │
 Le scoring tourne **côté serveur** : le client n'envoie que les réponses brutes. Rien
 d'exploitable depuis le navigateur, et la règle de scoring peut évoluer sans redéployer la page.
 
-## 5. Le questionnaire — 12 écrans
+## 5. Le questionnaire — 14 écrans
 
 Une question par écran, barre de progression, retour arrière possible, aucune question
 obligatoire sauf prénom / email / consentement. Chaque question fait un des trois jobs :
@@ -90,16 +90,17 @@ obligatoire sauf prénom / email / consentement. Chaque question fait un des tro
 | 1 | `prenom` | Comment tu t'appelles ? | texte | identité |
 | 2 | `instagram` | Ton @ Instagram | texte | rapprochement avec le DM |
 | 3 | `situation` | Tu fais quoi en ce moment ? | salarié · freelance · entrepreneur · étudiant · sans emploi | qualif |
-| 4 | `pays` + `destination` | T'es où aujourd'hui, et tu veux aller où ? | texte + select (Portugal · Espagne · Dubaï · Asie · autre · rester mais bosser libre) | segmentation |
-| 5 | `delai` | Dans quel délai tu veux que ça bouge ? | <3 mois · 3-6 mois · 6-12 mois · +12 mois · je sais pas | **qualif n°1** |
-| 6 | `motivation` | En 2 phrases : pourquoi tu veux ce changement ? | textarea | **munition de closing n°1** |
-| 7 | `niveau_tech` | Ton niveau aujourd'hui | zéro · j'ai testé ChatGPT · j'ai touché Make/Zapier/n8n · je code | personnalisation |
-| 8 | `blocages` | Qu'est-ce qui te bloque ? | multi : je sais pas par où commencer · pas le temps · peur de pas trouver de clients · pas de compétence tech · j'ai commencé et je stagne · l'argent | munition n°2 |
-| 9 | `temps_dispo` | Combien d'heures par semaine tu peux y mettre ? | <5h · 5-10h · 10-20h · +20h | qualif sérieux |
-| 10 | `objectif_revenu` | Ton objectif de revenu mensuel | 1-2k · 2-4k · 4k+ · je sais pas | calibrage de la promesse |
-| 11 | `deja_formation` | T'as déjà investi dans une formation en ligne ? | oui · non | **meilleur prédicteur d'achat** |
-| 12 | `pret_a_investir` | Si le plan te convient, t'es prêt(e) à investir pour aller plus vite ? | oui · oui mais dans quelques mois · non, je cherche du gratuit | **filtre budget** |
-| 13 | `email`, `telephone`, `rgpd` | Où je t'envoie ta réponse ? | email (requis) · WhatsApp (optionnel) · case consentement (requise) | contact + retarget |
+| 4 | `pays` | T’es où aujourd’hui ? | texte | segmentation |
+| 5 | `destination` | Et tu veux aller où ? | select : Portugal · Espagne · Dubaï · Asie · autre · rester mais bosser libre | segmentation |
+| 6 | `delai` | Dans quel délai tu veux que ça bouge ? | <3 mois · 3-6 mois · 6-12 mois · +12 mois · je sais pas | **qualif n°1** |
+| 7 | `motivation` | En 2 phrases : pourquoi tu veux ce changement ? | textarea | **munition de closing n°1** |
+| 8 | `niveau_tech` | Ton niveau aujourd'hui | zéro · j'ai testé ChatGPT · j'ai touché Make/Zapier/n8n · je code | personnalisation |
+| 9 | `blocages` | Qu'est-ce qui te bloque ? | multi : je sais pas par où commencer · pas le temps · peur de pas trouver de clients · pas de compétence tech · j'ai commencé et je stagne · l'argent | munition n°2 |
+| 10 | `temps_dispo` | Combien d'heures par semaine tu peux y mettre ? | <5h · 5-10h · 10-20h · +20h | qualif sérieux |
+| 11 | `objectif_revenu` | Ton objectif de revenu mensuel | 1-2k · 2-4k · 4k+ · je sais pas | calibrage de la promesse |
+| 12 | `deja_formation` | T'as déjà investi dans une formation en ligne ? | oui · non | **meilleur prédicteur d'achat** |
+| 13 | `pret_a_investir` | Si le plan te convient, t'es prêt(e) à investir pour aller plus vite ? | oui · oui mais dans quelques mois · non, je cherche du gratuit | **filtre budget** |
+| 14 | `email`, `telephone`, `rgpd` | Où je t'envoie ta réponse ? | email (requis) · WhatsApp (optionnel) · case consentement (requise) | contact + retarget |
 
 Le niveau technique zéro n'est **jamais** éliminatoire : c'est l'histoire du fondateur
 (ex-supply chain, jamais touché un PC). Les vrais filtres sont délai, budget et heures dispo.
