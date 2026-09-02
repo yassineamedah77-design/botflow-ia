@@ -103,7 +103,7 @@ test('écrit dans Airtable les champs attendus par la table', async () => {
     assert.strictEqual(f.Segment, 'A');
     assert.strictEqual(f.Statut, 'Nouveau');
     assert.strictEqual(f.Source, 'DM');
-    assert.strictEqual(f.Deja_Formation, true);
+    assert.strictEqual(f.Deja_Formation, 'Oui');
     assert.strictEqual(f.Consentement_RGPD, true);
     assert.deepStrictEqual(f.Blocages, []);
     assert.strictEqual(f.Situation, 'Salarié');
