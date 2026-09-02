@@ -139,7 +139,7 @@ flux dépassera ~10 candidatures par semaine.
 
 ## 7. Airtable — table `LEADS_ACADEMY`
 
-Base **CRM yass_IA** = `app7l6qJCDoWebj8s`. Table distincte de `PROSPECTS_B2B` (outbound B2B
+Base **CRM yass_IA** = `app7l6qJCDoWebj8s`. Table créée le 2026-09-02 : **`tblXxZiRlfA9E3gZU`**. Table distincte de `PROSPECTS_B2B` (outbound B2B
 cliniques) : audience, cycle et champs n'ont rien en commun.
 
 | Champ | Type |
@@ -167,8 +167,12 @@ cliniques) : audience, cycle et champs n'ont rien en commun.
 | `Consentement_RGPD` | checkbox |
 | `Notes` | long text |
 
-Vues : **🔥 Chauds à closer** (Segment A + Statut Nouveau, tri par score décroissant) ·
-**🕓 À retargeter** (Segment B et C) · **📅 Appels calés** · **📊 Tout**.
+Vues à créer à la main (l'API Airtable ne crée pas de vue filtrée) : **🔥 Chauds à closer**
+(Segment A + Statut Nouveau, tri par Score décroissant) · **🕓 À retargeter** (Segment B ou C) ·
+**📅 Appels calés** (Statut = Appel calé) · **📊 Tout**.
+
+Les valeurs écrites sont des libellés français (« Salarié », « < 3 mois ») et non les clés
+techniques du barème : la table est lue à la main pour décider qui appeler.
 
 Cohérent avec le protocole de tracking de sources déjà en place sur `PROSPECTS_B2B`.
 
@@ -187,7 +191,7 @@ Cohérent avec le protocole de tracking de sources déjà en place sur `PROSPECT
 |---|---|
 | `AIRTABLE_TOKEN` | PAT Airtable, scope `data.records:write` sur la base |
 | `AIRTABLE_BASE` | `app7l6qJCDoWebj8s` |
-| `AIRTABLE_TABLE` | id de `LEADS_ACADEMY` |
+| `AIRTABLE_TABLE` | `tblXxZiRlfA9E3gZU` |
 | `NOTIFY_EMAIL` | boîte de réception des alertes segment A |
 
 ### Sécurité et conformité
