@@ -1,66 +1,71 @@
 # Modelos de email — Portugal (PT-PT)
 
-> Tom sóbrio e profissional, digno de uma agência. Toque 1: < 120 palavras, sem
-> qualquer link, opt-out obrigatório. Personalização na geração (cidade,
-> especialidade, nome se disponível). Alternativa: «Bom dia,» se faltar o nome.
+> Tom sóbrio, profissional e direto, orientado para números e benefício. Toque 1
+> sem qualquer link, opt-out obrigatório. Personalização na geração (cidade,
+> especialidade, nome se disponível; alternativa «Bom dia,» se faltar o nome).
+> Assinatura: `Yassine — Botflow.IA`. Alvo: clínicas / institutos de estética
+> apenas — nunca clínicas dentárias.
 
 ## Toque 1
-**Assunto:** `Os pedidos de marcação ao fim do dia e ao fim de semana`
+**Assunto:** `O faturamento que escapa fora de horas`
 
 Bom dia,
 
-Escrevo-lhe a propósito da {{Entreprise}}. Ao analisarmos várias clínicas de
-estética, percebemos que grande parte dos pedidos de marcação chega ao final do
-dia ou ao fim de semana, quando não há ninguém disponível para responder — e que
-parte desses clientes nunca mais volta a contactar.
+Grande parte dos pedidos de marcação da {{Entreprise}} chega ao fim do dia, ao
+fim de semana ou durante um tratamento — quando ninguém pode responder. O cliente
+não espera: marca noutro sítio. A isto somam-se os no-shows e os antigos clientes
+que não voltam. É faturação que se perde todos os meses sem se dar por isso.
 
-Na BotFlow IA, instalamos um assistente que responde a esses pedidos em menos de
-um minuto, 24 horas por dia, e recupera automaticamente as marcações falhadas.
+Na Botflow.IA colocamos à sua disposição um agente de IA à medida, com a vossa
+marca, que responde em menos de um minuto no Instagram, WhatsApp e site, qualifica
+o pedido, marca a consulta, faz o seguimento automático, reativa antigos clientes
+e reduz os no-shows. Na prática: mais marcações, menos tarefas repetitivas no dia
+a dia.
 
-Antes de propor seja o que for, uma pergunta simples: sabe quantos pedidos lhe
-escapam todos os meses?
+Se tiver interesse, envio-lhe um link que faz uma auditoria gratuita à vossa
+clínica para calcular exatamente o que está a perder hoje — e o que o nosso agente
+lhe pode trazer.
 
 Com os melhores cumprimentos,
-{{Signature}}
+Yassine — Botflow.IA
 
 Para não voltar a receber mensagens, responda «STOP».
 
 ## Toque 2 (+3 dias, mesma conversa)
-**Assunto:** `Re: Os pedidos de marcação…`
+**Assunto:** `Re: O faturamento que escapa fora de horas`
 
 Bom dia,
 
-Volto a contactá-lo brevemente. Para dar uma ordem de grandeza: nas clínicas que
-acompanhamos, 20 a 30 % dos pedidos de marcação chegam fora das horas em que
-alguém pode responder. Dado o preço de um tratamento ou de uma intervenção, isto
-representa rapidamente vários milhares de euros por mês que vão para a concorrência.
+Volto a contactá-lo rapidamente. Uma clínica que recebe apenas alguns pedidos por
+semana fora do horário perde facilmente vários milhares de euros em tratamentos
+para a concorrência todos os meses — sem contar os no-shows e os clientes que nunca
+mais voltam.
 
-Criámos uma auditoria gratuita que calcula com precisão, para a {{Entreprise}},
-quanto lhe custam esses pedidos não tratados — sem compromisso, em poucos minutos.
+O agente Botflow.IA recupera exatamente isso: responde, qualifica, marca e faz o
+seguimento por si, 24 horas por dia, com a vossa marca.
 
-Se quiser recebê-la, basta responder «auditoria» a esta mensagem.
+Se quiser o número exato para a {{Entreprise}}, envio-lhe a nossa auditoria
+gratuita — basta responder «auditoria».
 
 Com os melhores cumprimentos,
-{{Signature}}
+Yassine — Botflow.IA
 
 Para não voltar a receber mensagens, responda «STOP».
 
 ## Toque 3 (+4 dias, mesma conversa, última mensagem)
-**Assunto:** `Re: Os pedidos de marcação…`
+**Assunto:** `Re: O faturamento que escapa fora de horas`
 
 Bom dia,
 
-Não quero sobrecarregar a sua caixa de correio, por isso esta será a minha última
-mensagem.
+Prometo que esta é a minha última mensagem. Se o assunto não for uma prioridade
+para a {{Entreprise}} neste momento, compreendo perfeitamente.
 
-Se a questão dos pedidos de marcação não tratados não for uma prioridade para a
-{{Entreprise}} neste momento, sem problema, compreendo perfeitamente.
-
-Se, pelo contrário, tiver curiosidade em saber o que isto representa na prática, a
-minha proposta de auditoria gratuita mantém-se: uma palavra em resposta e trato disso.
+Mas se a ideia de recuperar as marcações que hoje lhe escapam fizer sentido, a
+minha proposta de auditoria gratuita mantém-se: uma palavra em resposta e envio-lhe
+o link.
 
 Desejo-lhe uma excelente continuação,
-{{Signature}}
+Yassine — Botflow.IA
 
 Para não voltar a receber mensagens, responda «STOP».
 
@@ -68,13 +73,13 @@ Para não voltar a receber mensagens, responda «STOP».
 
 Bom dia,
 
-Com todo o gosto. Aqui tem o link para a sua auditoria gratuita: {{LIEN_AUDIT}}
+Com todo o gosto. Aqui tem o link da sua auditoria gratuita: {{LIEN_AUDIT}}
 
-Demora poucos minutos e dá-lhe uma estimativa concreta dos pedidos de marcação que
-a {{Entreprise}} deixa hoje sem resposta, bem como o que isso representa em faturação.
+Em poucos minutos, calcula os pedidos que a {{Entreprise}} deixa hoje sem resposta
+(fim do dia, fim de semana, no-shows, antigos clientes) e o que o agente lhe pode
+trazer concretamente.
 
-Depois de a preencher, posso ligar-lhe para conversarmos, se assim o entender —
-diga-me o que lhe for mais conveniente.
+Depois de a preencher, posso ligar-lhe para conversarmos — diga-me o que lhe for
+mais conveniente.
 
-Com os melhores cumprimentos,
-{{Signature}}
+Yassine — Botflow.IA

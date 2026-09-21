@@ -1,66 +1,72 @@
 # Modèles d'emails — France (FR)
 
-> Ton posé et professionnel, digne d'une agence. Touche 1 : < 120 mots, aucun
+> Ton posé et professionnel, direct, orienté chiffre et bénéfice. Touche 1 sans
 > lien, opt-out obligatoire. Personnalisation à la génération (ville, spécialité,
-> nom si disponible). Repli : « Bonjour, » si le prénom est absent.
+> nom si disponible ; repli « Bonjour, » si le prénom est absent).
+> Signature : `Yassine — Botflow.IA`. Cible : cliniques / instituts esthétiques
+> uniquement — jamais de cabinet dentaire.
 
 ## Touche 1
-**Objet :** `Vos demandes de rendez-vous le soir et le week-end`
+**Objet :** `Le chiffre d'affaires qui vous échappe hors horaires`
 
 Bonjour,
 
-Je me permets de vous écrire au sujet de {{Entreprise}}. En observant plusieurs
-cliniques esthétiques, on constate qu'une grande partie des demandes de
-rendez-vous arrivent le soir ou le week-end, quand personne n'est disponible pour
-répondre — et qu'une partie de ces patients ne rappelle jamais.
+Une grande partie des demandes de rendez-vous d'{{Entreprise}} arrivent le soir,
+le week-end ou pendant un soin — quand personne ne peut répondre. Le client
+n'attend pas : il réserve ailleurs. Ajoutez les no-shows et les anciens clients
+qui ne reviennent plus, et c'est du chiffre d'affaires qui part chaque mois sans
+que vous le voyiez.
 
-Chez BotFlow IA, nous installons un assistant qui répond à ces demandes en moins
-d'une minute, 24h/24, et relance automatiquement les rendez-vous manqués.
+Chez Botflow.IA, on met à votre disposition un agent IA sur mesure, à votre
+enseigne, qui répond en moins d'une minute sur Instagram, WhatsApp et votre site,
+qualifie la demande, réserve le créneau, relance automatiquement, réactive vos
+anciens clients et réduit les no-shows. Concrètement : plus de rendez-vous, moins
+de tâches répétitives au quotidien.
 
-Avant de vous proposer quoi que ce soit, une question simple : savez-vous combien
-de demandes vous échappent chaque mois ?
+Si cela vous intéresse, je vous envoie un lien qui audite gratuitement votre
+institut pour chiffrer précisément ce que vous perdez aujourd'hui — et ce que
+l'agent peut vous rapporter.
 
 Bien à vous,
-{{Signature}}
+Yassine — Botflow.IA
 
 Pour ne plus recevoir de messages, répondez « STOP ».
 
 ## Touche 2 (+3 j, même fil)
-**Objet :** `Re: Vos demandes de rendez-vous…`
+**Objet :** `Re: Le chiffre d'affaires qui vous échappe hors horaires`
 
 Bonjour,
 
-Je reviens brièvement vers vous. Pour donner un ordre de grandeur : sur les
-cliniques que nous accompagnons, 20 à 30 % des demandes de rendez-vous arrivent
-en dehors des heures où quelqu'un peut répondre. Vu le prix d'un soin ou d'une
-intervention, cela représente vite plusieurs milliers d'euros par mois qui
-partent à la concurrence.
+Je reviens rapidement vers vous. Une clinique qui reçoit ne serait-ce que
+quelques demandes par semaine en dehors des heures d'ouverture, c'est vite
+plusieurs milliers d'euros de soins qui partent à la concurrence chaque mois —
+sans compter les no-shows et les clients qu'on ne revoit jamais.
 
-Nous avons conçu un audit gratuit qui chiffre précisément, pour {{Entreprise}}, ce
-que ces demandes non traitées vous coûtent — sans engagement, en quelques minutes.
+L'agent Botflow.IA récupère exactement ça : il répond, qualifie, réserve et
+relance à votre place, 24h/24, à votre enseigne.
 
-Si vous souhaitez le recevoir, répondez simplement « audit » à ce message.
+Si vous voulez le chiffre exact pour {{Entreprise}}, je vous envoie notre audit
+gratuit — répondez simplement « audit ».
 
 Bien à vous,
-{{Signature}}
+Yassine — Botflow.IA
 
 Pour ne plus recevoir de messages, répondez « STOP ».
 
 ## Touche 3 (+4 j, même fil, dernière relance)
-**Objet :** `Re: Vos demandes de rendez-vous…`
+**Objet :** `Re: Le chiffre d'affaires qui vous échappe hors horaires`
 
 Bonjour,
 
-Je ne veux pas encombrer votre boîte mail, ce sera donc mon dernier message.
+Promis, c'est mon dernier message. Si le sujet n'est pas une priorité pour
+{{Entreprise}} en ce moment, je le comprends tout à fait.
 
-Si la question des demandes de rendez-vous non traitées n'est pas une priorité
-pour {{Entreprise}} en ce moment, aucun souci, je le comprends parfaitement.
-
-Si au contraire vous êtes curieux de savoir ce que cela représente concrètement,
-ma proposition d'audit gratuit tient toujours : un mot en réponse et je m'en occupe.
+Mais si l'idée de récupérer les rendez-vous qui vous échappent aujourd'hui vous
+parle, mon offre d'audit gratuit tient toujours : un mot en réponse et je vous
+envoie le lien.
 
 Je vous souhaite une belle continuation,
-{{Signature}}
+Yassine — Botflow.IA
 
 Pour ne plus recevoir de messages, répondez « STOP ».
 
@@ -68,14 +74,13 @@ Pour ne plus recevoir de messages, répondez « STOP ».
 
 Bonjour,
 
-Avec plaisir. Voici le lien vers votre audit gratuit : {{LIEN_AUDIT}}
+Avec plaisir. Voici le lien de votre audit gratuit : {{LIEN_AUDIT}}
 
-Il vous prend quelques minutes et vous donne une estimation chiffrée des demandes
-de rendez-vous que {{Entreprise}} laisse aujourd'hui sans réponse, ainsi que ce que
-cela représente en chiffre d'affaires.
+En quelques minutes, il chiffre les demandes que {{Entreprise}} laisse aujourd'hui
+sans réponse (soir, week-end, no-shows, anciens clients) et ce que l'agent peut
+vous rapporter concrètement.
 
-Une fois rempli, je peux vous rappeler pour en discuter si vous le souhaitez —
-dites-moi ce qui vous arrange.
+Une fois rempli, je peux vous rappeler pour en parler — dites-moi ce qui vous
+arrange.
 
-Bien à vous,
-{{Signature}}
+Yassine — Botflow.IA

@@ -43,6 +43,10 @@ demandes perdues (le lien de l'audit est fourni séparément, jamais en Touche 1
 3. Croiser l'email destinataire avec l'historique **Gmail « envoyés »**
    (`in:sent to:<email>`) : si déjà contacté, ne pas ré-envoyer.
 4. Respecter `Opt_Out` = true (exclusion définitive, toutes campagnes).
+5. **Exclure tout dentaire** : niche `Dentistes`, et aussi les cliniques
+   dentaires mal étiquetées « Cliniques esthétiques » (nom/notes contenant
+   « dental », « dentária », « medicina dentária », « Smile.up », etc.).
+   Cible = esthétique uniquement.
 
 ## Scoring (heat)
 
@@ -90,5 +94,11 @@ déclenché sans l'accord de l'opérateur, et jamais avant la validation du ton.
 ## Modèles d'emails
 
 Voir `templates-fr.md` et `templates-pt.md`. Variables : `{{Entreprise}}`,
-`{{Ville}}`, `{{Prenom}}` (repli propre si absent), `{{LIEN_AUDIT}}`.
-Contraintes Touche 1 : moins de 120 mots, aucun lien, opt-out obligatoire.
+`{{Ville}}`, `{{Prenom}}` (repli propre si absent), `{{Signature}}` =
+« Yassine — Botflow.IA », `{{LIEN_AUDIT}}`.
+Touche 1 : accroche orientée chiffre et bénéfice (CA perdu hors horaires,
+no-shows, clients inactifs), présentation de l'agent IA sur mesure à l'enseigne
+du prospect (répond en < 1 min sur Instagram/WhatsApp/site, qualifie, réserve,
+relance, réactive, réduit les no-shows), puis offre d'audit gratuit formulée en
+texte — aucun lien en Touche 1, opt-out obligatoire. Le lien d'audit ne part
+qu'en réponse à un intérêt.
