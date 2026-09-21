@@ -32,7 +32,7 @@ Yassine — Botflow.IA
 
 Pour ne plus recevoir de messages, répondez « STOP ».
 
-## Touche 2 (+3 j, même fil)
+## Touche 2 (+7 j, même fil)
 **Objet :** `Re: Le chiffre d'affaires qui vous échappe hors horaires`
 
 Bonjour,
@@ -53,7 +53,7 @@ Yassine — Botflow.IA
 
 Pour ne plus recevoir de messages, répondez « STOP ».
 
-## Touche 3 (+4 j, même fil, dernière relance)
+## Touche 3 (+7 j, même fil, dernière relance)
 **Objet :** `Re: Le chiffre d'affaires qui vous échappe hors horaires`
 
 Bonjour,

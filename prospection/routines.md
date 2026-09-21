@@ -27,7 +27,7 @@ Base Airtable app7l6qJCDoWebj8s, table PROSPECTS_B2B (tblEc8k4ch3KQyosV). Champs
    - Refus poli (« pas intéressé », « não estou interessado ») → Statut « Refus ».
    - Intérêt / demande d'audit (« audit », « auditoria », « sim, tenho interesse ») → Statut « Intéressé » + priorité en tête du brief (répondre avec le lien d'audit fourni par l'opérateur).
    - Réponse automatique (congés, accusé) → ne rien changer.
-3. Compte les relances dues (sans envoyer) : Touche 1 envoyée ≥ 3 j → Touche 2 due ; Touche 2 ≥ 4 j → Touche 3 due. Par marché (France / Portugal via Source_Detaillee).
+3. Compte les relances dues (sans envoyer, rythme hebdomadaire) : Touche 1 envoyée ≥ 7 j → Touche 2 due ; Touche 2 ≥ 7 j → Touche 3 due. Par marché (France / Portugal via Source_Detaillee).
 4. Brief court : opt-out/rebonds/refus traités, « Intéressé » à recontacter (priorité), relances dues par type et marché, RDV repérés.
 
 Ne déclenche jamais d'envoi. Termine par le brief.
@@ -47,7 +47,7 @@ Base app7l6qJCDoWebj8s, table PROSPECTS_B2B (tblEc8k4ch3KQyosV). Champs : Entrep
 
 PLAFOND quotidien (relances + nouveaux confondus) : 25 jusqu'au 2026-09-23 inclus, puis 50. La routine se déclenchant plusieurs fois le matin, compte d'abord les envois DÉJÀ faits aujourd'hui (Date_Derniere_Touche = aujourd'hui) et n'envoie que le solde jusqu'au plafond. Priorité aux relances.
 
-A. RELANCES (priorité) : Touche 1 envoyée avec Date_Derniere_Touche ≥ 3 j → Touche 2 ; Touche 2 ≥ 4 j → Touche 3. Envoie EN RÉPONSE dans le fil d'origine (Gmail « to:<email> », réponds au dernier message du fil). Puis Statut → Touche 2 / Touche 3 et Date_Derniere_Touche = aujourd'hui.
+A. RELANCES (priorité, rythme hebdomadaire) : Touche 1 envoyée avec Date_Derniere_Touche ≥ 7 j → Touche 2 ; Touche 2 ≥ 7 j → Touche 3. Envoie EN RÉPONSE dans le fil d'origine (Gmail « to:<email> », réponds au dernier message du fil). Puis Statut → Touche 2 / Touche 3 et Date_Derniere_Touche = aujourd'hui.
 
 B. NOUVEAUX (Touche 1) pour combler le solde : prospects « Non contacté » AVEC email, marché France ou Portugal (via Source_Detaillee). EXCLURE : niche « Dentistes », toute clinique dentaire (nom/notes : dental / dentária / medicina dentária / smile.up), Opt_Out=true, notes contenant « doublon » / « déjà contacté ». Avant d'envoyer, vérifie « in:sent to:<email> » : si déjà contacté, saute et corrige le statut. Personnalise (ville + spécialité depuis Notes ; « Bom dia, » ou « Bonjour, » sans prénom) selon templates-pt.md / templates-fr.md (marché). Puis Statut → « Touche 1 envoyée » et Date_Derniere_Touche = aujourd'hui.
 

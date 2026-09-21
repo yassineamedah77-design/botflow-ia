@@ -31,7 +31,7 @@ Yassine — Botflow.IA
 
 Para não voltar a receber mensagens, responda «STOP».
 
-## Toque 2 (+3 dias, mesma conversa)
+## Toque 2 (+7 dias, mesma conversa)
 **Assunto:** `Re: O faturamento que escapa fora de horas`
 
 Bom dia,
@@ -52,7 +52,7 @@ Yassine — Botflow.IA
 
 Para não voltar a receber mensagens, responda «STOP».
 
-## Toque 3 (+4 dias, mesma conversa, última mensagem)
+## Toque 3 (+7 dias, mesma conversa, última mensagem)
 **Assunto:** `Re: O faturamento que escapa fora de horas`
 
 Bom dia,

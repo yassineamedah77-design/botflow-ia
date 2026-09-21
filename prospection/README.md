@@ -55,7 +55,8 @@ Prioriser les prospects de score 2 dans l'ordre d'envoi.
 
 ## Cadence & fenêtre d'envoi
 
-- Séquence : Touche 1 → +3 j Touche 2 → +4 j Touche 3 → arrêt sans réponse.
+- Séquence : Touche 1 → +7 j Touche 2 → +7 j Touche 3 → arrêt sans réponse
+  (une relance par semaine : T1 jour 0, T2 à J+7, T3 à J+14).
 - Le lien d'audit ne part JAMAIS en Touche 1/2/3 : il est envoyé en réponse
   quand le prospect manifeste de l'intérêt (modèle « Réponse-Audit »).
 - Fenêtre d'envoi : **8h–11h (heure de Paris)**, réparti (lots horaires).
@@ -83,8 +84,8 @@ Scanner `in:inbox` de la boîte. Classer :
 1. **Envoi du jour** : sélectionne les prospects éligibles (dédup ci-dessus),
    génère un mail personnalisé (nom si dispo, ville, spécialité) dans le ton
    posé de l'agence, envoie par lots horaires 8h–11h, met à jour le statut.
-2. **Relances** : passe les Touche 1 dues (≥3 j) en Touche 2, les Touche 2
-   dues (≥4 j) en Touche 3, dans le même fil.
+2. **Relances** (rythme hebdomadaire) : passe les Touche 1 dues (≥7 j) en
+   Touche 2, les Touche 2 dues (≥7 j) en Touche 3, dans le même fil.
 3. **Réponses/opt-out** : voir ci-dessus.
 4. **Brief du matin** : synthèse des relances dues, réponses à traiter, RDV.
 
