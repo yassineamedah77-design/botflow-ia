@@ -13,9 +13,11 @@
 
 1. **07h00 Paris — scraping quotidien** (`0 5 * * 1-5`) : récolte les nouveaux
    prospects + Instagram. Passe en premier pour alimenter le stock avant les envois.
-2. **07h30 Paris — veille & brief** (`30 5 * * 1-5`) : traite les réponses
-   (opt-out, refus, intérêt/audit) AVANT les envois, pour ne jamais relancer
-   quelqu'un qui vient de se désinscrire.
+2. **07h30 / 10h30 / 13h30 / 16h30 Paris — veille & brief + alerte leads chauds**
+   (`30 5,8,11,14 * * 1-5`) : le passage de 7h30 traite les réponses (opt-out,
+   refus, intérêt) AVANT les envois ; les passages suivants surveillent les
+   réponses qui tombent en journée et poussent une alerte 🔥 pour tout lead chaud.
+   (Pour un maximum de réactivité, passer à un contrôle par heure : `30 5-16 * * 1-5`.)
 3. **08h / 09h / 10h Paris — envoi & relances** (`0 6,7,8 * * 1-5`) : 3 passages
    pour étaler les envois sur la fenêtre 8h–11h. Le plafond se remplit en cumulé
    sur les 3 passages ; la liste DM mystère ne sort qu'au dernier passage.
@@ -60,14 +62,16 @@ FILTRAGE de chaque fiche :
 Termine par un compte-rendu : nb de nouveaux prospects par marché et par ville, nb avec Instagram, coût Apify total.
 ```
 
-## Routine 2 — Veille & brief (`30 5 * * 1-5`, 07h30 Paris)
+## Routine 2 — Veille & brief + alerte leads chauds (`30 5,8,11,14 * * 1-5`)
 
-N'envoie aucun email. Traite les réponses AVANT les envois du jour.
+7h30 / 10h30 / 13h30 / 16h30 Paris, jours ouvrés. N'envoie aucun email. Le passage de 7h30 traite les réponses avant les envois ; les passages suivants surveillent les réponses de la journée et alertent sur les leads chauds.
 
 ```
-Routine BotFlow — veille & brief. Tu n'envoies AUCUN email : lecture, mise à jour du CRM, brief.
+Routine BotFlow — veille & brief + alerte leads chauds. Tu n'envoies AUCUN email : lecture, mise à jour du CRM, brief.
 
 PÉRIMÈTRE STRICT : tu opères UNIQUEMENT via les connecteurs Gmail et Airtable. Ne touche jamais au dépôt de code (aucun fichier, aucune branche git, aucun commit, aucune pull request).
+
+⚡ ALERTE LEAD CHAUD (priorité absolue) : dès qu'une réponse manifeste de l'intérêt (« audit », « auditoria », « quero/gostaria de saber mais », « mais informações », « tenho interesse », « quanto custa », « intéressé », « en savoir plus », « vos tarifs », demande de prix ou de rendez-vous), passe IMMÉDIATEMENT le prospect en Statut « Intéressé » et place-le TOUT EN HAUT du brief avec un marqueur 🔥 (Établissement, ville, email, texte reçu, date/heure). C'est ce que la notification push doit mettre en avant. Ne réponds pas toi-même : le lien d'audit est envoyé par l'opérateur.
 
 Vérifie l'accès à mcp__Gmail__* et mcp__Airtable__*. Si l'un manque, ne fais rien et signale-le.
 Airtable : base app7l6qJCDoWebj8s, table PROSPECTS_B2B (tblEc8k4ch3KQyosV). Champs : Email_Pro fld58zYs6jvtTEtRq, Statut_Outreach fldD933RiNGtt0ow2, Date_Derniere_Touche fldTxRLJTmSUY4QGF, Opt_Out fld4K0vNOtk4cC4J1, Source_Detaillee fldOMMZbpgL0wVjvM, Notes fldxMHf7VaEaeeFer, Entreprise fldgMy6uNB1VzY8p1.
