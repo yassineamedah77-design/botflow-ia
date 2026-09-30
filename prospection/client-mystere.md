@@ -122,10 +122,26 @@ C. EN ATTENTE : compte les « DM envoyé » de moins de 2 jours (observation en 
 Termine par le brief en 3 blocs (À tester / Preuves prêtes / En attente). Aucun envoi.
 ```
 
-## Aller plus loin (option, plus tard)
+## Automatisation via PlugKit — ce qui est possible (et ce qui ne l'est pas)
 
-Automatisation complète possible via un connecteur réseaux sociaux (ex. PlugKit)
-en reliant un **compte Instagram neutre** : la routine enverrait alors les DM
-mystères elle-même et détecterait les réponses automatiquement (plus besoin de
-marquer « Répondu » à la main). Le mail de preuve resterait le meilleur avec la
-capture, donc semi-manuel. À évaluer quand le volume le justifie.
+- **Envoi du DM mystère : NON automatisable.** L'API Instagram officielle (celle
+  qu'utilise PlugKit) n'autorise à ouvrir un fil qu'avec quelqu'un qui vous a
+  écrit en premier (fenêtre 24 h). Un premier DM à froid vers un prospect qui ne
+  vous a jamais écrit est bloqué par Meta ; les outils qui « forcent » l'envoi
+  sont hors CGU et font bannir le compte. → Le DM reste **manuel**, depuis un
+  compte séparé.
+- **Détection des réponses : automatisable.** PlugKit lit l'inbox du compte
+  expéditeur (vérifié). Si les DM partent d'un compte **connecté à PlugKit**, une
+  routine peut, pour chaque prospect « DM envoyé », retrouver le fil par son handle
+  Instagram et poser tout seul `DM_Mystere_Statut` = « Répondu » (message entrant
+  après `DM_Mystere_Date`) ou « Sans réponse (preuve) » (rien après 2 jours
+  ouvrés). Compte actuellement connecté : `@yass.automat`
+  (accountId `cmulrqsf344jjqx01tkisckrb`). PlugKit : `list_conversations` /
+  `list_messages` sur cet accountId.
+- **Prérequis** : (1) envoyer depuis un compte connecté à PlugKit — idéalement un
+  compte « client » dédié, pas `@botflow` ni un compte pro reconnaissable ; (2) que
+  le connecteur PlugKit soit disponible pour les routines (comme Gmail/Airtable).
+  Sinon, la détection reste manuelle (tu coches « Répondu » toi-même dans Airtable).
+- **Capture + mail de preuve : restent manuels** — la capture ne se génère pas
+  toute seule, et un contrôle humain évite d'écrire « vous n'avez pas répondu » à
+  quelqu'un qui a répondu.
