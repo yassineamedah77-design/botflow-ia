@@ -21,6 +21,11 @@
 3. **08h / 09h / 10h Paris — envoi & relances** (`0 6,7,8 * * 1-5`) : 3 passages
    pour étaler les envois sur la fenêtre 8h–11h. Le plafond se remplit en cumulé
    sur les 3 passages ; la liste DM mystère ne sort qu'au dernier passage.
+4. **11h30 / 15h30 Paris — contre-objection auto-répondeurs** (`30 9,13 * * 1-5`) :
+   répond une seule fois, dans le fil, aux prospects dont la réponse est un message
+   automatique (« on répond sous 24-48h », « on est débordés »), en retournant
+   l'objection en argument. Protection anti-boucle stricte, une contre-réponse par
+   prospect à vie.
 
 ## Suivi automatique
 
@@ -149,6 +154,54 @@ FR — Touche 2 (fil) : même angle, plus court, se termine par « répondez sim
 Termine par un compte-rendu : nb relances T2/T3, nb nouveaux Touche 1, par marché.
 
 LISTE DM MYSTÈRE : uniquement au DERNIER passage du matin (heure de déclenchement ≥ 10h Paris). Pour chaque prospect passé en « Touche 1 envoyée » aujourd'hui dont Contact_Alternatif contient « IG: », liste « Établissement → Instagram ». Aux passages de 08h et 09h, ne produis pas cette liste.
+```
+
+## Routine 4 — Contre-objection auto-répondeurs (`30 9,13 * * 1-5`)
+
+11h30 / 15h30 Paris, jours ouvrés. ENVOIE des emails. Retourne les auto-réponses
+(« on est débordés / on répond sous 24-48h ») en argument de vente.
+
+```
+Routine BotFlow — contre-objection auto-répondeurs. Tu réponds UNE seule fois, dans le fil, aux prospects dont la réponse est un message AUTOMATIQUE (« on répond sous 24-48h », « on est débordés », « on ne traite plus les demandes de RDV par mail »), en retournant cette objection en argument. Tu envoies depuis contact.botflow@gmail.com et tu mets à jour Airtable.
+
+PÉRIMÈTRE STRICT : uniquement via les connecteurs Gmail et Airtable. Ne touche jamais au dépôt de code (aucun fichier, branche git, commit, pull request). Sortie = envoi d'emails + mise à jour Airtable + compte-rendu texte.
+
+Vérifie l'accès à mcp__Gmail__* et mcp__Airtable__*. Si l'un manque, ne fais rien et signale-le.
+Airtable : base app7l6qJCDoWebj8s, table PROSPECTS_B2B (tblEc8k4ch3KQyosV). Champs : Entreprise fldgMy6uNB1VzY8p1, Email_Pro fld58zYs6jvtTEtRq, Statut_Outreach fldD933RiNGtt0ow2, Date_Derniere_Touche fldTxRLJTmSUY4QGF, Opt_Out fld4K0vNOtk4cC4J1, Niche fldLaYjjz8emj6u85, Pays fldBHhFIGDmXqu2BL, Source_Detaillee fldOMMZbpgL0wVjvM, Notes fldxMHf7VaEaeeFer.
+
+PLAFOND : maximum 15 contre-réponses par jour.
+
+1. Lis Gmail « in:inbox newer_than:3d » et repère les AUTO-RÉPONSES à nos fils de prospection. Signaux : objet commençant par « Auto: », « Réponse automatique », « Resposta automática », « Automatic reply », « Out of office », « Ausência » ; en-têtes « Auto-Submitted: auto-replied », « X-Autoreply », « Precedence: auto_reply » ; ou corps du type « nous vous répondrons dans les meilleurs délais / sous 24h / sous 48h », « nous ne répondrons plus aux mails », « responderemos assim que possível », « estamos com elevado volume de pedidos ».
+
+2. Pour chaque auto-réponse, retrouve l'expéditeur dans PROSPECTS_B2B (via Email_Pro). NE CONTRE PAS et saute si : Opt_Out=true ; Statut « Refus »/« Intéressé »/« RDV pris »/« Email invalide » ; niche « Dentistes » ou clinique dentaire (dental/dentária/smile/denti) ; Notes contient déjà « Contre-objection auto-reply » (JAMAIS deux fois) ; l'auto-réponse indique une adresse fermée/non surveillée (« será desativado », « no-reply », « boîte non relevée »).
+
+3. PROTECTION ANTI-BOUCLE (impératif) : n'envoie une contre-réponse QUE si le DERNIER message du fil est cette auto-réponse du prospect (on n'a rien envoyé après). Si notre dernier message est postérieur à l'auto-réponse, ne renvoie rien. Une seule contre-réponse par prospect, à vie. Ne contre JAMAIS une auto-réponse déclenchée par une contre-réponse précédente.
+
+4. Envoie EN RÉPONSE dans le fil d'origine (même sujet « Re: … »), langue selon le prospect (FR pour France / Suisse romande, PT pour Portugal), en reprenant l'objection dans la 1re phrase. Modèles ci-dessous. N'écris JAMAIS le mot « IA » ; signature « Yassine — Botflow.IA » ; opt-out obligatoire ; PAS de lien d'audit (on propose « audit »/« auditoria »). Jamais de « -- » ni « — » comme séparateur.
+
+5. Après envoi : Notes += « | Contre-objection auto-reply envoyée <YYYY-MM-DD> » et Date_Derniere_Touche = aujourd'hui. Ne change pas le Statut (le prospect reste dans sa séquence de relances).
+
+MODÈLES :
+
+FR — « Re: <sujet d'origine> » :
+Bonjour,
+Votre réponse automatique dit tout : les demandes s'accumulent et vous ne pouvez pas répondre tout de suite. Ce n'est pas un défaut d'organisation, c'est humainement impossible de tout traiter en direct, et pendant ce temps une partie des clients qui écrivent le soir ou le week-end réservent ailleurs.
+C'est exactement ce qu'on corrige : un système automatisé sur mesure, à votre enseigne, qui répond à chaque demande en moins d'une minute, 24h/24, sur votre site, Instagram et WhatsApp. Il qualifie, propose un créneau, confirme et relance les no-shows, sans que vous touchiez à rien.
+Si vous voulez le chiffre exact de ce que ces délais vous coûtent aujourd'hui, répondez simplement « audit » et je vous envoie un diagnostic gratuit de votre institut.
+Bien à vous,
+Yassine — Botflow.IA
+Pour ne plus recevoir de messages, répondez « STOP ».
+
+PT — « Re: <sujet d'origine> » :
+Bom dia,
+A vossa resposta automática diz tudo: os pedidos acumulam-se e não conseguem responder de imediato. Não é falha de organização, é humanamente impossível tratar tudo em direto, e entretanto parte dos clientes que escrevem à noite ou ao fim de semana acaba por marcar noutro sítio.
+É exatamente isto que resolvemos: um sistema automatizado à medida, com a vossa marca, que responde a cada pedido em menos de um minuto, 24h/dia, no site, Instagram e WhatsApp. Qualifica, propõe horário, confirma e faz o seguimento dos no-shows, sem que precise de tocar em nada.
+Se quiser o número exato do que estes atrasos custam hoje, responda simplesmente «auditoria» e envio-lhe um diagnóstico gratuito da vossa clínica.
+Com os melhores cumprimentos,
+Yassine — Botflow.IA
+Para não voltar a receber mensagens, responda «STOP».
+
+Termine par un compte-rendu : nb de contre-réponses envoyées (FR/PT), nb ignorées (déjà contré / adresse fermée / opt-out / hors cible), établissements contactés.
 ```
 
 ## Réponse aux prospects intéressés (manuel, tant que le lien d'audit n'existe pas)
