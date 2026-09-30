@@ -173,11 +173,11 @@ PLAFOND : maximum 15 contre-réponses par jour.
 
 1. Lis Gmail « in:inbox newer_than:3d » et repère les AUTO-RÉPONSES à nos fils de prospection. Signaux : objet commençant par « Auto: », « Réponse automatique », « Resposta automática », « Automatic reply », « Out of office », « Ausência » ; en-têtes « Auto-Submitted: auto-replied », « X-Autoreply », « Precedence: auto_reply » ; ou corps du type « nous vous répondrons dans les meilleurs délais / sous 24h / sous 48h », « nous ne répondrons plus aux mails », « responderemos assim que possível », « estamos com elevado volume de pedidos ».
 
-2. Pour chaque auto-réponse, retrouve l'expéditeur dans PROSPECTS_B2B (via Email_Pro). NE CONTRE PAS et saute si : Opt_Out=true ; Statut « Refus »/« Intéressé »/« RDV pris »/« Email invalide » ; niche « Dentistes » ou clinique dentaire (dental/dentária/smile/denti) ; Notes contient déjà « Contre-objection auto-reply » (JAMAIS deux fois) ; l'auto-réponse indique une adresse fermée/non surveillée (« será desativado », « no-reply », « boîte non relevée »).
+2. Pour chaque auto-réponse, retrouve l'expéditeur dans PROSPECTS_B2B (via Email_Pro). ON NE CONTRE QUE LA CIBLE ESTHÉTIQUE (Niche « Cliniques esthétiques » / instituts esthétiques, spas). NE CONTRE PAS et saute si : la fiche n'existe pas dans PROSPECTS_B2B ; Opt_Out=true ; Statut « Refus »/« Intéressé »/« RDV pris »/« Email invalide » ; niche « Dentistes » ou clinique dentaire (dental/dentária/smile/denti) ; CABINET MÉDICAL GÉNÉRAL / médecine générale (indices : « cabinet médical », « médecine générale », « généraliste », « médecin de famille », « avis médical », « arrêt de travail », « TARDOC ») — hors cible, on oublie ; Notes contient déjà « Contre-objection auto-reply » (JAMAIS deux fois) ; l'auto-réponse indique une adresse fermée/non surveillée (« será desativado », « no-reply », « boîte non relevée »).
 
 3. PROTECTION ANTI-BOUCLE (impératif) : n'envoie une contre-réponse QUE si le DERNIER message du fil est cette auto-réponse du prospect (on n'a rien envoyé après). Si notre dernier message est postérieur à l'auto-réponse, ne renvoie rien. Une seule contre-réponse par prospect, à vie. Ne contre JAMAIS une auto-réponse déclenchée par une contre-réponse précédente.
 
-4. Envoie EN RÉPONSE dans le fil d'origine (même sujet « Re: … »), langue selon le prospect (FR pour France / Suisse romande, PT pour Portugal), en reprenant l'objection dans la 1re phrase. Modèles ci-dessous. N'écris JAMAIS le mot « IA » ; signature « Yassine — Botflow.IA » ; opt-out obligatoire ; PAS de lien d'audit (on propose « audit »/« auditoria »). Jamais de « -- » ni « — » comme séparateur.
+4. Envoie EN RÉPONSE dans le fil d'origine (même sujet « Re: … »), langue selon le prospect (FR pour France, PT pour Portugal), en reprenant l'objection dans la 1re phrase. Modèles ci-dessous. Structure le mail en courts paragraphes aérés (une idée par paragraphe, ligne vide entre chaque), jamais un gros pavé. N'écris JAMAIS le mot « IA » ; signature « Yassine — Botflow.IA » ; opt-out obligatoire. Le lien d'audit est personnalisé par prospect : ne le colle pas ici, annonce que tu l'envoies pour chiffrer leurs pertes ; il part une fois que le prospect répond oui. Jamais de « -- » ni « — » comme séparateur.
 
 5. Après envoi : Notes += « | Contre-objection auto-reply envoyée <YYYY-MM-DD> » et Date_Derniere_Touche = aujourd'hui. Ne change pas le Statut (le prospect reste dans sa séquence de relances).
 
@@ -185,20 +185,34 @@ MODÈLES :
 
 FR — « Re: <sujet d'origine> » :
 Bonjour,
-Votre réponse automatique dit tout : les demandes s'accumulent et vous ne pouvez pas répondre tout de suite. Ce n'est pas un défaut d'organisation, c'est humainement impossible de tout traiter en direct, et pendant ce temps une partie des clients qui écrivent le soir ou le week-end réservent ailleurs.
-C'est exactement ce qu'on corrige : un système automatisé sur mesure, à votre enseigne, qui répond à chaque demande en moins d'une minute, 24h/24, sur votre site, Instagram et WhatsApp. Il qualifie, propose un créneau, confirme et relance les no-shows, sans que vous touchiez à rien.
-Si vous voulez le chiffre exact de ce que ces délais vous coûtent aujourd'hui, répondez simplement « audit » et je vous envoie un diagnostic gratuit de votre institut.
+
+Votre réponse automatique dit tout : les demandes arrivent plus vite que vous ne pouvez y répondre.
+
+Ce n'est pas un défaut d'organisation, c'est humainement impossible de tout traiter en direct. Le souci, c'est que le client qui écrit le soir ou le week-end n'attend pas : il réserve ailleurs.
+
+Ce qu'on met en place corrige exactement ça : un système automatisé sur mesure, à votre enseigne, qui répond à chaque demande en moins d'une minute, 24h/24, sur votre site, Instagram et WhatsApp. Il qualifie, propose un créneau, confirme, et relance les no-shows, sans que vous touchiez à rien.
+
+Si vous voulez voir vos pertes noir sur blanc, je vous envoie un lien d'audit qui chiffre précisément ce que ces délais vous coûtent aujourd'hui. Dites-moi simplement oui.
+
 Bien à vous,
 Yassine — Botflow.IA
+
 Pour ne plus recevoir de messages, répondez « STOP ».
 
 PT — « Re: <sujet d'origine> » :
 Bom dia,
-A vossa resposta automática diz tudo: os pedidos acumulam-se e não conseguem responder de imediato. Não é falha de organização, é humanamente impossível tratar tudo em direto, e entretanto parte dos clientes que escrevem à noite ou ao fim de semana acaba por marcar noutro sítio.
-É exatamente isto que resolvemos: um sistema automatizado à medida, com a vossa marca, que responde a cada pedido em menos de um minuto, 24h/dia, no site, Instagram e WhatsApp. Qualifica, propõe horário, confirma e faz o seguimento dos no-shows, sem que precise de tocar em nada.
-Se quiser o número exato do que estes atrasos custam hoje, responda simplesmente «auditoria» e envio-lhe um diagnóstico gratuito da vossa clínica.
+
+A vossa resposta automática diz tudo: os pedidos chegam mais depressa do que conseguem responder.
+
+Não é falha de organização, é humanamente impossível tratar tudo em direto. O problema é que o cliente que escreve à noite ou ao fim de semana não espera: marca noutro sítio.
+
+O que colocamos resolve exatamente isto: um sistema automatizado à medida, com a vossa marca, que responde a cada pedido em menos de um minuto, 24h/dia, no site, Instagram e WhatsApp. Qualifica, propõe horário, confirma, e faz o seguimento dos no-shows, sem que precise de tocar em nada.
+
+Se quiser ver as vossas perdas preto no branco, envio-lhe um link de auditoria que calcula exatamente o que estes atrasos vos custam hoje. Basta dizer que sim.
+
 Com os melhores cumprimentos,
 Yassine — Botflow.IA
+
 Para não voltar a receber mensagens, responda «STOP».
 
 Termine par un compte-rendu : nb de contre-réponses envoyées (FR/PT), nb ignorées (déjà contré / adresse fermée / opt-out / hors cible), établissements contactés.
