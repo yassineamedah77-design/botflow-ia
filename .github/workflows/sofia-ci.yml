@@ -1,0 +1,98 @@
+# SOFIA (sofia-app/) — lint, types, unit + integration tests against a real
+# PostgreSQL, production build, end-to-end tests, and the Docker image build.
+# The marketing site at the repository root is not affected by this workflow.
+
+name: SOFIA CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "sofia-app/**"
+      - ".github/workflows/sofia-ci.yml"
+  pull_request:
+    paths:
+      - "sofia-app/**"
+      - ".github/workflows/sofia-ci.yml"
+
+concurrency:
+  group: sofia-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  checks:
+    name: Lint, types, tests, build, E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: sofia-app
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      NEXT_TELEMETRY_DISABLED: 1
+      # Superuser connection, only used to create the application role.
+      DATABASE_ADMIN_URL: postgres://postgres:postgres@localhost:5432/postgres
+      # Application role: neither superuser nor BYPASSRLS, so Row-Level
+      # Security is really enforced during the tests.
+      DATABASE_URL: postgres://sofia:sofia@localhost:5432/sofia_dev
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: sofia-app/package-lock.json
+
+      - run: npm ci
+
+      - name: Create the role and the dev, test and E2E databases
+        run: npm run db:setup -- --with-test
+
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run test:unit
+      - run: npm run test:integration
+      - run: npm run build
+
+      - name: Install the Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      - name: End-to-end tests (production build)
+        run: npm run test:e2e
+        env:
+          E2E_SKIP_BUILD: "1"
+
+      - name: Upload the Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: |
+            sofia-app/playwright-report
+            sofia-app/test-results
+          retention-days: 7
+
+  docker:
+    name: Docker image
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+      - name: Build the production image
+        run: docker build --tag sofia:ci sofia-app

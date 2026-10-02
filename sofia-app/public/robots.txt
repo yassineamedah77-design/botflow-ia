@@ -1,0 +1,3 @@
+# SOFIA is a private application: there is nothing to index.
+User-agent: *
+Disallow: /
