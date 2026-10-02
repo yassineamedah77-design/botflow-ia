@@ -43,3 +43,6 @@ next-env.d.ts
 # prospection ops — jamais dans ce repo public
 /emails_*.md
 /prospects_*.csv
+
+# ScrapeGraphAI just-scrape output
+.just-scrape/
