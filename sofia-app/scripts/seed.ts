@@ -29,6 +29,12 @@ async function main() {
     return;
   }
   console.log("✓ Maison Éclat seeded.\n");
+  if (result.activity) {
+    const { leads, conversations, messages, appointments, followups, importedClients } = result.activity;
+    console.log(
+      `  Activity: ${leads} contacts (${importedClients} from the client file), ${conversations} conversations, ${messages} messages, ${appointments} appointments, ${followups} automated follow-ups.\n`,
+    );
+  }
   console.log("  Demo accounts:");
   for (const user of DEMO_USERS) {
     console.log(`  · ${user.role.padEnd(5)}  ${user.email}`);

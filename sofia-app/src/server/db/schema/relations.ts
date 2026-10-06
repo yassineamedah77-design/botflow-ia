@@ -3,7 +3,7 @@ import { relations } from "drizzle-orm";
 import { appointments } from "./appointments";
 import { automations, campaignRecipients, campaigns, followups } from "./automation";
 import { conversations, messages } from "./conversations";
-import { consentRecords, leadNotes, leadStatusChanges, leads } from "./crm";
+import { consentRecords, contactImports, leadNotes, leadStatusChanges, leads } from "./crm";
 import { invitations, memberships, organizations, sessions, users } from "./identity";
 import { integrations } from "./integrations";
 import { businessHours, businessProfiles, faqs, practitioners, services } from "./knowledge";
@@ -63,12 +63,18 @@ export const practitionersRelations = relations(practitioners, ({ many }) => ({
 export const leadsRelations = relations(leads, ({ one, many }) => ({
   interestedService: one(services, { fields: [leads.interestedServiceId], references: [services.id] }),
   assignedTo: one(users, { fields: [leads.assignedToUserId], references: [users.id] }),
+  import: one(contactImports, { fields: [leads.importId], references: [contactImports.id] }),
   notes: many(leadNotes),
   statusChanges: many(leadStatusChanges),
   consents: many(consentRecords),
   conversations: many(conversations),
   appointments: many(appointments),
   revenue: many(revenueAttributions),
+}));
+
+export const contactImportsRelations = relations(contactImports, ({ one, many }) => ({
+  createdBy: one(users, { fields: [contactImports.createdByUserId], references: [users.id] }),
+  leads: many(leads),
 }));
 
 export const leadNotesRelations = relations(leadNotes, ({ one }) => ({

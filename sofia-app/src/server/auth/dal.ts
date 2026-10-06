@@ -79,6 +79,9 @@ async function resolveTenant(session: ValidatedSession): Promise<TenantResolutio
         defaultLanguage: organization.defaultLanguage,
         allowedLanguages: organization.allowedLanguages,
         widgetPublicId: organization.widgetPublicId,
+        country: organization.country,
+        currency: organization.currency,
+        isDemo: organization.isDemo,
       },
     }),
   };

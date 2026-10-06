@@ -68,6 +68,8 @@ export const organizations = pgTable(
     /** GDPR retention for prospect data, in days (CNIL guidance: 3 years after last contact). */
     leadRetentionDays: integer().notNull().default(1095),
     onboardingCompletedAt: timestamptz(),
+    /** Demonstration establishment (seed): fictional contacts, nothing is ever sent for real. */
+    isDemo: boolean().notNull().default(false),
     createdAt: createdAt(),
     updatedAt: updatedAt(),
   },

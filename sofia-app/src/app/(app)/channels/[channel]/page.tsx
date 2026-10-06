@@ -10,51 +10,14 @@ import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { CHANNEL_SETUP, type ChannelSlug } from "@/lib/channels";
 import { formatDateTime } from "@/lib/format";
 import { requireTenant } from "@/server/auth/dal";
 import { withTenant } from "@/server/db/context";
-import { listIntegrations, type IntegrationProvider } from "@/server/services/organizations";
+import { listIntegrations } from "@/server/services/organizations";
 
-const CHANNELS = {
-  whatsapp: {
-    title: "WhatsApp",
-    icon: WhatsAppIcon,
-    provider: "WHATSAPP_CLOUD" as IntegrationProvider,
-    phase: 5,
-    description: "SOFIA répond sur votre numéro WhatsApp Business, via l'API officielle de Meta.",
-    requirements: [
-      "Un compte Meta Business vérifié (justificatifs de l'entreprise)",
-      "Un numéro de téléphone dédié, non utilisé dans l'application WhatsApp",
-      "La connexion à la WhatsApp Business Platform (Cloud API), sans solution non officielle",
-      "Des modèles de messages approuvés par Meta pour les relances au-delà de 24 h",
-    ],
-  },
-  instagram: {
-    title: "Instagram",
-    icon: InstagramIcon,
-    provider: "INSTAGRAM_MESSAGING" as IntegrationProvider,
-    phase: 6,
-    description: "SOFIA répond à vos messages privés Instagram via l'API officielle de Meta.",
-    requirements: [
-      "Un compte Instagram professionnel",
-      "Ce compte relié à une page Facebook",
-      "L'autorisation d'accès à la messagerie accordée à SOFIA",
-    ],
-  },
-  website: {
-    title: "Site web",
-    icon: GlobeIcon,
-    provider: "WEBSITE_WIDGET" as IntegrationProvider,
-    phase: 4,
-    description: "Un widget de conversation premium sur votre site, ajouté avec une seule ligne de code.",
-    requirements: [
-      "L'accès à l'administration de votre site (WordPress, Wix, Webflow, Shopify ou code)",
-      "La liste des domaines où le widget est autorisé à s'afficher",
-    ],
-  },
-} as const;
-
-type ChannelSlug = keyof typeof CHANNELS;
+const ICONS = { whatsapp: WhatsAppIcon, instagram: InstagramIcon, website: GlobeIcon } as const;
+const CHANNELS = CHANNEL_SETUP;
 
 function isChannel(value: string): value is ChannelSlug {
   return value in CHANNELS;
@@ -82,7 +45,7 @@ export default async function ChannelPage(props: PageProps<"/channels/[channel]"
   const integrations = await withTenant(ctx.organization.id, (tx) => listIntegrations(tx, ctx.organization.id));
   const integration = integrations.find((candidate) => candidate.provider === definition.provider);
   const status = (integration?.status ?? "NOT_CONNECTED") as ChannelStatus;
-  const Icon = definition.icon;
+  const Icon = ICONS[channel];
 
   return (
     <>

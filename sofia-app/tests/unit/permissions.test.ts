@@ -57,14 +57,15 @@ describe("role permissions", () => {
       "knowledge:write",
       "leads:delete",
       "leads:export",
+      "leads:import",
       "data:erase",
       "audit:read",
     ];
     for (const permission of restricted) expect(can("STAFF", permission)).toBe(false);
   });
 
-  it("restricts GDPR export and erasure to owners and admins", () => {
-    for (const permission of ["leads:export", "data:erase"] as const) {
+  it("restricts GDPR export, erasure and client file imports to owners and admins", () => {
+    for (const permission of ["leads:export", "leads:import", "data:erase"] as const) {
       expect(can("OWNER", permission)).toBe(true);
       expect(can("ADMIN", permission)).toBe(true);
       expect(can("STAFF", permission)).toBe(false);

@@ -8,7 +8,7 @@ test.describe("authentication journey", () => {
     const password = "une phrase de passe solide";
     const newPassword = "une nouvelle phrase solide";
 
-    // Sign up creates the establishment and lands on the dashboard.
+    // Sign up creates the establishment and opens the setup.
     await page.goto("/signup");
     await page.getByLabel("Votre prénom et nom").fill("Sabrina Costa");
     await page.getByLabel("Nom de l'établissement").fill("Institut Azulejo");
@@ -17,11 +17,13 @@ test.describe("authentication journey", () => {
     await page.getByRole("checkbox").check();
     await page.getByRole("button", { name: "Créer mon espace SOFIA" }).click();
 
-    await page.waitForURL("**/dashboard?welcome=1");
+    await page.waitForURL("**/onboarding/welcome");
+    await expect(page.getByRole("heading", { name: "Bienvenue sur SOFIA" })).toBeVisible();
+    await expect(page.getByText("Institut Azulejo · Mise en route")).toBeVisible();
+    await page.getByRole("link", { name: "Quitter" }).click();
+    await page.waitForURL("**/dashboard");
     await expect(page.getByRole("heading", { name: "Bonjour Sabrina" })).toBeVisible();
-    await expect(page.getByText("Votre espace SOFIA est prêt")).toBeVisible();
-    await expect(page.getByText("0 étape sur 8 terminée")).toBeVisible();
-    await expect(page.getByText("Institut Azulejo").first()).toBeVisible();
+    await expect(page.getByText("0 étape sur 8 validée")).toBeVisible();
 
     // Email verification: the banner disappears once the link is confirmed.
     await expect(page.getByText(`Confirmez votre adresse ${email}`)).toBeVisible();

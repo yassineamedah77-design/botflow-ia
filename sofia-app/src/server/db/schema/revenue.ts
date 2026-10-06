@@ -8,14 +8,17 @@ import { leads } from "./crm";
 import { appointments } from "./appointments";
 
 /**
- * Revenue attributed to SOFIA, one row per appointment and attribution type:
+ * Revenue attributed to SOFIA:
  *
  *   lead perdu récupéré + rendez-vous généré + no-show récupéré
  *   + ancienne cliente réactivée = revenu attribué à SOFIA
  *
- * A row is ESTIMATED until the appointment takes place (CONFIRMED) or falls
- * through (CANCELLED). Dashboards never present ESTIMATED as earned revenue,
- * and no row is created when the service price is not configured.
+ * At most one row per appointment, carrying the most specific reason
+ * (no-show recovered > client reactivated > lead recovered > appointment
+ * generated), so a sum never counts an appointment twice. A row is ESTIMATED
+ * until the appointment takes place (CONFIRMED) or falls through (CANCELLED).
+ * Dashboards never present ESTIMATED as earned revenue, and no row is created
+ * when the service price is not configured.
  */
 export const revenueAttributions = pgTable(
   "revenue_attributions",
@@ -42,8 +45,8 @@ export const revenueAttributions = pgTable(
     updatedAt: updatedAt(),
   },
   (t) => [
-    // The same appointment can never be counted twice for the same reason.
-    uniqueIndex("revenue_attributions_appointment_type_unique").on(t.appointmentId, t.attributionType),
+    // An appointment is attributed once, so revenue is never counted twice.
+    uniqueIndex("revenue_attributions_appointment_unique").on(t.appointmentId),
     index("revenue_attributions_organization_date_idx").on(t.organizationId, t.attributedAt.desc()),
     index("revenue_attributions_organization_status_idx").on(t.organizationId, t.status),
     check("revenue_attributions_amount_positive", sql`${t.amountCents} >= 0`),

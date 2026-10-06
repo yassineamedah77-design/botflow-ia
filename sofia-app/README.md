@@ -2,7 +2,9 @@
 
 SOFIA est l'assistante IA de BotFlow IA pour les instituts de beauté et cliniques esthétiques : elle répond aux demandes sur WhatsApp, Instagram et le site web, qualifie les leads, réserve les rendez-vous, relance, réduit les no-shows et mesure le chiffre d'affaires récupéré.
 
-Ce dossier contient l'application SaaS multi-établissements. Elle est indépendante du site vitrine situé à la racine du dépôt (dépendances, configuration et déploiement séparés). La **Phase 1** est livrée : architecture, base de données complète avec isolation stricte entre établissements, authentification, rôles, équipe, design system et shell applicatif. Le détail est dans [`docs/PHASE-1.md`](docs/PHASE-1.md), l'architecture cible dans [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) et le plan des phases suivantes dans [`docs/ROADMAP.md`](docs/ROADMAP.md).
+Ce dossier contient l'application SaaS multi-établissements. Elle est indépendante du site vitrine situé à la racine du dépôt (dépendances, configuration et déploiement séparés).
+
+Deux phases sont livrées. La **Phase 1** pose l'architecture, la base de données avec isolation stricte entre établissements, l'authentification, les rôles, l'équipe et le design system ([`docs/PHASE-1.md`](docs/PHASE-1.md)). La **Phase 2** apporte le CRM et son pipeline, l'import du fichier clients et la réactivation des anciennes clientes, l'inbox unifiée avec prise de main, les notifications, le dashboard du chiffre d'affaires récupéré et l'onboarding en 10 étapes ([`docs/PHASE-2.md`](docs/PHASE-2.md)). L'architecture cible est dans [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), le plan des phases suivantes dans [`docs/ROADMAP.md`](docs/ROADMAP.md), la mise en ligne sur Vercel dans [`docs/VERCEL.md`](docs/VERCEL.md).
 
 ## Prérequis
 
@@ -16,7 +18,7 @@ npm install
 npm run setup:env    # crée .env.local avec une clé de chiffrement générée
 docker compose up -d # PostgreSQL + Mailpit (sauter si tu as ton propre PostgreSQL)
 npm run db:migrate   # crée les 32 tables et applique l'isolation entre établissements
-npm run db:seed      # crée l'établissement de démonstration « Maison Éclat »
+npm run db:seed      # crée « Maison Éclat », avec trois mois d'activité de démonstration
 npm run dev
 ```
 
@@ -35,6 +37,8 @@ En développement, les emails (vérification d'adresse, mot de passe oublié, in
 | Équipe | `lea@maison-eclat.example` | Le travail quotidien, sans la gestion de l'équipe ni les réglages |
 
 Le mot de passe de développement est `Eclat-Demo-2026`. En production, le seed exige la variable `SEED_DEMO_PASSWORD` et n'utilise jamais ce mot de passe par défaut.
+
+Maison Éclat est un établissement de démonstration : trois mois de leads, de conversations, de rendez-vous et de chiffre d'affaires attribué, plus un fichier de 260 clientes importé pour la page Réactivation. Tout y est fictif (numéros de la plage réservée à la fiction par l'ARCEP, emails en `example.com`), l'écran l'indique, et une réponse envoyée depuis l'inbox y est enregistrée sans partir nulle part. `npm run db:seed -- --reset` la recrée avec des dates recalées sur le jour même.
 
 ## Commandes
 
@@ -56,7 +60,7 @@ Le mot de passe de développement est `Eclat-Demo-2026`. En production, le seed 
 
 ## Tests
 
-Les tests unitaires couvrent les permissions, la validation des formulaires, la cryptographie et les helpers. Les tests d'intégration tournent sur une vraie base PostgreSQL, avec le même rôle sans privilège que la production : c'est la seule façon de prouver que l'isolation entre établissements tient réellement. La base `sofia_test` est entièrement reconstruite à chaque lancement. Les tests de bout en bout pilotent un vrai navigateur sur le build de production : inscription, vérification d'email, mot de passe oublié, invitation d'un membre, droits par rôle, en-têtes de sécurité et affichage mobile. Ils lisent les emails écrits sur disque pour suivre les vrais liens.
+Les tests unitaires couvrent les permissions, la validation des formulaires, la lecture des fichiers clients, la cryptographie et les helpers. Les tests d'intégration tournent sur une vraie base PostgreSQL, avec le même rôle sans privilège que la production : c'est la seule façon de prouver que l'isolation entre établissements tient réellement. La base `sofia_test` est entièrement reconstruite à chaque lancement. Les tests de bout en bout pilotent un vrai navigateur sur le build de production : inscription et mise en route, vérification d'email, mot de passe oublié, invitation d'un membre, droits par rôle, CRM et Kanban, import d'un fichier clients, prise de main dans l'inbox, dashboard, notifications, en-têtes de sécurité et affichage mobile. Ils lisent les emails écrits sur disque pour suivre les vrais liens.
 
 Avant le premier lancement des tests de bout en bout, installe le navigateur avec `npx playwright install chromium`. Les noms des bases de test peuvent être changés avec `TEST_DATABASE_URL` et `E2E_DATABASE_URL` ; par sécurité, seules les bases dont le nom finit par `_test` ou `_e2e` peuvent être effacées par les tests.
 
@@ -66,14 +70,14 @@ La CI GitHub (`.github/workflows/sofia-ci.yml` à la racine du dépôt) rejoue t
 
 | Dossier | Contenu |
 |---|---|
-| `src/app` | Pages et actions serveur (App Router de Next.js) : `(auth)` pour les pages publiques, `(app)` pour l'application connectée |
+| `src/app` | Pages et actions serveur (App Router de Next.js) : `(auth)` pour les pages publiques, `(app)` pour l'application connectée, `onboarding` pour la mise en route, `api` pour la santé, l'import de fichiers et les notifications |
 | `src/components` | Interface : composants de base (`ui`), shell, formulaires, écrans métier |
 | `src/lib` | Code partagé client et serveur : rôles et permissions, validation, formatage |
 | `src/server` | Code exclusivement serveur : base de données, authentification, services métier, emails, sécurité, journaux |
 | `drizzle` | Migrations SQL versionnées |
 | `scripts` | Migration, seed, création de la base, préparation des tests |
 | `tests` | Tests unitaires, d'intégration et de bout en bout |
-| `docs` | Audit, architecture, plan des phases, bilan de la Phase 1 |
+| `docs` | Audit, architecture, plan des phases, bilans des phases, graphiques, mise en ligne sur Vercel |
 
 Trois règles structurent le code. Toute lecture ou écriture de données d'un établissement passe par `withTenant(organizationId, …)`, qui active l'isolation PostgreSQL (Row-Level Security) : une requête oubliée ou mal filtrée ne renvoie rien plutôt que les données d'un autre établissement. Les composants d'interface n'importent jamais `@/server/*`, et ESLint le vérifie. Enfin, aucune fonctionnalité n'est simulée : un module pas encore construit est affiché comme tel, et un canal non connecté apparaît comme non connecté.
 
@@ -83,7 +87,7 @@ Pour faire évoluer le schéma, modifie `src/server/db/schema`, lance `npm run d
 
 La configuration passe uniquement par des variables d'environnement, toutes documentées dans `.env.example`. Une configuration invalide est signalée dans les journaux dès le démarrage et l'application refuse alors de servir les pages. En production (`APP_ENV=production`), une URL en https et un envoi d'emails réel par SMTP sont obligatoires, parce qu'un mot de passe oublié ou une invitation qui n'arrive jamais est une panne. Avant chaque mise en production, `npm run db:migrate` (ou `node scripts/migrate.cjs` dans l'image Docker) doit tourner avant que la nouvelle version ne reçoive du trafic.
 
-**Sur Vercel**, avec une base PostgreSQL managée en région européenne (Neon ou Supabase, par exemple), crée le projet avec `sofia-app` comme dossier racine, renseigne les variables d'environnement et lance les migrations depuis ta CI ou ton poste avant de promouvoir le déploiement. Utilise une base distincte par environnement, pour qu'un déploiement de prévisualisation ne touche jamais aux données de production.
+**Sur Vercel**, avec une base PostgreSQL managée en région européenne : le pas-à-pas complet (base Neon à Francfort, rôle sans privilège, variables, migrations, domaine, emails) est dans [`docs/VERCEL.md`](docs/VERCEL.md). `vercel.json` place les fonctions à Francfort, à côté de la base. Utilise une base distincte par environnement, pour qu'un déploiement de prévisualisation ne touche jamais aux données de production.
 
 **Avec Docker**, sur n'importe quel serveur (Scaleway, OVH, Hetzner, Fly.io, Railway…), derrière un reverse proxy qui gère le https (Caddy, Traefik, nginx) :
 

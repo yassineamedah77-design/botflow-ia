@@ -1,225 +1,375 @@
-import { CircleCheckIcon, GlobeIcon, PartyPopperIcon, UsersIcon } from "lucide-react";
+import { CircleCheckIcon, FlaskConicalIcon, UploadIcon } from "lucide-react";
 import type { Metadata } from "next";
 import Link from "next/link";
 
 import { PageHeader } from "@/components/app/page-header";
-import { channelStatusLabel, StatusDot } from "@/components/app/status-dot";
-import { InstagramIcon, WhatsAppIcon } from "@/components/brand/channel-icons";
-import { SofiaMark } from "@/components/brand/logo";
+import { ChannelPerformanceCard } from "@/components/dashboard/channel-performance";
+import { ColumnChart, type ChartDatum } from "@/components/dashboard/column-chart";
+import { ConversionFunnel } from "@/components/dashboard/conversion-funnel";
+import { KpiGroup, type KpiItem } from "@/components/dashboard/kpi";
+import { PeriodScope } from "@/components/dashboard/period-scope";
 import { RevenueHero } from "@/components/dashboard/revenue-hero";
-import { SetupChecklist, type ChecklistItem } from "@/components/dashboard/setup-checklist";
+import { SetupProgress } from "@/components/dashboard/setup-checklist";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
-import { firstName } from "@/lib/format";
+import { formatResponseTime, parseDashboardPeriod, relativeChange, resolveDashboardPeriod, type Delta } from "@/lib/dashboard";
+import { firstName, formatCurrency, formatNumber, formatPercent } from "@/lib/format";
+import { setupProgress } from "@/lib/onboarding";
 import { requireTenant } from "@/server/auth/dal";
 import { withTenant } from "@/server/db/context";
-import { listMembers, listPendingInvitations } from "@/server/services/members";
-import { getSetupChecklist, listIntegrations } from "@/server/services/organizations";
-import { getRevenueSummary, monthRange } from "@/server/services/revenue";
+import { getChannelPerformance, getDashboardMetrics, getDashboardTrends, type DashboardMetrics, type TrendPoint } from "@/server/services/dashboard";
+import { getSetupChecklist } from "@/server/services/organizations";
+import { getPendingRevenue } from "@/server/services/revenue";
 
 export const metadata: Metadata = { title: "Dashboard" };
+
+const count = (value: number) => formatNumber(value);
+const percent = (value: number | null) => (value === null ? "—" : formatPercent(value));
+
+function change(current: number, previous: number, goodWhen: Delta["goodWhen"] = "up"): Delta {
+  return { value: relativeChange(current, previous), unit: "percent", goodWhen, fromZero: previous === 0 && current > 0 };
+}
+
+function kpiGroups(current: DashboardMetrics, previous: DashboardMetrics, currency: string): Array<{ title: string; items: KpiItem[] }> {
+  return [
+    {
+      title: "Acquisition",
+      items: [
+        {
+          key: "incoming",
+          label: "Leads entrants",
+          value: count(current.incomingLeads),
+          hint: "Nouveaux contacts arrivés pendant la période (WhatsApp, Instagram, site, saisie, recommandation). Les clientes importées depuis votre fichier ne sont pas comptées.",
+          delta: change(current.incomingLeads, previous.incomingLeads),
+        },
+        {
+          key: "qualified",
+          label: "Leads qualifiés",
+          value: count(current.qualifiedLeads),
+          hint: "Parmi les leads entrants de la période, ceux dont le besoin a été identifié (qualifiés, chauds ou ayant réservé) avant la fin de la période.",
+          delta: change(current.qualifiedLeads, previous.qualifiedLeads),
+        },
+        {
+          key: "conversion",
+          label: "Taux de conversion",
+          value: percent(current.conversionRate),
+          hint: "Part des leads entrants de la période qui ont réservé un rendez-vous avant la fin de la période. L'écart avec la période précédente est en points.",
+          delta: {
+            value: current.conversionRate !== null && previous.conversionRate !== null ? current.conversionRate - previous.conversionRate : null,
+            unit: "points",
+            goodWhen: "up",
+          },
+        },
+        {
+          key: "response",
+          label: "Temps de réponse moyen",
+          value: current.responseTimeSeconds === null ? "—" : formatResponseTime(current.responseTimeSeconds),
+          hint: "Délai moyen entre le dernier message d'une cliente et la réponse qui suit, de SOFIA ou de votre équipe. Les relances et rappels automatiques ne sont pas comptés.",
+          delta: {
+            value: current.responseTimeSeconds !== null && previous.responseTimeSeconds ? relativeChange(current.responseTimeSeconds, previous.responseTimeSeconds) : null,
+            unit: "percent",
+            goodWhen: "down",
+          },
+        },
+      ],
+    },
+    {
+      title: "Rendez-vous",
+      items: [
+        {
+          key: "generated",
+          label: "RDV générés",
+          value: count(current.appointmentsGenerated),
+          hint: "Rendez-vous réservés par SOFIA pendant la période. Déplacer un rendez-vous n'en crée pas un nouveau ; reprendre rendez-vous après un no-show, si.",
+          delta: change(current.appointmentsGenerated, previous.appointmentsGenerated),
+        },
+        {
+          key: "honoured",
+          label: "RDV confirmés",
+          value: count(current.appointmentsHonoured),
+          hint: "Rendez-vous réservés par SOFIA et honorés pendant la période : la cliente est venue. C'est ce qui rend un montant « confirmé ».",
+          delta: change(current.appointmentsHonoured, previous.appointmentsHonoured),
+        },
+        {
+          key: "noshows",
+          label: "No-shows",
+          value: count(current.noShows),
+          hint: "Rendez-vous manqués sans prévenir pendant la période, quelle que soit leur origine. Une baisse est une bonne nouvelle.",
+          delta: change(current.noShows, previous.noShows, "down"),
+        },
+        {
+          key: "noshows-recovered",
+          label: "No-shows récupérés",
+          value: count(current.noShowsRecovered),
+          hint: "Nouveaux rendez-vous pris avec SOFIA pendant la période pour remplacer un rendez-vous manqué.",
+          delta: change(current.noShowsRecovered, previous.noShowsRecovered),
+        },
+      ],
+    },
+    {
+      title: "Revenus et fidélisation",
+      items: [
+        {
+          key: "revenue-generated",
+          label: "CA généré",
+          value: formatCurrency(current.revenueGeneratedCents, currency),
+          hint: "Prix des rendez-vous honorés pendant la période, quelle que soit leur origine (SOFIA ou votre équipe). Les rendez-vous sans prix renseigné ne sont pas comptés.",
+          delta: change(current.revenueGeneratedCents, previous.revenueGeneratedCents),
+        },
+        {
+          key: "revenue-recovered",
+          label: "CA récupéré",
+          value: formatCurrency(current.revenue.totalCents, currency),
+          hint: "Part du CA due à SOFIA : rendez-vous générés, leads récupérés, no-shows récupérés et clientes réactivées, honorés pendant la période.",
+          delta: change(current.revenue.totalCents, previous.revenue.totalCents),
+        },
+        {
+          key: "leads-recovered",
+          label: "Leads récupérés",
+          value: count(current.leadsRecovered),
+          hint: "Leads qui ne répondaient plus et qui ont réservé avec SOFIA dans les 30 jours suivant une relance.",
+          delta: change(current.leadsRecovered, previous.leadsRecovered),
+        },
+        {
+          key: "reactivated",
+          label: "Clientes réactivées",
+          value: count(current.clientsReactivated),
+          hint: "Anciennes clientes qui ont repris rendez-vous pendant la période après une campagne de réactivation.",
+          delta: change(current.clientsReactivated, previous.clientsReactivated),
+        },
+      ],
+    },
+  ];
+}
+
+function chartData(
+  points: TrendPoint[],
+  timeZone: string,
+  unit: "day" | "week" | "month",
+  options: { note?: (point: TrendPoint) => string | undefined } = {},
+): ChartDatum[] {
+  const tick = new Intl.DateTimeFormat("fr-FR", unit === "month" ? { month: "short", timeZone } : { day: "numeric", month: "short", timeZone });
+  const label = new Intl.DateTimeFormat(
+    "fr-FR",
+    unit === "month"
+      ? { month: "long", year: "numeric", timeZone }
+      : unit === "week"
+        ? { day: "numeric", month: "long", timeZone }
+        : { weekday: "long", day: "numeric", month: "long", timeZone },
+  );
+  return points.map((point, index) => {
+    const text = label.format(point.start);
+    const current = index === points.length - 1 ? (unit === "week" ? "" : " (en cours)") : "";
+    return {
+      key: point.start.toISOString(),
+      tick: tick.format(point.start),
+      label: unit === "week" ? `Semaine du ${text}` : `${text.charAt(0).toUpperCase()}${text.slice(1)}${current}`,
+      values: point.values,
+      note: options.note?.(point),
+    };
+  });
+}
 
 export default async function DashboardPage(props: PageProps<"/dashboard">) {
   const ctx = await requireTenant();
   const searchParams = await props.searchParams;
-  const organizationId = ctx.organization.id;
+  const { id: organizationId, timezone, currency, isDemo } = ctx.organization;
   const now = new Date();
+  const period = resolveDashboardPeriod(parseDashboardPeriod(searchParams.period), now, timezone);
 
-  // A transaction holds a single connection: queries run one after the other.
-  const data = await withTenant(organizationId, async (tx) => ({
-    checklist: await getSetupChecklist(tx, organizationId),
-    revenue: await getRevenueSummary(tx, organizationId, monthRange(now, ctx.organization.timezone)),
-    members: await listMembers(tx, organizationId),
-    invitations: await listPendingInvitations(tx, organizationId),
-    integrations: await listIntegrations(tx, organizationId),
-  }));
+  // Independent reads, each in its own transaction, run side by side.
+  const [current, previous, trends, channels, rest] = await Promise.all([
+    withTenant(organizationId, (tx) => getDashboardMetrics(tx, organizationId, period.current)),
+    withTenant(organizationId, (tx) => getDashboardMetrics(tx, organizationId, period.previous)),
+    withTenant(organizationId, (tx) => getDashboardTrends(tx, organizationId, now, timezone)),
+    withTenant(organizationId, (tx) => getChannelPerformance(tx, organizationId, period.current)),
+    withTenant(organizationId, async (tx) => ({
+      checklist: await getSetupChecklist(tx, organizationId),
+      pending: await getPendingRevenue(tx, organizationId),
+    })),
+  ]);
 
-  const statusOf = (provider: string) =>
-    data.integrations.find((integration) => integration.provider === provider)?.status ?? "NOT_CONNECTED";
-
-  const items: ChecklistItem[] = [
-    {
-      key: "profile",
-      label: "Profil de l'établissement",
-      done: data.checklist.profile,
-      description: "Adresse, téléphone et présentation que SOFIA communique à vos clientes.",
-      href: "/knowledge",
-    },
-    {
-      key: "services",
-      label: "Prestations et tarifs",
-      done: data.checklist.services,
-      description: "SOFIA ne donne que les prix et durées que vous avez renseignés.",
-      href: "/knowledge",
-    },
-    {
-      key: "hours",
-      label: "Horaires d'ouverture",
-      done: data.checklist.hours,
-      description: "Utilisés pour proposer des créneaux réels, jamais inventés.",
-      href: "/knowledge",
-    },
-    {
-      key: "calendar",
-      label: "Calendrier",
-      done: data.checklist.calendar,
-      description: "Agenda SOFIA, Google Calendar ou Calendly pour réserver sans double booking.",
-      phase: 7,
-    },
-    {
-      key: "whatsapp",
-      label: "WhatsApp",
-      done: data.checklist.whatsapp,
-      description: "Connexion officielle WhatsApp Business Platform (Meta).",
-      phase: 5,
-    },
-    {
-      key: "instagram",
-      label: "Instagram",
-      done: data.checklist.instagram,
-      description: "Messages privés Instagram via l'API officielle Meta.",
-      phase: 6,
-    },
-    {
-      key: "widget",
-      label: "Widget du site",
-      done: data.checklist.widget,
-      description: "Une ligne de code à ajouter sur votre site.",
-      phase: 4,
-    },
-    {
-      key: "sofia",
-      label: "SOFIA activée",
-      done: data.checklist.sofiaActive,
-      description: "SOFIA commence à répondre à vos clientes, 24 h/24.",
-      phase: 3,
-    },
-  ];
-
-  const monthLabel = new Intl.DateTimeFormat("fr-FR", {
-    month: "long",
-    year: "numeric",
-    timeZone: ctx.organization.timezone,
-  }).format(now);
-
-  const channels = [
-    { label: "WhatsApp", icon: WhatsAppIcon, status: statusOf("WHATSAPP_CLOUD"), href: "/channels/whatsapp" },
-    { label: "Instagram", icon: InstagramIcon, status: statusOf("INSTAGRAM_MESSAGING"), href: "/channels/instagram" },
-    { label: "Site web", icon: GlobeIcon, status: statusOf("WEBSITE_WIDGET"), href: "/channels/website" },
-  ];
+  const setup = setupProgress(rest.checklist);
+  const hasActivity =
+    trends.conversationsPerDay.some((point) => point.values.conversations! > 0) ||
+    trends.leadsPerWeek.some((point) => point.values.leads! > 0) ||
+    trends.appointmentsPerWeek.some((point) => Object.values(point.values).some((value) => value > 0));
 
   return (
     <>
       <PageHeader
         eyebrow={ctx.organization.name}
         title={`Bonjour ${firstName(ctx.user.name)}`}
-        description="Voici l'état de SOFIA pour votre établissement. Les indicateurs de conversations, leads et rendez-vous arrivent avec l'inbox et le CRM."
+        description="Ce que SOFIA vous rapporte, et l'activité de votre établissement."
       />
 
-      {searchParams.welcome ? (
-        <Alert variant="sofia" className="mb-6">
-          <PartyPopperIcon aria-hidden />
-          <AlertDescription className="text-sofia-strong">
-            Votre espace SOFIA est prêt. Suivez la mise en route ci-dessous : chaque étape se valide automatiquement.
-          </AlertDescription>
-        </Alert>
-      ) : null}
-      {searchParams.joined ? (
-        <Alert variant="success" className="mb-6">
-          <CircleCheckIcon aria-hidden />
-          <AlertDescription className="text-success">Vous avez rejoint l&apos;équipe de {ctx.organization.name}.</AlertDescription>
-        </Alert>
-      ) : null}
-      {searchParams.password ? (
-        <Alert variant="success" className="mb-6">
-          <CircleCheckIcon aria-hidden />
-          <AlertDescription className="text-success">Votre mot de passe a été modifié et vos autres sessions déconnectées.</AlertDescription>
-        </Alert>
-      ) : null}
+      <div className="space-y-6">
+        {isDemo ? (
+          <Alert variant="sofia">
+            <FlaskConicalIcon aria-hidden />
+            <AlertDescription className="text-sofia-strong">
+              Établissement de démonstration : les clientes, conversations et montants sont fictifs, et aucun message n&apos;est réellement envoyé.
+            </AlertDescription>
+          </Alert>
+        ) : null}
+        {searchParams.joined ? (
+          <Alert variant="success">
+            <CircleCheckIcon aria-hidden />
+            <AlertDescription className="text-success">Vous avez rejoint l&apos;équipe de {ctx.organization.name}.</AlertDescription>
+          </Alert>
+        ) : null}
+        {searchParams.password ? (
+          <Alert variant="success">
+            <CircleCheckIcon aria-hidden />
+            <AlertDescription className="text-success">Votre mot de passe a été modifié et vos autres sessions déconnectées.</AlertDescription>
+          </Alert>
+        ) : null}
 
-      <div className="grid gap-6 lg:grid-cols-3">
-        <div className="space-y-6 lg:col-span-2">
-          <RevenueHero
-            confirmedCents={data.revenue.confirmedCents}
-            estimatedCents={data.revenue.estimatedCents}
-            attributedAppointments={data.revenue.attributedAppointments}
-            monthLabel={monthLabel.charAt(0).toUpperCase() + monthLabel.slice(1)}
-            currency="EUR"
-          />
-          <SetupChecklist items={items} />
-        </div>
+        {setup.complete ? null : <SetupProgress state={rest.checklist} />}
 
-        <div className="space-y-6">
-          <Card>
-            <CardHeader>
-              <div className="flex items-center gap-3">
-                <SofiaMark className="size-9 text-sm" />
-                <div>
-                  <CardTitle>SOFIA</CardTitle>
-                  <CardDescription>
-                    {ctx.organization.sofiaStatus === "ACTIVE"
-                      ? "Active, elle répond à vos clientes."
-                      : ctx.organization.sofiaStatus === "PAUSED"
-                        ? "En pause : aucune réponse automatique."
-                        : "Pas encore activée."}
-                  </CardDescription>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent className="text-[0.8125rem] leading-relaxed text-muted-foreground">
-              SOFIA s&apos;active une fois vos prestations renseignées et au moins un canal connecté. Elle ne répond qu&apos;à
-              partir des informations de votre établissement et passe la main à votre équipe dès qu&apos;une question
-              sort de son cadre.
-            </CardContent>
-          </Card>
+        <PeriodScope
+          period={period.period}
+          heading={
+            <div>
+              <h2 id="results-title" className="text-lg font-semibold">
+                Résultats
+              </h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {period.label}, {period.comparison}
+              </p>
+            </div>
+          }
+        >
+          <div className="space-y-8">
+            <div className="grid gap-6 xl:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)]">
+              <RevenueHero
+                revenue={current.revenue}
+                previousCents={previous.revenue.totalCents}
+                pending={rest.pending}
+                periodLabel={period.label}
+                comparison={period.comparison}
+                currency={currency}
+              />
+              <ConversionFunnel
+                incoming={current.incomingLeads}
+                qualified={current.qualifiedLeads}
+                booked={current.bookedLeads}
+                showed={current.showedLeads}
+                periodLabel={period.label}
+              />
+            </div>
 
-          <Card>
-            <CardHeader>
-              <CardTitle>Canaux</CardTitle>
-              <CardDescription>Statut réel de chaque connexion.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ul className="divide-y divide-border">
-                {channels.map((channel) => (
-                  <li key={channel.label}>
-                    <Link
-                      href={channel.href}
-                      className="-mx-2 flex items-center gap-3 rounded-lg px-2 py-2.5 transition-colors hover:bg-muted/60"
-                    >
-                      <channel.icon className="size-4 text-foreground/70" />
-                      <span className="flex-1 text-sm font-medium">{channel.label}</span>
-                      <span className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <StatusDot status={channel.status} />
-                        {channelStatusLabel(channel.status)}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </CardContent>
-          </Card>
+            {kpiGroups(current, previous, currency).map((group) => (
+              <KpiGroup key={group.title} title={group.title} items={group.items} comparison={period.comparison} />
+            ))}
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <UsersIcon className="size-4 text-muted-foreground" aria-hidden />
-                Équipe
-              </CardTitle>
-              <CardDescription>
-                {data.members.length} membre{data.members.length > 1 ? "s" : ""}
-                {data.invitations.length > 0
-                  ? ` · ${data.invitations.length} invitation${data.invitations.length > 1 ? "s" : ""} en attente`
-                  : ""}
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Link href="/team" className={buttonVariants({ variant: "outline", size: "sm", className: "w-full" })}>
-                {ctx.can("members:invite") ? "Inviter et gérer l'équipe" : "Voir l'équipe"}
-              </Link>
-            </CardContent>
-          </Card>
-        </div>
+            <ChannelPerformanceCard rows={channels} currency={currency} periodLabel={period.label} />
+          </div>
+        </PeriodScope>
+
+        <section aria-labelledby="trends-title" className="pt-2">
+          <div className="mb-5">
+            <h2 id="trends-title" className="text-lg font-semibold">
+              Évolution
+            </h2>
+            <p className="mt-1 text-sm text-muted-foreground">Les dernières semaines, quelle que soit la période choisie ci-dessus.</p>
+          </div>
+
+          {hasActivity ? (
+            <div className="grid gap-6 lg:grid-cols-2">
+              <Card className="lg:col-span-2">
+                <CardHeader>
+                  <CardTitle>Conversations par jour</CardTitle>
+                  <CardDescription>Conversations où une cliente a écrit, sur les 30 derniers jours.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ColumnChart
+                    title="Conversations par jour"
+                    data={chartData(trends.conversationsPerDay, timezone, "day")}
+                    series={[{ key: "conversations", label: "Conversations", color: "var(--viz-ink)" }]}
+                    tickEvery={7}
+                  />
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Leads par semaine</CardTitle>
+                  <CardDescription>Nouveaux contacts sur 12 semaines, hors fichier clients importé.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ColumnChart
+                    title="Leads par semaine"
+                    data={chartData(trends.leadsPerWeek, timezone, "week")}
+                    series={[{ key: "leads", label: "Leads", color: "var(--viz-ink)" }]}
+                    tickEvery={3}
+                  />
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Rendez-vous par semaine</CardTitle>
+                  <CardDescription>Rendez-vous pris par SOFIA, à la date du rendez-vous : 8 semaines passées et 4 à venir.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ColumnChart
+                    title="Rendez-vous par semaine"
+                    data={chartData(trends.appointmentsPerWeek, timezone, "week", {
+                      note: (point) => {
+                        const noShow = point.values.noShow ?? 0;
+                        const cancelled = (point.values.missed ?? 0) - noShow;
+                        const parts = [
+                          noShow ? `${noShow} no-show${noShow > 1 ? "s" : ""}` : "",
+                          cancelled ? `${cancelled} annulation${cancelled > 1 ? "s" : ""}` : "",
+                        ].filter(Boolean);
+                        return parts.length ? `Non honorés : ${parts.join(", ")}` : undefined;
+                      },
+                    })}
+                    series={[
+                      { key: "honoured", label: "Honorés", color: "var(--viz-sofia)" },
+                      { key: "missed", label: "Non honorés", color: "var(--viz-muted)" },
+                      { key: "planned", label: "Prévus", color: "var(--viz-planned)" },
+                    ]}
+                    tickEvery={3}
+                  />
+                </CardContent>
+              </Card>
+
+              <Card className="lg:col-span-2">
+                <CardHeader>
+                  <CardTitle>CA récupéré par mois</CardTitle>
+                  <CardDescription>Montants confirmés (rendez-vous honorés) sur 6 mois, mois en cours compris.</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <ColumnChart
+                    title="CA récupéré par mois"
+                    data={chartData(trends.recoveredPerMonth, timezone, "month")}
+                    series={[{ key: "recovered", label: "CA récupéré", color: "var(--viz-sofia)" }]}
+                    format={{ kind: "money", currency }}
+                    annotateLast
+                  />
+                </CardContent>
+              </Card>
+            </div>
+          ) : (
+            <Card>
+              <CardContent className="flex flex-col items-start gap-4 py-2 sm:flex-row sm:items-center sm:justify-between">
+                <p className="max-w-xl text-sm leading-relaxed text-muted-foreground">
+                  Les graphiques se rempliront dès que SOFIA échangera avec vos clientes. En attendant, importez votre fichier clients : SOFIA
+                  repère tout de suite les clientes à réactiver.
+                </p>
+                {ctx.can("leads:import") ? (
+                  <Link href="/leads/import" className={buttonVariants({ variant: "outline", size: "sm" })}>
+                    <UploadIcon aria-hidden />
+                    Importer mon fichier clients
+                  </Link>
+                ) : null}
+              </CardContent>
+            </Card>
+          )}
+        </section>
       </div>
     </>
   );

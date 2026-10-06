@@ -51,11 +51,14 @@
   --color-info: var(--info);
   --color-info-soft: var(--info-soft);
 
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
+  --color-viz-ink: var(--viz-ink);
+  --color-viz-sofia: var(--viz-sofia);
+  --color-viz-planned: var(--viz-planned);
+  --color-viz-muted: var(--viz-muted);
+  --color-viz-step-1: var(--viz-step-1);
+  --color-viz-step-2: var(--viz-step-2);
+  --color-viz-step-3: var(--viz-step-3);
+  --color-viz-step-4: var(--viz-step-4);
 
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
@@ -127,12 +130,21 @@
   --info: #3a6ea5;
   --info-soft: #e8eff7;
 
-  /* Charts */
-  --chart-1: #d97757;
-  --chart-2: #161514;
-  --chart-3: #b9a88f;
-  --chart-4: #7a8f86;
-  --chart-5: #d8cbb8;
+  /*
+   * Data visualisation, checked with the palette validator on the card
+   * surface (#ffffff): colour-blind separation, contrast, lightness steps.
+   * Ink for volumes, SOFIA orange for what SOFIA earned, blue for what is
+   * still to come, warm grey to de-emphasise. The funnel is an ordinal ramp
+   * of the orange (one hue, light to dark). See docs/DATAVIZ.md.
+   */
+  --viz-ink: #3a3938;
+  --viz-sofia: #d97757;
+  --viz-planned: #3a6ea5;
+  --viz-muted: #b9b4ab;
+  --viz-step-1: #e8987a;
+  --viz-step-2: #d97757;
+  --viz-step-3: #b5593a;
+  --viz-step-4: #8c4128;
 
   /* Sidebar */
   --sidebar: #f5f1eb;

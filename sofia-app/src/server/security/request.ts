@@ -27,3 +27,25 @@ export async function getRequestMeta(): Promise<RequestMeta> {
     userAgent: source.get("user-agent")?.slice(0, 512) ?? null,
   };
 }
+
+/**
+ * Route handlers that change data with the session cookie only accept
+ * requests sent by the application itself (same Origin), like Server Actions.
+ */
+export function isSameOriginRequest(request: Request): boolean {
+  const origin = request.headers.get("origin");
+  if (!origin) return false;
+  let originHost: string;
+  try {
+    originHost = new URL(origin).host;
+  } catch {
+    return false;
+  }
+  const host = request.headers.get("x-forwarded-host")?.split(",")[0]?.trim() || request.headers.get("host");
+  if (originHost === host) return true;
+  try {
+    return originHost === new URL(env().APP_URL).host;
+  } catch {
+    return false;
+  }
+}

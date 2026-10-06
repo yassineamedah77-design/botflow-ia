@@ -10,7 +10,7 @@ import { escapeHtml, invitationEmail, passwordResetEmail } from "@/server/email/
 import { parseEnv } from "@/server/env";
 import { redact, REDACTED } from "@/server/observability/logger";
 import { slugify } from "@/server/services/organizations";
-import { monthRange } from "@/server/services/revenue";
+import { startOfZonedDay, startOfZonedWeek, zonedMonthRange, zonedParts, zonedTimeToUtc } from "@/lib/timezone";
 
 describe("post-login redirects", () => {
   it("keeps same-site paths", () => {
@@ -60,17 +60,52 @@ describe("establishment slugs", () => {
 
 describe("monthly revenue window", () => {
   it("uses the establishment's local midnight (Paris, summer and winter time)", () => {
-    const october = monthRange(new Date("2026-10-15T12:00:00Z"), "Europe/Paris");
+    const october = zonedMonthRange(new Date("2026-10-15T12:00:00Z"), "Europe/Paris");
     expect(october.from.toISOString()).toBe("2026-09-30T22:00:00.000Z");
     expect(october.to.toISOString()).toBe("2026-10-31T23:00:00.000Z");
-    const december = monthRange(new Date("2026-12-31T23:30:00Z"), "Europe/Paris");
+    const december = zonedMonthRange(new Date("2026-12-31T23:30:00Z"), "Europe/Paris");
     expect(december.from.toISOString()).toBe("2026-12-31T23:00:00.000Z");
   });
 
   it("handles Lisbon and year boundaries", () => {
-    const january = monthRange(new Date("2027-01-01T00:30:00Z"), "Europe/Lisbon");
+    const january = zonedMonthRange(new Date("2027-01-01T00:30:00Z"), "Europe/Lisbon");
     expect(january.from.toISOString()).toBe("2027-01-01T00:00:00.000Z");
     expect(january.to.toISOString()).toBe("2027-02-01T00:00:00.000Z");
+  });
+
+  it("moves by whole months, including the previous one", () => {
+    const september = zonedMonthRange(new Date("2026-10-15T12:00:00Z"), "Europe/Paris", -1);
+    expect(september.from.toISOString()).toBe("2026-08-31T22:00:00.000Z");
+    expect(september.to.toISOString()).toBe("2026-09-30T22:00:00.000Z");
+  });
+});
+
+describe("establishment time zone", () => {
+  it("converts local wall-clock times across daylight saving changes", () => {
+    // Paris: winter UTC+1, summer UTC+2 (changes on 2026-03-29 and 2026-10-25).
+    expect(zonedTimeToUtc({ year: 2026, month: 3, day: 28, hour: 14 }, "Europe/Paris").toISOString()).toBe(
+      "2026-03-28T13:00:00.000Z",
+    );
+    expect(zonedTimeToUtc({ year: 2026, month: 3, day: 30, hour: 14 }, "Europe/Paris").toISOString()).toBe(
+      "2026-03-30T12:00:00.000Z",
+    );
+    expect(zonedTimeToUtc({ year: 2026, month: 10, day: 26, hour: 9, minute: 30 }, "Europe/Paris").toISOString()).toBe(
+      "2026-10-26T08:30:00.000Z",
+    );
+  });
+
+  it("reads local calendar parts and rolls days over month ends", () => {
+    const parts = zonedParts(new Date("2026-10-31T23:30:00Z"), "Europe/Paris");
+    expect(parts).toMatchObject({ year: 2026, month: 11, day: 1, weekday: 7, hour: 0, minute: 30 });
+    expect(zonedTimeToUtc({ year: 2026, month: 1, day: 32 }, "Europe/Paris").toISOString()).toBe("2026-01-31T23:00:00.000Z");
+  });
+
+  it("finds local day and week starts", () => {
+    const thursday = new Date("2026-10-08T21:30:00Z"); // 23:30 in Paris
+    expect(startOfZonedDay(thursday, "Europe/Paris").toISOString()).toBe("2026-10-07T22:00:00.000Z");
+    expect(startOfZonedDay(thursday, "Europe/Paris", 1).toISOString()).toBe("2026-10-08T22:00:00.000Z");
+    expect(startOfZonedWeek(thursday, "Europe/Paris").toISOString()).toBe("2026-10-04T22:00:00.000Z");
+    expect(startOfZonedWeek(thursday, "Europe/Paris", -1).toISOString()).toBe("2026-09-27T22:00:00.000Z");
   });
 });
 

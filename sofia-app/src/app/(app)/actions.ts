@@ -18,6 +18,7 @@ import {
   sendVerificationEmail,
   updateProfile,
 } from "@/server/auth/service";
+import { withTenant } from "@/server/db/context";
 import { env } from "@/server/env";
 import { AppError } from "@/server/errors";
 import { getRequestMeta } from "@/server/security/request";
@@ -28,6 +29,7 @@ import {
   resendInvitation,
   revokeInvitation,
 } from "@/server/services/members";
+import { markNotificationsRead } from "@/server/services/notifications";
 import {
   createOrganizationForUser,
   switchActiveOrganization,
@@ -57,7 +59,7 @@ export async function createOrganizationAction(_previous: ActionState, formData:
   } catch (error) {
     return actionFailure(error, formData);
   }
-  redirect("/dashboard?welcome=1");
+  redirect("/onboarding/welcome");
 }
 
 export async function updateOrganizationSettingsAction(_previous: ActionState, formData: FormData): Promise<ActionState> {
@@ -228,4 +230,20 @@ export async function removeMemberAction(membershipId: string): Promise<ActionSt
   revalidatePath("/", "layout");
   if (leftOrganization) redirect("/dashboard");
   return { status: "success", message: "Membre retiré de l'équipe." };
+}
+
+// ─── Notifications ──────────────────────────────────────────────────────────
+
+/**
+ * Marks the current user's notifications as read: the given ones, or all of
+ * them. The bell updates itself at once, so no page is rendered again.
+ */
+export async function markNotificationsReadAction(ids?: string[]): Promise<void> {
+  if (ids !== undefined && (!Array.isArray(ids) || ids.length > 100 || !ids.every((id) => uuid.safeParse(id).success))) return;
+  try {
+    const ctx = await getActionTenant();
+    await withTenant(ctx.organization.id, (tx) => markNotificationsRead(tx, ctx.organization.id, ctx.user.id, ids));
+  } catch {
+    // Reading state is cosmetic: never surface an error for it.
+  }
 }

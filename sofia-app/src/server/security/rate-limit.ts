@@ -30,6 +30,8 @@ export const rateLimitPolicies = {
   verificationEmailByUser: { limit: 3, windowSeconds: 60 * 60 },
   invitationsByOrganization: { limit: 50, windowSeconds: 24 * 60 * 60 },
   invitationAcceptByIp: { limit: 20, windowSeconds: 60 * 60 },
+  /** Client file checks and imports per establishment (each one reads a whole file). */
+  contactImportsByOrganization: { limit: 30, windowSeconds: 60 * 60 },
 } as const satisfies Record<string, RateLimitPolicy>;
 
 export type RateLimitPolicyName = keyof typeof rateLimitPolicies;

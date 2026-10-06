@@ -130,6 +130,9 @@ export const priceType = pgEnum("price_type", ["FIXED", "FROM", "ON_CONSULTATION
 
 export const consentStatus = pgEnum("consent_status", ["UNKNOWN", "GRANTED", "DENIED", "WITHDRAWN"]);
 
+/** Import of an establishment's existing client file (CSV export of its previous software). */
+export const contactImportStatus = pgEnum("contact_import_status", ["PROCESSING", "COMPLETED", "FAILED"]);
+
 export const consentPurpose = pgEnum("consent_purpose", ["MARKETING", "REMINDERS", "DATA_PROCESSING"]);
 
 export const automationType = pgEnum("automation_type", [
@@ -194,6 +197,8 @@ export const notificationType = pgEnum("notification_type", [
   "NO_SHOW",
   "INTEGRATION_ERROR",
   "CAMPAIGN_COMPLETED",
+  "LEAD_ASSIGNED",
+  "IMPORT_COMPLETED",
   "SYSTEM",
 ]);
 

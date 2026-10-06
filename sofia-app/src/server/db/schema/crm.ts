@@ -18,12 +18,48 @@ import {
   channel,
   consentPurpose,
   consentStatus,
+  contactImportStatus,
   intentLevel,
   leadSource,
   leadStatus,
 } from "./enums";
 import { organizationId, users } from "./identity";
 import { services } from "./knowledge";
+
+/**
+ * One import of an establishment's existing client file. Former clients feed
+ * the reactivation segments ("jamais revenues", "perdues"). The report keeps
+ * counts and row-level reasons only, never the imported personal data itself.
+ */
+export const contactImports = pgTable(
+  "contact_imports",
+  {
+    id: primaryId(),
+    organizationId: organizationId(),
+    fileName: text().notNull(),
+    status: contactImportStatus().notNull().default("PROCESSING"),
+    totalRows: integer().notNull().default(0),
+    createdCount: integer().notNull().default(0),
+    updatedCount: integer().notNull().default(0),
+    skippedCount: integer().notNull().default(0),
+    /** Lead field → column header of the file, e.g. { phone: "Portable" }. */
+    mapping: jsonb().$type<Record<string, string>>().notNull().default({}),
+    /** First rejected rows and why (row number + reason), for the import report. */
+    errors: jsonb().$type<Array<{ row: number; reason: string }>>().notNull().default([]),
+    /** Declaration accepted by the user before importing (existing clients, informed, able to object). */
+    declaration: text().notNull(),
+    createdByUserId: uuid().references(() => users.id, { onDelete: "set null" }),
+    createdAt: createdAt(),
+    completedAt: timestamptz(),
+  },
+  (t) => [
+    index("contact_imports_organization_created_idx").on(t.organizationId, t.createdAt.desc()),
+    check(
+      "contact_imports_counts_positive",
+      sql`${t.totalRows} >= 0 AND ${t.createdCount} >= 0 AND ${t.updatedCount} >= 0 AND ${t.skippedCount} >= 0`,
+    ),
+  ],
+);
 
 /**
  * A lead is a person in an establishment's CRM, from first contact to loyal
@@ -59,7 +95,16 @@ export const leads = pgTable(
     assignedToUserId: uuid().references(() => users.id, { onDelete: "set null" }),
     lastInteractionAt: timestamptz(),
     nextFollowUpAt: timestamptz(),
+    /** Last visit (past appointment), from the imported client file or SOFIA's agenda. Drives reactivation. */
     lastAppointmentAt: timestamptz(),
+    firstVisitAt: timestamptz(),
+    /** Visits at the establishment: 1 = came once and never returned. */
+    visitCount: integer().notNull().default(0),
+    /** Total spent at the establishment (client file). Never counted as revenue recovered by SOFIA. */
+    lifetimeValueCents: integer(),
+    /** Client id in the establishment's previous software, so a re-import updates instead of duplicating. */
+    externalId: text(),
+    importId: uuid().references(() => contactImports.id, { onDelete: "set null" }),
     marketingConsent: consentStatus().notNull().default("UNKNOWN"),
     marketingConsentUpdatedAt: timestamptz(),
     /** Set when the person asked to stop receiving messages (STOP). No outbound marketing after this. */
@@ -87,8 +132,16 @@ export const leads = pgTable(
     uniqueIndex("leads_organization_whatsapp_unique")
       .on(t.organizationId, t.whatsappId)
       .where(sql`${t.whatsappId} IS NOT NULL`),
+    uniqueIndex("leads_organization_external_unique")
+      .on(t.organizationId, t.externalId)
+      .where(sql`${t.externalId} IS NOT NULL`),
+    index("leads_organization_created_idx").on(t.organizationId, t.createdAt.desc()),
     check("leads_score_range", sql`${t.score} BETWEEN 0 AND 100`),
     check("leads_values_positive", sql`${t.generatedValueCents} >= 0 AND (${t.potentialValueCents} IS NULL OR ${t.potentialValueCents} >= 0)`),
+    check(
+      "leads_history_positive",
+      sql`${t.visitCount} >= 0 AND (${t.lifetimeValueCents} IS NULL OR ${t.lifetimeValueCents} >= 0)`,
+    ),
   ],
 );
 

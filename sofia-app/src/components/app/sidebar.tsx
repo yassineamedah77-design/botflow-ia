@@ -5,6 +5,7 @@ import { CheckIcon, ChevronsUpDownIcon, LogOutIcon, UserRoundIcon } from "lucide
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTransition } from "react";
+import type * as React from "react";
 
 import { Logo } from "@/components/brand/logo";
 import {
@@ -18,6 +19,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { ROLE_LABELS, type Permission, type Role } from "@/lib/auth/roles";
 import { initials } from "@/lib/format";
+import type { ShellFeed } from "@/server/services/shell";
 
 import { NAVIGATION, type ChannelKey, type ChannelStatus, type NavItem } from "./navigation";
 import { StatusDot } from "./status-dot";
@@ -29,18 +31,34 @@ export interface ShellData {
   organization: { id: string; name: string; sofiaStatus: "INACTIVE" | "ACTIVE" | "PAUSED" };
   organizations: Array<{ id: string; name: string; role: Role }>;
   channels: Record<ChannelKey, ChannelStatus>;
+  /** Notification bell and Inbox badge, as rendered by the server. */
+  feed: ShellFeed;
 }
 
 export interface ShellActions {
   switchOrganization: (organizationId: string) => Promise<void>;
   signOut: () => Promise<void>;
+  markNotificationsRead: (ids?: string[]) => Promise<void>;
 }
 
 function isActive(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-function NavLink({ item, active, channelStatus, onNavigate }: { item: NavItem; active: boolean; channelStatus?: ChannelStatus; onNavigate?: () => void }) {
+function NavLink({
+  item,
+  active,
+  channelStatus,
+  badge,
+  onNavigate,
+}: {
+  item: NavItem;
+  active: boolean;
+  channelStatus?: ChannelStatus;
+  /** Unread conversations, on the Inbox entry. */
+  badge?: number;
+  onNavigate?: () => void;
+}) {
   const Icon = item.icon;
   return (
     <Link
@@ -54,6 +72,14 @@ function NavLink({ item, active, channelStatus, onNavigate }: { item: NavItem; a
     >
       <Icon className={cn("size-[1.0625rem] shrink-0 transition-colors", active ? "text-foreground" : "text-foreground/55 group-hover:text-foreground/80")} />
       <span className="flex-1 truncate">{item.label}</span>
+      {badge ? (
+        <span className="rounded-full bg-sofia px-1.5 py-0.5 text-[0.6875rem] leading-none font-semibold text-sofia-foreground tabular-nums">
+          <span aria-hidden>{badge > 99 ? "99+" : badge}</span>
+          <span className="sr-only">
+            , {badge} conversation{badge > 1 ? "s" : ""} non lue{badge > 1 ? "s" : ""}
+          </span>
+        </span>
+      ) : null}
       {item.phase ? (
         <span className="rounded-full bg-sand px-1.5 py-0.5 text-[0.6875rem] leading-none font-medium text-muted-foreground">
           Bientôt
@@ -165,16 +191,32 @@ function UserMenu({ data, actions }: { data: ShellData; actions: ShellActions })
   );
 }
 
-export function SidebarContent({ data, actions, onNavigate }: { data: ShellData; actions: ShellActions; onNavigate?: () => void }) {
+export function SidebarContent({
+  data,
+  actions,
+  inboxUnread,
+  bell,
+  onNavigate,
+}: {
+  data: ShellData;
+  actions: ShellActions;
+  inboxUnread: number;
+  /** The notification bell, next to the logo (the mobile header has its own). */
+  bell?: React.ReactNode;
+  onNavigate?: () => void;
+}) {
   const pathname = usePathname();
   const permissions = new Set(data.permissions);
 
   return (
     <div className="flex h-full flex-col">
       <div className="space-y-4 px-4 pt-6 pb-4">
-        <Link href="/dashboard" onClick={onNavigate} className="inline-flex rounded-md px-1 outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring/40">
-          <Logo />
-        </Link>
+        <div className="flex items-center justify-between gap-2">
+          <Link href="/dashboard" onClick={onNavigate} className="inline-flex rounded-md px-1 outline-none focus-visible:ring-3 focus-visible:ring-sidebar-ring/40">
+            <Logo />
+          </Link>
+          {bell}
+        </div>
         <OrganizationSwitcher data={data} actions={actions} />
       </div>
       <nav aria-label="Navigation principale" className="flex-1 space-y-6 overflow-y-auto px-3 pb-6">
@@ -194,6 +236,7 @@ export function SidebarContent({ data, actions, onNavigate }: { data: ShellData;
                   item={item}
                   active={isActive(pathname, item.href)}
                   channelStatus={item.channel ? data.channels[item.channel] : undefined}
+                  badge={item.href === "/inbox" ? inboxUnread : undefined}
                   onNavigate={onNavigate}
                 />
               ))}

@@ -15,6 +15,13 @@
       "when": 1790956247559,
       "tag": "0001_row_level_security",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791277497860,
+      "tag": "0002_phase2_crm_import",
+      "breakpoints": true
     }
   ]
 }

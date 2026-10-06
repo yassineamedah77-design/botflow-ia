@@ -20,10 +20,12 @@ import {
 } from "@/server/db/schema";
 import { provisionOrganization, slugify } from "@/server/services/organizations";
 
+import { seedDemoActivity, type DemoSeedSummary } from "./demo-activity";
+
 /**
- * Demo establishment "Maison Éclat" (fictional). Phase 1 seeds the business
- * context and the team; conversations, leads, appointments and statistics
- * are added with the dashboard in Phase 2.
+ * Demo establishment "Maison Éclat" (fictional): business context, team, and
+ * three months of activity (leads, conversations, appointments, attributed
+ * revenue, imported client file) so the application is demonstrable at once.
  */
 
 export const DEMO_ORGANIZATION_SLUG = "maison-eclat";
@@ -186,6 +188,7 @@ const FAQS = [
 export interface SeedResult {
   organizationId: string;
   created: boolean;
+  activity?: DemoSeedSummary;
 }
 
 export async function seedMaisonEclat(options: { password: string; reset?: boolean }): Promise<SeedResult> {
@@ -208,7 +211,7 @@ export async function seedMaisonEclat(options: { password: string; reset?: boole
   const organizationId = randomUUID();
   const now = new Date();
 
-  await withTenant(organizationId, async (tx) => {
+  const activity = await withTenant(organizationId, async (tx) => {
     const userIds = new Map<string, string>();
     for (const demoUser of DEMO_USERS) {
       const [user] = await tx
@@ -233,7 +236,7 @@ export async function seedMaisonEclat(options: { password: string; reset?: boole
     });
     await tx
       .update(organizations)
-      .set({ allowedLanguages: ["fr", "en", "pt"], defaultLanguage: "fr" })
+      .set({ allowedLanguages: ["fr", "en", "pt"], defaultLanguage: "fr", isDemo: true })
       .where(eq(organizations.id, organizationId));
 
     for (const demoUser of DEMO_USERS.slice(1)) {
@@ -277,13 +280,22 @@ export async function seedMaisonEclat(options: { password: string; reset?: boole
           ...service,
         })),
       )
-      .returning({ id: services.id, category: services.category, slug: services.slug });
+      .returning({
+        id: services.id,
+        name: services.name,
+        slug: services.slug,
+        category: services.category,
+        priceCents: services.priceCents,
+        durationMinutes: services.durationMinutes,
+      });
 
+    const insertedPractitioners: Array<{ id: string; categories: string[] }> = [];
     for (const practitioner of PRACTITIONERS) {
       const [row] = await tx
         .insert(practitioners)
         .values({ organizationId, name: practitioner.name, title: practitioner.title })
         .returning({ id: practitioners.id });
+      insertedPractitioners.push({ id: row!.id, categories: practitioner.categories });
       const linked = insertedServices.filter((service) => practitioner.categories.includes(service.category ?? ""));
       if (linked.length > 0) {
         await tx
@@ -303,7 +315,20 @@ export async function seedMaisonEclat(options: { password: string; reset?: boole
       startsAt: now,
       endsAt: new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000),
     });
+
+    return seedDemoActivity(tx, {
+      organizationId,
+      timeZone: "Europe/Paris",
+      now,
+      team: {
+        ownerId: userIds.get(DEMO_USERS[0]!.email)!,
+        adminId: userIds.get(DEMO_USERS[1]!.email)!,
+        staffId: userIds.get(DEMO_USERS[2]!.email)!,
+      },
+      services: insertedServices,
+      practitioners: insertedPractitioners,
+    });
   });
 
-  return { organizationId, created: true };
+  return { organizationId, created: true, activity };
 }

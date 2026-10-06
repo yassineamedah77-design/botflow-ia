@@ -23,7 +23,7 @@ import {
   switchActiveOrganization,
   updateOrganizationSettings,
 } from "@/server/services/organizations";
-import { getRevenueSummary } from "@/server/services/revenue";
+import { getPendingRevenue, getRecoveredRevenue } from "@/server/services/revenue";
 import { DEMO_USERS, seedMaisonEclat } from "@/server/seed/maison-eclat";
 import { eq } from "drizzle-orm";
 
@@ -80,8 +80,8 @@ describe("establishment settings", () => {
   });
 });
 
-describe("revenue attribution summary", () => {
-  it("separates confirmed from estimated revenue and ignores cancellations", async () => {
+describe("revenue attribution", () => {
+  it("counts honoured appointments once, dated by their confirmation, and keeps estimates apart", async () => {
     const { organizationId } = await createEstablishment();
     const now = new Date();
     await withTenant(organizationId, async (tx) => {
@@ -96,22 +96,34 @@ describe("revenue attribution summary", () => {
       };
       const [done, upcoming, cancelled] = [await makeAppointment(-1), await makeAppointment(2), await makeAppointment(3)];
       await tx.insert(revenueAttributions).values([
-        { organizationId, leadId: lead!.id, appointmentId: done, attributionType: "LEAD_RECOVERED", revenueSource: "LEAD_FOLLOWUP", amountCents: 18_000, status: "CONFIRMED" },
+        { organizationId, leadId: lead!.id, appointmentId: done, attributionType: "LEAD_RECOVERED", revenueSource: "LEAD_FOLLOWUP", amountCents: 18_000, status: "CONFIRMED", confirmedAt: now },
         { organizationId, leadId: lead!.id, appointmentId: upcoming, attributionType: "APPOINTMENT_GENERATED", revenueSource: "AI_CONVERSATION", amountCents: 9_500, status: "ESTIMATED" },
         { organizationId, leadId: lead!.id, appointmentId: cancelled, attributionType: "APPOINTMENT_GENERATED", revenueSource: "AI_CONVERSATION", amountCents: 12_000, status: "CANCELLED" },
       ]);
-      // The same appointment can never be counted twice for the same reason.
+      // An appointment is attributed once, whatever the reason: never counted twice.
       await expect(
         tx.transaction((savepoint) =>
-          savepoint.insert(revenueAttributions).values({ organizationId, leadId: lead!.id, appointmentId: done, attributionType: "LEAD_RECOVERED", revenueSource: "LEAD_FOLLOWUP", amountCents: 18_000 }),
+          savepoint
+            .insert(revenueAttributions)
+            .values({ organizationId, leadId: lead!.id, appointmentId: done, attributionType: "APPOINTMENT_GENERATED", revenueSource: "AI_CONVERSATION", amountCents: 18_000 }),
         ),
       ).rejects.toThrow();
     });
 
-    const summary = await withTenant(organizationId, (tx) =>
-      getRevenueSummary(tx, organizationId, { from: new Date(now.getTime() - 3600_000), to: new Date(now.getTime() + 3600_000) }),
-    );
-    expect(summary).toEqual({ confirmedCents: 18_000, estimatedCents: 9_500, attributedAppointments: 2 });
+    const hour = 3600_000;
+    const [recovered, earlier, pending] = await withTenant(organizationId, async (tx) => [
+      await getRecoveredRevenue(tx, organizationId, { from: new Date(now.getTime() - hour), to: new Date(now.getTime() + hour) }),
+      await getRecoveredRevenue(tx, organizationId, { from: new Date(now.getTime() - 3 * hour), to: new Date(now.getTime() - hour) }),
+      await getPendingRevenue(tx, organizationId),
+    ] as const);
+    expect(recovered.totalCents).toBe(18_000);
+    expect(recovered.appointments).toBe(1);
+    expect(recovered.byType.LEAD_RECOVERED).toEqual({ amountCents: 18_000, appointments: 1 });
+    expect(recovered.byType.APPOINTMENT_GENERATED).toEqual({ amountCents: 0, appointments: 0 });
+    // Dated by confirmation: nothing before it.
+    expect(earlier.totalCents).toBe(0);
+    // Booked, not honoured yet: an estimate, apart. Cancelled: nowhere.
+    expect(pending).toEqual({ amountCents: 9_500, appointments: 1 });
   });
 });
 

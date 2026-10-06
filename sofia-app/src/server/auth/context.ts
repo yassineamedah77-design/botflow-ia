@@ -23,6 +23,11 @@ export interface TenantContext {
     defaultLanguage: string;
     allowedLanguages: string[];
     widgetPublicId: string;
+    /** ISO country code: default country for phone numbers typed without +. */
+    country: string;
+    currency: string;
+    /** Demonstration establishment: fictional data, nothing is ever sent for real. */
+    isDemo: boolean;
   };
   can(permission: Permission): boolean;
 }

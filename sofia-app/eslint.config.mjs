@@ -17,12 +17,17 @@ const eslintConfig = defineConfig([
   {
     // The database, auth and secrets live behind src/server. Client
     // components must never reach into it; `server-only` enforces this at
-    // build time, this rule surfaces it while editing.
+    // build time, this rule surfaces it while editing. Types are erased at
+    // build time, so `import type` of server shapes is allowed.
     files: ["src/components/**/*.{ts,tsx}", "src/lib/**/*.{ts,tsx}"],
     rules: {
-      "no-restricted-imports": [
+      "@typescript-eslint/no-restricted-imports": [
         "error",
-        { patterns: [{ group: ["@/server/*"], message: "UI and shared code cannot import server modules." }] },
+        {
+          patterns: [
+            { group: ["@/server/*"], message: "UI and shared code cannot import server modules.", allowTypeImports: true },
+          ],
+        },
       ],
     },
   },

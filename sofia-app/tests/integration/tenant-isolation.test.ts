@@ -50,7 +50,24 @@ describe("tenant isolation (PostgreSQL Row-Level Security)", () => {
       where n.nspname = 'public' and c.relkind = 'r' and c.relrowsecurity and c.relforcerowsecurity
     `);
     const names = tenantTables.rows.map((row) => row.relname);
-    for (const table of ["organizations", "leads", "conversations", "messages", "appointments", "services", "revenue_attributions", "audit_logs", "memberships", "invitations"]) {
+    for (const table of [
+      "organizations",
+      "leads",
+      "conversations",
+      "messages",
+      "appointments",
+      "services",
+      "revenue_attributions",
+      "audit_logs",
+      "memberships",
+      "invitations",
+      "contact_imports",
+      "notifications",
+      "followups",
+      "campaign_recipients",
+      "business_profiles",
+      "business_hours",
+    ]) {
       expect(names).toContain(table);
     }
     expect(names.length).toBeGreaterThanOrEqual(25);

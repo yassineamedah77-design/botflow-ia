@@ -61,6 +61,9 @@ export async function tenantContextFor(userId: string, organizationId: string, s
         defaultLanguage: row.organization.defaultLanguage,
         allowedLanguages: row.organization.allowedLanguages,
         widgetPublicId: row.organization.widgetPublicId,
+        country: row.organization.country,
+        currency: row.organization.currency,
+        isDemo: row.organization.isDemo,
       },
     });
   });

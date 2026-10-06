@@ -46,11 +46,11 @@ export const NAVIGATION: NavSection[] = [
   {
     items: [
       { label: "Dashboard", href: "/dashboard", icon: LayoutDashboardIcon },
-      { label: "Inbox", href: "/inbox", icon: InboxIcon, phase: 2 },
-      { label: "Leads", href: "/leads", icon: UsersRoundIcon, phase: 2 },
+      { label: "Inbox", href: "/inbox", icon: InboxIcon },
+      { label: "Leads", href: "/leads", icon: UsersRoundIcon },
       { label: "Rendez-vous", href: "/appointments", icon: CalendarDaysIcon, phase: 7 },
       { label: "Automatisations", href: "/automations", icon: WorkflowIcon, phase: 8 },
-      { label: "Réactivation", href: "/reactivation", icon: RefreshCcwIcon, phase: 8 },
+      { label: "Réactivation", href: "/reactivation", icon: RefreshCcwIcon },
       { label: "Knowledge Base", href: "/knowledge", icon: BookOpenIcon },
       { label: "Analytics", href: "/analytics", icon: BarChart3Icon, phase: 9 },
     ],

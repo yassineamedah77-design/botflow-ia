@@ -52,7 +52,7 @@ export async function signUpAction(_previous: ActionState, formData: FormData): 
   } catch (error) {
     return actionFailure(error, formData);
   }
-  redirect("/dashboard?welcome=1");
+  redirect("/onboarding/welcome");
 }
 
 export async function forgotPasswordAction(_previous: ActionState, formData: FormData): Promise<ActionState> {

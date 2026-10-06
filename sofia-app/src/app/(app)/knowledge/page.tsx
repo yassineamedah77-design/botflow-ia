@@ -1,13 +1,16 @@
-import { BookOpenCheckIcon, CircleAlertIcon } from "lucide-react";
+import { BookOpenCheckIcon, CircleAlertIcon, PencilIcon } from "lucide-react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import type * as React from "react";
 
 import { PageHeader } from "@/components/app/page-header";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { buttonVariants } from "@/components/ui/button";
+import { Card, CardAction, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { formatDate, formatDuration } from "@/lib/format";
+import { formatPhone } from "@/lib/phone";
 import { describePrice, formatClockTime, WEEKDAYS } from "@/lib/pricing";
 import { LANGUAGE_LABELS, SUPPORTED_LANGUAGES } from "@/lib/validation/organization";
 import { requireTenant } from "@/server/auth/dal";
@@ -15,6 +18,17 @@ import { withTenant } from "@/server/db/context";
 import { getKnowledgeOverview } from "@/server/services/knowledge";
 
 export const metadata: Metadata = { title: "Knowledge Base" };
+
+function EditLink({ href, label }: { href: string; label: string }) {
+  return (
+    <CardAction>
+      <Link href={href} className={buttonVariants({ variant: "ghost", size: "sm" })} aria-label={label}>
+        <PencilIcon aria-hidden />
+        Modifier
+      </Link>
+    </CardAction>
+  );
+}
 
 function Field({ label, value }: { label: string; value: React.ReactNode }) {
   return (
@@ -29,6 +43,7 @@ export default async function KnowledgePage() {
   const ctx = await requireTenant();
   const knowledge = await withTenant(ctx.organization.id, (tx) => getKnowledgeOverview(tx, ctx.organization.id));
   const { profile } = knowledge;
+  const canEdit = ctx.can("knowledge:write");
 
   const hoursByDay = WEEKDAYS.map((label, index) => ({
     label,
@@ -44,15 +59,15 @@ export default async function KnowledgePage() {
       <PageHeader
         title="Knowledge Base"
         description="Tout ce que SOFIA a le droit de dire sur votre établissement. Ce qui n'est pas ici, elle ne l'invente pas : elle vérifie ou passe la main à votre équipe."
-        actions={<Badge variant="muted">Édition en phase 3</Badge>}
+        actions={<Badge variant="muted">FAQ et documents en phase 3</Badge>}
       />
 
       <Alert variant="info" className="mb-8">
         <BookOpenCheckIcon aria-hidden />
-        <AlertTitle>Lecture seule pour l&apos;instant</AlertTitle>
+        <AlertTitle>Exactement ce que SOFIA saura</AlertTitle>
         <AlertDescription className="text-info/85">
-          La modification de ces informations (prestations, FAQ, documents) arrive avec l&apos;AI Orchestrator en phase 3.
-          Cette page montre déjà exactement ce que SOFIA saura.
+          L&apos;établissement, les prestations et les horaires se modifient depuis la mise en route. La FAQ et les documents arrivent avec
+          l&apos;AI Orchestrator en phase 3.
         </AlertDescription>
       </Alert>
 
@@ -61,6 +76,7 @@ export default async function KnowledgePage() {
           <CardHeader>
             <CardTitle>Établissement</CardTitle>
             <CardDescription>Présentation, coordonnées et règles communiquées aux clientes.</CardDescription>
+            {canEdit ? <EditLink href="/onboarding/establishment" label="Modifier l'établissement" /> : null}
           </CardHeader>
           <CardContent>
             <dl className="grid gap-4">
@@ -75,7 +91,7 @@ export default async function KnowledgePage() {
                     : null
                 }
               />
-              <Field label="Téléphone" value={profile?.phone} />
+              <Field label="Téléphone" value={profile?.phone ? formatPhone(profile.phone) : null} />
               <Field label="Email" value={profile?.email} />
               <Field label="Site web" value={profile?.websiteUrl} />
               <Field label="Instagram" value={profile?.instagramHandle ? `@${profile.instagramHandle}` : null} />
@@ -91,6 +107,7 @@ export default async function KnowledgePage() {
           <CardHeader>
             <CardTitle>Horaires</CardTitle>
             <CardDescription>Fuseau : {ctx.organization.timezone}</CardDescription>
+            {canEdit ? <EditLink href="/onboarding/hours" label="Modifier les horaires" /> : null}
           </CardHeader>
           <CardContent>
             {knowledge.hours.length === 0 ? (
@@ -135,6 +152,7 @@ export default async function KnowledgePage() {
             {knowledge.services.length} prestation{knowledge.services.length > 1 ? "s" : ""} active
             {knowledge.services.length > 1 ? "s" : ""}. SOFIA ne communique que les prix et durées renseignés ici.
           </CardDescription>
+          {canEdit ? <EditLink href="/onboarding/services" label="Modifier les prestations" /> : null}
         </CardHeader>
         <CardContent>
           {unpricedServices.length > 0 ? (

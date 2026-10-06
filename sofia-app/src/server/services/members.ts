@@ -18,6 +18,7 @@ import { invitations, memberships, organizations, sessions, users } from "@/serv
 import { invitationEmail, sendEmail, type SendEmailResult } from "@/server/email";
 import { env } from "@/server/env";
 import { AppError, isUniqueViolation } from "@/server/errors";
+import { requirePermission } from "@/server/services/guards";
 import { recordAudit } from "@/server/observability/audit";
 import { generateToken, sha256Hex } from "@/server/security/crypto";
 import { consumeRateLimit, formatRetryAfter } from "@/server/security/rate-limit";
@@ -28,11 +29,6 @@ const INVITATION_LIFETIME_MS = INVITATION_LIFETIME_DAYS * 24 * 60 * 60 * 1000;
 
 function invitationUrl(token: string) {
   return `${env().APP_URL}/invitations/${encodeURIComponent(token)}`;
-}
-
-function requirePermission(ctx: TenantContext, allowed: boolean, message = "Vous n'avez pas les droits pour cette action.") {
-  if (!allowed) throw new AppError("FORBIDDEN", message);
-  void ctx;
 }
 
 // ─── Reading ────────────────────────────────────────────────────────────────
@@ -103,8 +99,8 @@ export async function inviteMember(
   input: { email: string; role: Role },
   meta: RequestMeta,
 ): Promise<InvitationResult> {
-  requirePermission(ctx, ctx.can("members:invite"));
-  requirePermission(ctx, invitableRoles(ctx.role).includes(input.role), "Vous ne pouvez pas inviter avec ce rôle.");
+  requirePermission(ctx.can("members:invite"));
+  requirePermission(invitableRoles(ctx.role).includes(input.role), "Vous ne pouvez pas inviter avec ce rôle.");
 
   const limit = await consumeRateLimit("invitationsByOrganization", ctx.organization.id);
   if (!limit.allowed) {
@@ -169,7 +165,7 @@ export async function inviteMember(
 }
 
 export async function resendInvitation(ctx: TenantContext, invitationId: string, meta: RequestMeta): Promise<InvitationResult> {
-  requirePermission(ctx, ctx.can("members:invite"));
+  requirePermission(ctx.can("members:invite"));
   const token = generateToken(32);
   const invitation = await withTenant(ctx.organization.id, async (tx) => {
     const [updated] = await tx
@@ -202,7 +198,7 @@ export async function resendInvitation(ctx: TenantContext, invitationId: string,
 }
 
 export async function revokeInvitation(ctx: TenantContext, invitationId: string, meta: RequestMeta) {
-  requirePermission(ctx, ctx.can("members:invite"));
+  requirePermission(ctx.can("members:invite"));
   await withTenant(ctx.organization.id, async (tx) => {
     const [revoked] = await tx
       .update(invitations)
@@ -416,12 +412,12 @@ async function ownerCount(tx: Transaction, organizationId: string) {
 }
 
 export async function changeMemberRole(ctx: TenantContext, input: { membershipId: string; role: Role }, meta: RequestMeta) {
-  requirePermission(ctx, ctx.can("members:update_role"));
-  requirePermission(ctx, assignableRoles(ctx.role).includes(input.role), "Vous ne pouvez pas attribuer ce rôle.");
+  requirePermission(ctx.can("members:update_role"));
+  requirePermission(assignableRoles(ctx.role).includes(input.role), "Vous ne pouvez pas attribuer ce rôle.");
 
   await withTenant(ctx.organization.id, async (tx) => {
     const member = await lockMember(tx, ctx.organization.id, input.membershipId);
-    requirePermission(ctx, canManageMember(ctx.role, member.role), "Vous ne pouvez pas modifier ce membre.");
+    requirePermission(canManageMember(ctx.role, member.role), "Vous ne pouvez pas modifier ce membre.");
     if (member.role === input.role) return;
     if (member.role === "OWNER" && (await ownerCount(tx, ctx.organization.id)) <= 1) {
       throw new AppError("CONFLICT", "L'établissement doit garder au moins un propriétaire.");
@@ -446,8 +442,8 @@ export async function removeMember(ctx: TenantContext, membershipId: string, met
     const member = await lockMember(tx, ctx.organization.id, membershipId);
     const leavingSelf = member.userId === ctx.user.id;
     if (!leavingSelf) {
-      requirePermission(ctx, ctx.can("members:remove"));
-      requirePermission(ctx, canManageMember(ctx.role, member.role), "Vous ne pouvez pas retirer ce membre.");
+      requirePermission(ctx.can("members:remove"));
+      requirePermission(canManageMember(ctx.role, member.role), "Vous ne pouvez pas retirer ce membre.");
     }
     if (member.role === "OWNER" && (await ownerCount(tx, ctx.organization.id)) <= 1) {
       throw new AppError("CONFLICT", "L'établissement doit garder au moins un propriétaire.");
