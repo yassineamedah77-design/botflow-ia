@@ -6,22 +6,25 @@ Ce guide déploie l'application `sofia-app/` sur Vercel avec une base PostgreSQL
 
 Les fonctions de l'application tournent à Francfort (`fra1`, fixé dans `vercel.json`), et la base doit être dans la même région : chaque page du dashboard fait plusieurs requêtes à la base, et quelques millisecondes d'écart par requête deviennent vite une seconde d'attente si l'application et la base sont sur deux continents. Francfort est aussi un bon point de départ pour des clientes en France et au Portugal, et garde les données dans l'Union européenne, ce que le RGPD et tes clientes attendront.
 
-Pour la base, Neon (région AWS Francfort, `aws-eu-central-1`) est le choix le plus simple : PostgreSQL standard, sauvegardes automatiques, et des « branches » de base pour les prévisualisations. Supabase convient aussi ; si tu prends sa région de Paris (`eu-west-3`), remplace `fra1` par `cdg1` dans `vercel.json` pour garder l'application à côté de la base.
+Pour la base, Neon (région AWS Francfort, `aws-eu-central-1`) est le choix le plus simple : PostgreSQL standard, sauvegardes automatiques et restauration de la base à un instant précis. Supabase convient aussi ; si tu prends sa région de Paris (`eu-west-3`), remplace `fra1` par `cdg1` dans `vercel.json` pour garder l'application à côté de la base.
 
 Une précaution importante : SOFIA est un outil commercial que tu factures à tes clientes, et le plan gratuit de Vercel (Hobby) est réservé à un usage non commercial. Il faut donc le plan Pro pour la production.
 
 ## 1. Créer la base
 
-Crée un projet Neon en région Francfort. Neon fournit un rôle propriétaire du projet : ne l'utilise pas pour l'application, car il a des droits d'administration. Ouvre l'éditeur SQL de Neon et crée un rôle applicatif sans aucun privilège d'administration, puis une base qui lui appartient. C'est la condition pour que l'isolation entre établissements (Row-Level Security) s'applique réellement :
+Crée un projet Neon en région Francfort. Neon fournit un rôle propriétaire du projet : ne l'utilise pas pour l'application, car il a des droits d'administration. Ouvre l'éditeur SQL de Neon et crée un rôle applicatif sans aucun privilège d'administration, puis une base qui lui appartient. C'est la condition pour que l'isolation entre établissements (Row-Level Security) s'applique réellement. Exécute ces trois lignes une par une, car la création d'une base doit s'exécuter seule :
 
 ```sql
-create role sofia_app login password 'un-mot-de-passe-long-et-aleatoire' nosuperuser nobypassrls nocreatedb nocreaterole;
+create role sofia_app login password 'le-mot-de-passe-genere' nosuperuser nobypassrls nocreatedb nocreaterole;
+grant sofia_app to current_user;
 create database sofia owner sofia_app;
 ```
 
-Neon donne deux adresses pour cette base. L'adresse « poolée » (son nom d'hôte contient `-pooler`) passe par un répartiteur de connexions et convient aux fonctions de Vercel, qui ouvrent beaucoup de connexions courtes : c'est elle qui servira de `DATABASE_URL`, sous la forme `postgres://sofia_app:…@ep-xxx-pooler.eu-central-1.aws.neon.tech/sofia?sslmode=require`. L'adresse directe (sans `-pooler`) sert aux migrations. `/api/health` vérifie au démarrage que le rôle ne contourne pas l'isolation, et le signale sinon.
+La deuxième ligne autorise ton rôle d'administration à créer une base au nom de `sofia_app` : depuis PostgreSQL 16, sans elle, la troisième échoue avec l'erreur « must be able to SET ROLE ». Elle ne donne aucun droit supplémentaire à l'application. Pour le mot de passe, génère une suite de lettres et de chiffres avec `openssl rand -hex 32` : Neon refuse les mots de passe trop faibles, et un caractère comme `@` ou `/` casserait l'adresse de connexion.
 
-Utilise une base distincte par environnement : une pour la production, une (ou une branche Neon) pour les prévisualisations. Un déploiement de prévisualisation ne doit jamais pouvoir lire ni modifier les données de vrais instituts.
+Neon affiche deux adresses de connexion (bouton « Connect ») : garde leur nom d'hôte, et remplace le rôle, le mot de passe et la base par `sofia_app`, ton mot de passe et `sofia`. L'adresse « poolée » (son nom d'hôte contient `-pooler`) passe par un répartiteur de connexions et convient aux fonctions de Vercel, qui ouvrent beaucoup de connexions courtes : c'est elle qui servira de `DATABASE_URL`, sous la forme `postgres://sofia_app:…@ep-xxx-pooler.eu-central-1.aws.neon.tech/sofia?sslmode=require`. L'adresse directe (sans `-pooler`) sert aux migrations. `/api/health` vérifie au démarrage que le rôle ne contourne pas l'isolation, et le signale sinon.
+
+Utilise une base et un rôle distincts par environnement : pour les prévisualisations, répète les trois lignes avec d'autres noms, par exemple `sofia_preview_app` et `sofia_preview`. Un déploiement de prévisualisation ne doit jamais pouvoir lire ni modifier les données de vrais instituts : avec son propre rôle, il n'a accès à aucune table de la base de production, même si son adresse de connexion était modifiée. Pour la même raison, ne lui donne pas une branche Neon de la base de production, qui en copierait les données.
 
 ## 2. Créer le projet Vercel
 
@@ -31,7 +34,7 @@ Renseigne ensuite les variables d'environnement, séparément pour **Production*
 
 | Variable | Valeur |
 |---|---|
-| `DATABASE_URL` | L'adresse poolée du rôle `sofia_app` (la base de production pour Production, l'autre pour Preview) |
+| `DATABASE_URL` | L'adresse poolée : celle de `sofia_app` et `sofia` pour Production, celle du rôle et de la base de prévisualisation pour Preview |
 | `DATABASE_POOL_MAX` | `5` : chaque instance garde peu de connexions, le répartiteur de Neon fait le reste |
 | `APP_URL` | `https://app.botflow-ia.fr` en production (l'adresse publique, en https) |
 | `APP_ENV` | `production` pour Production, `staging` pour Preview |

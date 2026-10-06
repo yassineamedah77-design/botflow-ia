@@ -87,7 +87,7 @@ Pour faire évoluer le schéma, modifie `src/server/db/schema`, lance `npm run d
 
 La configuration passe uniquement par des variables d'environnement, toutes documentées dans `.env.example`. Une configuration invalide est signalée dans les journaux dès le démarrage et l'application refuse alors de servir les pages. En production (`APP_ENV=production`), une URL en https et un envoi d'emails réel par SMTP sont obligatoires, parce qu'un mot de passe oublié ou une invitation qui n'arrive jamais est une panne. Avant chaque mise en production, `npm run db:migrate` (ou `node scripts/migrate.cjs` dans l'image Docker) doit tourner avant que la nouvelle version ne reçoive du trafic.
 
-**Sur Vercel**, avec une base PostgreSQL managée en région européenne : le pas-à-pas complet (base Neon à Francfort, rôle sans privilège, variables, migrations, domaine, emails) est dans [`docs/VERCEL.md`](docs/VERCEL.md). `vercel.json` place les fonctions à Francfort, à côté de la base. Utilise une base distincte par environnement, pour qu'un déploiement de prévisualisation ne touche jamais aux données de production.
+**Sur Vercel**, avec une base PostgreSQL managée en région européenne : le pas-à-pas complet (base Neon à Francfort, rôle sans privilège, variables, migrations, domaine, emails) est dans [`docs/VERCEL.md`](docs/VERCEL.md). `vercel.json` place les fonctions à Francfort, à côté de la base. Utilise une base et un rôle distincts par environnement, pour qu'un déploiement de prévisualisation ne touche jamais aux données de production.
 
 **Avec Docker**, sur n'importe quel serveur (Scaleway, OVH, Hetzner, Fly.io, Railway…), derrière un reverse proxy qui gère le https (Caddy, Traefik, nginx) :
 
