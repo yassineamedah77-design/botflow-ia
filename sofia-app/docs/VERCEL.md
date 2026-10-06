@@ -37,7 +37,7 @@ Renseigne ensuite les variables d'environnement, séparément pour **Production*
 | `DATABASE_URL` | L'adresse poolée : celle de `sofia_app` et `sofia` pour Production, celle du rôle et de la base de prévisualisation pour Preview |
 | `DATABASE_MIGRATION_URL` | L'adresse directe (sans `-pooler`) du même rôle et de la même base, utilisée par les migrations au moment du build |
 | `DATABASE_POOL_MAX` | `5` : chaque instance garde peu de connexions, le répartiteur de Neon fait le reste |
-| `APP_URL` | `https://sofia.botflow-ia.fr` en production (l'adresse publique, en https) ; pour Preview, l'adresse de la branche (`https://sofia-saas-git-…vercel.app`) |
+| `APP_URL` | `https://sofia.botflow-ia.fr` en production (l'adresse publique, en https). Rien pour Preview : l'application prend l'adresse de la branche prévisualisée |
 | `APP_ENV` | `production` pour Production, `staging` pour Preview |
 | `ENCRYPTION_KEY` | Générée une fois avec `openssl rand -base64 32`, et sauvegardée hors de Vercel |
 | `EMAIL_TRANSPORT` | `smtp` |

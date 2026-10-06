@@ -88,6 +88,11 @@ export class InvalidEnvironmentError extends Error {
 export function parseEnv(source: Record<string, string | undefined>): Env {
   // Empty strings in .env files mean "not set".
   const cleaned = Object.fromEntries(Object.entries(source).filter(([, value]) => value !== undefined && value !== ""));
+  // Every Vercel preview branch has its own address: without an explicit
+  // APP_URL, links in emails point to the branch being previewed.
+  if (!cleaned.APP_URL && cleaned.VERCEL_ENV === "preview" && cleaned.VERCEL_BRANCH_URL) {
+    cleaned.APP_URL = `https://${cleaned.VERCEL_BRANCH_URL}`;
+  }
   const result = envSchema.safeParse(cleaned);
   if (!result.success) {
     throw new InvalidEnvironmentError(

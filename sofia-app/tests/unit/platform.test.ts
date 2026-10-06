@@ -178,4 +178,16 @@ describe("environment validation", () => {
     expect(parseEnv({ ...base, SIGNUP_ENABLED: "false" }).SIGNUP_ENABLED).toBe(false);
     expect(parseEnv({ ...base, SIGNUP_ENABLED: "1" }).SIGNUP_ENABLED).toBe(true);
   });
+
+  it("defaults APP_URL to the branch address on Vercel previews only", () => {
+    const preview = {
+      DATABASE_URL: base.DATABASE_URL,
+      ENCRYPTION_KEY: base.ENCRYPTION_KEY,
+      VERCEL_ENV: "preview",
+      VERCEL_BRANCH_URL: "sofia-saas-git-feature-team.vercel.app",
+    };
+    expect(parseEnv(preview).APP_URL).toBe("https://sofia-saas-git-feature-team.vercel.app");
+    expect(parseEnv({ ...preview, APP_URL: "https://staging.example" }).APP_URL).toBe("https://staging.example");
+    expect(() => parseEnv({ ...preview, VERCEL_ENV: "production" })).toThrow(/APP_URL/);
+  });
 });
