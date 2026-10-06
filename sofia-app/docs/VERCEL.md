@@ -38,7 +38,7 @@ Renseigne ensuite les variables d'environnement, séparément pour **Production*
 | `ENCRYPTION_KEY` | Générée une fois avec `openssl rand -base64 32`, et sauvegardée hors de Vercel |
 | `EMAIL_TRANSPORT` | `smtp` |
 | `SMTP_URL` | L'URL SMTP du fournisseur d'emails (Brevo, Resend, Postmark…) |
-| `EMAIL_FROM` | Par exemple `SOFIA <notifications@botflow-ia.fr>` |
+| `EMAIL_FROM` | Une adresse du sous-domaine d'envoi, par exemple `SOFIA <sofia@mail.botflow-ia.fr>` |
 | `SIGNUP_ENABLED` | `false` tant que tu crées toi-même les comptes de tes clientes, `true` pour l'inscription libre |
 | `HEALTHCHECK_TOKEN` | Une valeur aléatoire, pour lire le détail de `/api/health` |
 
@@ -63,7 +63,9 @@ Dans le projet Vercel, ajoute le domaine `app.botflow-ia.fr`. Vercel indique l'e
 
 ## 5. Les emails
 
-Les emails de mot de passe oublié, de vérification d'adresse et d'invitation partent du domaine de `EMAIL_FROM`. Déclare chez ton fournisseur d'emails un sous-domaine d'envoi dédié (par exemple `notifications.botflow-ia.fr`) et ajoute les enregistrements SPF, DKIM et DMARC qu'il te donne. Sans eux, ces emails arrivent en spam, et un email de réinitialisation qui n'arrive pas est une panne pour ta cliente.
+Les emails de mot de passe oublié, de vérification d'adresse et d'invitation partent de l'adresse `EMAIL_FROM`. Déclare chez ton fournisseur d'emails un sous-domaine d'envoi réservé à l'application (par exemple `mail.botflow-ia.fr`), utilise-le dans `EMAIL_FROM`, et ajoute les enregistrements SPF, DKIM et DMARC qu'il te donne : ce sont des lignes DNS qui prouvent à Gmail ou Outlook que l'email vient bien de toi. Sans elles, ces emails arrivent en spam, et un email de réinitialisation qui n'arrive pas est une panne pour ta cliente.
+
+Garde ce sous-domaine pour les emails de l'application uniquement. Les campagnes de réactivation de la Phase 8 auront leur propre sous-domaine, et la prospection commerciale à froid ne doit jamais partir de `botflow-ia.fr` : une campagne signalée comme indésirable abîmerait la réputation des emails dont tes clientes ont besoin.
 
 ## 6. Vérifier
 
