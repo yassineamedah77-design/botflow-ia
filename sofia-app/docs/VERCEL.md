@@ -28,41 +28,42 @@ Utilise une base et un rôle distincts par environnement : pour les prévisualis
 
 ## 2. Créer le projet Vercel
 
-Dans Vercel, importe le dépôt GitHub `botflow-ia` dans un projet nommé `sofia-saas` (ton compte a déjà un projet `sofia-app`, l'ancien portail déployé à la main, qu'il ne faut pas écraser), puis indique `sofia-app` comme **Root Directory** et Node.js 22 dans les réglages du projet, la version de la CI. Vercel détecte Next.js tout seul ; la commande de build par défaut (`npm run build`) convient, le build ne demande aucune variable d'environnement.
+Dans Vercel, importe le dépôt GitHub `botflow-ia` dans un projet nommé `sofia-saas` (ton compte a déjà un projet `sofia-app`, l'ancien portail déployé à la main, qu'il ne faut pas écraser), puis indique `sofia-app` comme **Root Directory** et Node.js 22 dans les réglages du projet, la version de la CI. Vercel détecte Next.js tout seul. La commande de build est fixée par `vercel.json` : elle crée ou met à jour les tables (`npm run db:migrate`), puis construit l'application (étape 3). Les variables de base de données doivent donc être renseignées avant le premier déploiement.
 
 Renseigne ensuite les variables d'environnement, séparément pour **Production** et **Preview** :
 
 | Variable | Valeur |
 |---|---|
 | `DATABASE_URL` | L'adresse poolée : celle de `sofia_app` et `sofia` pour Production, celle du rôle et de la base de prévisualisation pour Preview |
+| `DATABASE_MIGRATION_URL` | L'adresse directe (sans `-pooler`) du même rôle et de la même base, utilisée par les migrations au moment du build |
 | `DATABASE_POOL_MAX` | `5` : chaque instance garde peu de connexions, le répartiteur de Neon fait le reste |
-| `APP_URL` | `https://app.botflow-ia.fr` en production (l'adresse publique, en https) |
+| `APP_URL` | `https://sofia.botflow-ia.fr` en production (l'adresse publique, en https) ; pour Preview, l'adresse de la branche (`https://sofia-saas-git-…vercel.app`) |
 | `APP_ENV` | `production` pour Production, `staging` pour Preview |
 | `ENCRYPTION_KEY` | Générée une fois avec `openssl rand -base64 32`, et sauvegardée hors de Vercel |
 | `EMAIL_TRANSPORT` | `smtp` |
 | `SMTP_URL` | L'URL SMTP de Brevo (voir l'étape 5) |
 | `EMAIL_FROM` | Une adresse du sous-domaine d'envoi, par exemple `SOFIA <sofia@mail.botflow-ia.fr>` |
-| `SIGNUP_ENABLED` | `false` tant que tu crées toi-même les comptes de tes clientes, `true` pour l'inscription libre |
+| `SIGNUP_ENABLED` | `true` au lancement : l'inscription est aujourd'hui le seul moyen de créer un établissement, le tien comme ceux de tes clientes. Avec `false`, seules les invitations dans un établissement existant restent possibles |
 | `HEALTHCHECK_TOKEN` | Une valeur aléatoire, pour lire le détail de `/api/health` |
 
 La liste complète, avec les valeurs par défaut, est dans `.env.example`. Une variable invalide est signalée dans les journaux de Vercel dès le démarrage, et l'application refuse alors de servir les pages plutôt que de fonctionner à moitié.
 
-## 3. Créer les tables avant le premier trafic
+## 3. Les tables se créent à chaque déploiement
 
-Les migrations doivent tourner avant qu'une nouvelle version reçoive du trafic. Depuis ton poste, avec l'adresse directe de la base concernée :
+Les migrations doivent tourner avant qu'une nouvelle version reçoive du trafic, et c'est la commande de build de Vercel qui s'en charge : elle lance `npm run db:migrate` avec `DATABASE_MIGRATION_URL`, puis construit l'application. La commande crée les tables, applique l'isolation entre établissements et refuse de se terminer si une table reste sans protection. Si elle échoue, le déploiement échoue avec elle et la version en ligne continue de servir. Une prévisualisation migre sa propre base, la production la sienne.
+
+Tant qu'une migration ne fait qu'ajouter des tables ou des colonnes, comme celles de la Phase 2, la version précédente continue de fonctionner pendant les quelques secondes de bascule ; une migration qui renomme ou supprime quelque chose se fait en deux déploiements. La même commande reste utilisable depuis un poste, avec l'adresse directe de la base concernée :
 
 ```bash
 cd sofia-app
-DATABASE_URL="postgres://sofia_app:…@ep-xxx.eu-central-1.aws.neon.tech/sofia?sslmode=require" npm run db:migrate
+DATABASE_MIGRATION_URL="postgres://sofia_app:…@ep-xxx.eu-central-1.aws.neon.tech/sofia?sslmode=require" npm run db:migrate
 ```
 
-La commande crée les tables, applique l'isolation entre établissements et refuse de se terminer si une table reste sans protection. Pour une démonstration commerciale, tu peux ensuite créer Maison Éclat dans une base à part avec `SEED_DEMO_PASSWORD=… npm run db:seed` ; ne le fais jamais dans la base de production de tes clientes.
-
-Pour la suite, le plus sûr est d'automatiser : une étape de la CI GitHub lance `npm run db:migrate` sur la base de production au moment où la branche principale est fusionnée, puis Vercel déploie. Tant qu'une migration ne fait qu'ajouter des tables ou des colonnes, comme celles de la Phase 2, la version précédente continue de fonctionner pendant les quelques secondes de bascule ; une migration qui renomme ou supprime quelque chose se fait en deux déploiements.
+Pour une démonstration commerciale, tu peux créer Maison Éclat dans une base à part avec `SEED_DEMO_PASSWORD=… npm run db:seed` ; ne le fais jamais dans la base de production de tes clientes.
 
 ## 4. Brancher le domaine
 
-Dans le projet Vercel, ajoute le domaine `app.botflow-ia.fr`. Vercel indique l'enregistrement à créer chez ton registrar : un `CNAME` de `app` vers la cible fournie par Vercel. Le certificat https est créé et renouvelé automatiquement. Le site vitrine garde le domaine principal, l'application vit sur son sous-domaine.
+Dans le projet Vercel, ajoute le domaine `sofia.botflow-ia.fr`. Vercel indique l'enregistrement à créer chez Infomaniak, qui gère le DNS de `botflow-ia.fr` : un `CNAME` de `sofia` vers la cible fournie par Vercel. Le certificat https est créé et renouvelé automatiquement. Le site vitrine garde le domaine principal, `app.botflow-ia.fr` reste à l'ancien portail tant que SOFIA ne le remplace pas, et la plateforme vit sur son propre sous-domaine.
 
 ## 5. Les emails, avec Brevo
 
@@ -76,7 +77,7 @@ Garde ce sous-domaine pour les emails de l'application uniquement. Les campagnes
 
 ## 6. Vérifier
 
-Après le premier déploiement, ouvre `https://app.botflow-ia.fr/api/health` : la réponse doit être `{"status":"ok"}`. Avec l'en-tête `Authorization: Bearer <HEALTHCHECK_TOKEN>`, la réponse détaille la base, l'isolation et l'envoi d'emails. Branche ensuite cette adresse sur un moniteur de disponibilité (UptimeRobot, Better Stack…) pour être prévenu avant tes clientes.
+Après le premier déploiement, ouvre `https://sofia.botflow-ia.fr/api/health` : la réponse doit être `{"status":"ok"}`. Avec l'en-tête `Authorization: Bearer <HEALTHCHECK_TOKEN>`, la réponse détaille la base, l'isolation et l'envoi d'emails. Branche ensuite cette adresse sur un moniteur de disponibilité (UptimeRobot, Better Stack…) pour être prévenu avant tes clientes.
 
 ## Ce qui viendra avec les phases suivantes
 
