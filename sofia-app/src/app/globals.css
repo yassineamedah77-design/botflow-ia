@@ -1,0 +1,213 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+/*
+ * SOFIA design tokens.
+ *
+ * Palette: deep black (ink), off-white (paper), beige (sand) and one subtle
+ * orange reserved for SOFIA / AI moments. Orange is used sparingly: the brand
+ * mark, focus rings, SOFIA status and AI-specific accents — never for
+ * generic decoration.
+ */
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-heading: var(--font-dm-sans), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-sofia: var(--sofia);
+  --color-sofia-foreground: var(--sofia-foreground);
+  --color-sofia-soft: var(--sofia-soft);
+  --color-sofia-strong: var(--sofia-strong);
+  --color-sand: var(--sand);
+  --color-sand-strong: var(--sand-strong);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger-soft: var(--danger-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+
+  --color-viz-ink: var(--viz-ink);
+  --color-viz-sofia: var(--viz-sofia);
+  --color-viz-planned: var(--viz-planned);
+  --color-viz-muted: var(--viz-muted);
+  --color-viz-step-1: var(--viz-step-1);
+  --color-viz-step-2: var(--viz-step-2);
+  --color-viz-step-3: var(--viz-step-3);
+  --color-viz-step-4: var(--viz-step-4);
+
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  --radius-sm: calc(var(--radius) * 0.6);
+  --radius-md: calc(var(--radius) * 0.8);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) * 1.4);
+  --radius-2xl: calc(var(--radius) * 1.8);
+  --radius-3xl: calc(var(--radius) * 2.2);
+  --radius-4xl: calc(var(--radius) * 2.6);
+
+  /* Very light, warm shadows: depth without heaviness. */
+  --shadow-xs: 0 1px 2px rgb(22 21 20 / 0.04);
+  --shadow-sm: 0 1px 3px rgb(22 21 20 / 0.06), 0 1px 2px rgb(22 21 20 / 0.03);
+  --shadow-md: 0 10px 30px -14px rgb(22 21 20 / 0.16), 0 2px 6px -2px rgb(22 21 20 / 0.05);
+  --shadow-lg: 0 24px 60px -28px rgb(22 21 20 / 0.24), 0 6px 14px -8px rgb(22 21 20 / 0.08);
+
+  --ease-out-soft: cubic-bezier(0.22, 0.9, 0.3, 1);
+}
+
+:root {
+  --radius: 0.625rem;
+
+  /* Paper & ink */
+  --background: #faf8f5;
+  --foreground: #161514;
+  --card: #ffffff;
+  --card-foreground: #161514;
+  --popover: #ffffff;
+  --popover-foreground: #161514;
+
+  --primary: #161514;
+  --primary-foreground: #faf8f5;
+  --secondary: #f2ede6;
+  --secondary-foreground: #161514;
+  --muted: #f3efe9;
+  --muted-foreground: #6e685f;
+  --accent: #f2ede6;
+  --accent-foreground: #161514;
+
+  --border: #e9e3d9;
+  --input: #e2d9cc;
+  --ring: #d97757;
+
+  /* SOFIA orange — AI accent, used sparingly */
+  --sofia: #d97757;
+  --sofia-foreground: #ffffff;
+  --sofia-soft: #fbeee8;
+  --sofia-strong: #b5593a;
+
+  /* Beige */
+  --sand: #ece5da;
+  --sand-strong: #b9a88f;
+
+  /* Feedback */
+  --destructive: #b42318;
+  --danger-soft: #fbeae8;
+  --success: #2e7d57;
+  --success-soft: #e7f3ec;
+  --warning: #a8691a;
+  --warning-soft: #fbf1de;
+  --info: #3a6ea5;
+  --info-soft: #e8eff7;
+
+  /*
+   * Data visualisation, checked with the palette validator on the card
+   * surface (#ffffff): colour-blind separation, contrast, lightness steps.
+   * Ink for volumes, SOFIA orange for what SOFIA earned, blue for what is
+   * still to come, warm grey to de-emphasise. The funnel is an ordinal ramp
+   * of the orange (one hue, light to dark). See docs/DATAVIZ.md.
+   */
+  --viz-ink: #3a3938;
+  --viz-sofia: #d97757;
+  --viz-planned: #3a6ea5;
+  --viz-muted: #b9b4ab;
+  --viz-step-1: #e8987a;
+  --viz-step-2: #d97757;
+  --viz-step-3: #b5593a;
+  --viz-step-4: #8c4128;
+
+  /* Sidebar */
+  --sidebar: #f5f1eb;
+  --sidebar-foreground: #161514;
+  --sidebar-primary: #161514;
+  --sidebar-primary-foreground: #faf8f5;
+  --sidebar-accent: #ffffff;
+  --sidebar-accent-foreground: #161514;
+  --sidebar-border: #e9e3d9;
+  --sidebar-ring: #d97757;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    /* Inter: single-storey a, open digits, disambiguated l/I. */
+    font-feature-settings: "cv11", "ss01", "ss03";
+  }
+  h1,
+  h2,
+  h3 {
+    @apply font-heading tracking-tight;
+  }
+  ::selection {
+    background: var(--sofia-soft);
+    color: var(--foreground);
+  }
+  button:not(:disabled),
+  [role="button"]:not(:disabled) {
+    cursor: pointer;
+  }
+}
+
+@layer utilities {
+  /* Numbers that line up in tables and KPI cards. */
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+  /* Soft grain used on the auth panel and empty states. */
+  .bg-paper-grain {
+    background-image: radial-gradient(circle at 1px 1px, rgb(22 21 20 / 0.045) 1px, transparent 0);
+    background-size: 22px 22px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
