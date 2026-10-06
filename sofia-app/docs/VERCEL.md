@@ -28,7 +28,7 @@ Utilise une base et un rôle distincts par environnement : pour les prévisualis
 
 ## 2. Créer le projet Vercel
 
-Dans Vercel, importe le dépôt GitHub `botflow-ia`, puis indique `sofia-app` comme **Root Directory**. Vercel détecte Next.js tout seul ; la commande de build par défaut (`npm run build`) convient, le build ne demande aucune variable d'environnement.
+Dans Vercel, importe le dépôt GitHub `botflow-ia` dans un projet nommé `sofia-saas` (ton compte a déjà un projet `sofia-app`, l'ancien portail déployé à la main, qu'il ne faut pas écraser), puis indique `sofia-app` comme **Root Directory** et Node.js 22 dans les réglages du projet, la version de la CI. Vercel détecte Next.js tout seul ; la commande de build par défaut (`npm run build`) convient, le build ne demande aucune variable d'environnement.
 
 Renseigne ensuite les variables d'environnement, séparément pour **Production** et **Preview** :
 
@@ -40,7 +40,7 @@ Renseigne ensuite les variables d'environnement, séparément pour **Production*
 | `APP_ENV` | `production` pour Production, `staging` pour Preview |
 | `ENCRYPTION_KEY` | Générée une fois avec `openssl rand -base64 32`, et sauvegardée hors de Vercel |
 | `EMAIL_TRANSPORT` | `smtp` |
-| `SMTP_URL` | L'URL SMTP du fournisseur d'emails (Brevo, Resend, Postmark…) |
+| `SMTP_URL` | L'URL SMTP de Brevo (voir l'étape 5) |
 | `EMAIL_FROM` | Une adresse du sous-domaine d'envoi, par exemple `SOFIA <sofia@mail.botflow-ia.fr>` |
 | `SIGNUP_ENABLED` | `false` tant que tu crées toi-même les comptes de tes clientes, `true` pour l'inscription libre |
 | `HEALTHCHECK_TOKEN` | Une valeur aléatoire, pour lire le détail de `/api/health` |
@@ -64,11 +64,15 @@ Pour la suite, le plus sûr est d'automatiser : une étape de la CI GitHub lance
 
 Dans le projet Vercel, ajoute le domaine `app.botflow-ia.fr`. Vercel indique l'enregistrement à créer chez ton registrar : un `CNAME` de `app` vers la cible fournie par Vercel. Le certificat https est créé et renouvelé automatiquement. Le site vitrine garde le domaine principal, l'application vit sur son sous-domaine.
 
-## 5. Les emails
+## 5. Les emails, avec Brevo
 
-Les emails de mot de passe oublié, de vérification d'adresse et d'invitation partent de l'adresse `EMAIL_FROM`. Déclare chez ton fournisseur d'emails un sous-domaine d'envoi réservé à l'application (par exemple `mail.botflow-ia.fr`), utilise-le dans `EMAIL_FROM`, et ajoute les enregistrements SPF, DKIM et DMARC qu'il te donne : ce sont des lignes DNS qui prouvent à Gmail ou Outlook que l'email vient bien de toi. Sans elles, ces emails arrivent en spam, et un email de réinitialisation qui n'arrive pas est une panne pour ta cliente.
+Les emails de mot de passe oublié, de vérification d'adresse et d'invitation partent de l'adresse `EMAIL_FROM`, par Brevo. Brevo est retenu pour SOFIA parce qu'un seul compte couvre les emails de l'application, puis les campagnes email et les SMS de relance de la Phase 8, en France comme au Portugal, et que ses serveurs sont tous dans l'Union européenne.
 
-Garde ce sous-domaine pour les emails de l'application uniquement. Les campagnes de réactivation de la Phase 8 auront leur propre sous-domaine, et la prospection commerciale à froid ne doit jamais partir de `botflow-ia.fr` : une campagne signalée comme indésirable abîmerait la réputation des emails dont tes clientes ont besoin.
+Dans Brevo, ajoute le sous-domaine d'envoi réservé à l'application, `mail.botflow-ia.fr`, dans « Expéditeurs, domaines et IP dédiées ». Brevo affiche alors les lignes DNS à créer chez Infomaniak, qui gère le DNS de `botflow-ia.fr` : un code de vérification (TXT), deux enregistrements DKIM (CNAME `brevo1._domainkey` et `brevo2._domainkey`) et un enregistrement DMARC (TXT `_dmarc`). Ces lignes prouvent à Gmail ou Outlook que l'email vient bien de toi ; sans elles, les emails arrivent en spam, et un email de réinitialisation qui n'arrive pas est une panne pour ta cliente.
+
+Pour `SMTP_URL`, Brevo donne un identifiant SMTP et une clé SMTP (menu « SMTP & API », onglet SMTP) ; la clé SMTP n'est pas ton mot de passe Brevo. L'identifiant est une adresse email : son `@` s'écrit `%40` dans l'URL, qui prend la forme `smtp://identifiant%40smtp-brevo.com:CLE-SMTP@smtp-relay.brevo.com:587`.
+
+Garde ce sous-domaine pour les emails de l'application uniquement. Les campagnes de réactivation de la Phase 8 partiront d'un autre sous-domaine du même compte Brevo, et la prospection commerciale à froid ne doit jamais partir de `botflow-ia.fr` : une campagne signalée comme indésirable abîmerait la réputation des emails dont tes clientes ont besoin.
 
 ## 6. Vérifier
 
