@@ -186,6 +186,7 @@ export default async function OnboardingStepPage(props: PageProps<"/onboarding/[
                 bookingPolicy: data.profile?.bookingPolicy ?? "",
                 cancellationPolicy: data.profile?.cancellationPolicy ?? "",
                 importantInfo: data.profile?.importantInfo ?? "",
+                medicalReferent: data.profile?.medicalReferent ?? "",
               }}
             />
           </CardContent>
@@ -326,10 +327,18 @@ export default async function OnboardingStepPage(props: PageProps<"/onboarding/[
               </ul>
             </CardContent>
           </Card>
-          <PhaseNotice phase={3}>
-            Une conversation d&apos;essai avec SOFIA, sur un écran de test, arrive avec le moteur d&apos;intelligence artificielle. Vous verrez exactement ce
-            qu&apos;elle répond avant qu&apos;une cliente ne lui écrive.
-          </PhaseNotice>
+          <Card className="bg-sofia-soft/40 shadow-none">
+            <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                <span className="block font-medium text-foreground">Écrivez-lui comme une cliente.</span>
+                Vous voyez sa réponse, ce qu&apos;elle a compris et ce qu&apos;elle ferait, sans que rien ne soit envoyé.
+              </p>
+              <Link href="/knowledge/test" className={buttonVariants({ className: "shrink-0" })}>
+                Ouvrir la console de test
+                <ArrowRightIcon aria-hidden />
+              </Link>
+            </CardContent>
+          </Card>
         </div>
       );
       break;
@@ -351,9 +360,10 @@ export default async function OnboardingStepPage(props: PageProps<"/onboarding/[
               </ul>
             </CardContent>
           </Card>
-          <PhaseNotice phase={3}>
-            L&apos;activation arrive avec le moteur d&apos;intelligence artificielle, et demandera au moins un canal connecté. Vous pourrez la mettre en
-            pause à tout moment : vos conversations restent alors entre les mains de votre équipe.
+          <PhaseNotice phase={4}>
+            SOFIA sait déjà répondre : essayez-la dans la console de test. L&apos;activation arrive avec le premier canal, le widget du site, car elle
+            demande au moins un canal connecté. Vous pourrez la mettre en pause à tout moment : vos conversations restent alors entre les mains de votre
+            équipe.
           </PhaseNotice>
         </div>
       );

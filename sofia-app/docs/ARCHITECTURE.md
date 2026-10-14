@@ -61,7 +61,7 @@ sofia-app/
 │   │   ├── email/              transports + templates
 │   │   ├── observability/      logger structuré, audit log, event log
 │   │   ├── security/           rate limiting, chiffrement, contexte de requête
-│   │   ├── ai/                 (Phase 3) orchestrateur, providers, outils, prompts
+│   │   ├── ai/                 orchestrateur, providers, prompt, garde-fous, recherche
 │   │   ├── channels/           (Phases 4-6) adapters website / WhatsApp / Instagram + mocks
 │   │   ├── calendar/           (Phase 7) adapters agenda interne / Google / Calendly
 │   │   └── jobs/               (Phase 8) file de jobs en base + workers
@@ -100,7 +100,7 @@ Le schéma complet est créé dès la Phase 1 (32 tables), pour que chaque phase
 |---|---|---|
 | Identité | `users`, `sessions`, `auth_tokens`, `rate_limit_buckets` | Comptes, sessions hashées, jetons de reset / vérification, rate limiting |
 | Tenancy | `organizations`, `memberships`, `invitations` | Établissement, rôle de chaque membre, invitations d'équipe |
-| Contexte SOFIA | `business_profiles`, `business_hours`, `business_closures`, `services`, `practitioners`, `practitioner_services`, `faqs`, `promotions`, `knowledge_documents` | Tout ce que SOFIA a le droit de dire. Un prix `NULL` signifie « non configuré » : SOFIA ne le donne pas |
+| Contexte SOFIA | `business_profiles`, `business_hours`, `business_closures`, `services`, `practitioners`, `practitioner_services`, `faqs`, `promotions`, `knowledge_documents`, `knowledge_chunks` | Tout ce que SOFIA a le droit de dire. Un prix `NULL` signifie « non configuré » : SOFIA ne le donne pas |
 | Canaux | `integrations` | Statut réel de WhatsApp, Instagram, widget, Google Calendar, Calendly ; identifiants chiffrés |
 | CRM | `leads`, `lead_notes`, `lead_status_changes`, `consent_records` | Fiche contact, pipeline à 12 étapes, historique, preuves de consentement |
 | Conversations | `conversations`, `messages` | Inbox unifiée, mode `AI_ACTIVE` / `HUMAN_ACTIVE`, idempotence des webhooks, fenêtre WhatsApp 24 h |
@@ -129,15 +129,17 @@ La matrice vit dans `src/server/auth/permissions.ts`, testée unitairement. Le r
 
 ## 7. Architecture IA
 
-L'AI Orchestrator (Phase 3) suit le flux du cahier des charges : intention → contexte client → récupération de connaissances → règles métier → LLM → tool calling → réponse.
+L'AI Orchestrator (`src/server/ai/`, Phase 3) suit le flux du cahier des charges : contexte client → récupération de connaissances → règles métier → LLM → outils → réponse vérifiée → actions.
 
-Le fournisseur de LLM est abstrait derrière une interface `LlmProvider` (`generate`, `classify`, support des outils). Les implémentations prévues sont Anthropic Claude et OpenAI, sélectionnées par variable d'environnement, avec bascule automatique sur le second en cas d'indisponibilité. Aucune clé n'est jamais exposée au navigateur.
+Le fournisseur de LLM est abstrait derrière une interface `LlmProvider` (`generate` : prompt en couches, conversation, outils, format de sortie). L'implémentation livrée appelle Claude par le SDK officiel d'Anthropic : Claude Opus 5.5 par défaut, avec bascule automatique sur Claude Sonnet 5.5 en cas d'indisponibilité (`FailoverProvider`), et reprise d'un refus par l'API elle-même (`fallbacks: "default"`). Modèles et effort se règlent par variables d'environnement. Une implémentation à réponses fixes (`AI_PROVIDER=scripted`) sert aux tests automatiques et est refusée en préproduction et en production. Aucune clé n'est jamais exposée au navigateur.
 
-Le prompt est assemblé dynamiquement par établissement, en couches : système (identité « SOFIA, l'assistante virtuelle de [Établissement] », ton, interdits), contexte business, contexte client, historique, connaissances, outils disponibles, règles métier. Les règles éprouvées du prototype `sofia/` sont reprises : ne jamais inventer prix, horaires, disponibilités ou promotions, escalade médicale prioritaire, réponse à la partie autorisée des messages mixtes, PT-PT strict, ne jamais dire « en tant qu'intelligence artificielle ».
+Le prompt est assemblé en trois couches : les règles de la plateforme, identiques pour tous les établissements ; la fiche de l'établissement, rendue de façon déterministe ; le contexte du message (date et heure locales, canal, ce que l'on sait de la cliente). Les deux premières portent un point de cache, si bien qu'une conversation ne repaie pas sa Knowledge Base à chaque message. Les règles éprouvées du prototype `sofia/` sont reprises et corrigées : ne jamais inventer prix, horaires, disponibilités ou promotions, escalade médicale prioritaire, réponse à la partie autorisée des messages mixtes, ordre explicite des cas tarifaires, PT-PT strict, ne jamais prétendre être humaine.
 
-Les actions passent exclusivement par des outils typés (`get_services`, `get_available_slots`, `create_appointment`, `handoff_to_human`…). Chaque appel est validé par un schéma Zod puis exécuté par le code avec les droits du tenant : le modèle propose, le code décide. C'est la défense principale contre l'injection de prompt, complétée par l'isolation du contenu client dans le prompt et le refus de toute instruction venant d'un message entrant.
+La réponse du modèle a un format imposé par l'API (structured outputs) et revalidé par Zod : message, langue, intention, niveau d'intention et une action unique (`handoff`, `booking_request`, `opt_out` ou `none`). Les actions sont des champs validés, jamais du texte interprété : le modèle propose, le code décide et les applique avec les droits du tenant. Le seul outil exposé au modèle, `search_knowledge_base`, est en lecture seule. Viennent ensuite des garde-fous déterministes (`guards.ts`) : un prix, un numéro, un email ou un lien absent de la Knowledge Base fait remplacer la réponse par un message neutre et prévenir l'équipe ; une question médicale est toujours transmise. C'est la défense principale contre l'invention et l'injection de prompt, complétée par l'isolation du contenu client et le refus de toute instruction venant d'un message entrant.
 
-Le RAG (recherche sémantique dans les documents) est préparé : la table `knowledge_documents` existe, les chunks et embeddings (pgvector) arriveront quand le volume de documents le justifiera.
+Les documents sont découpés en passages (`knowledge_chunks`) indexés en plein texte PostgreSQL (configuration `simple`, texte sans accents), ce qui couvre le français, le portugais et l'anglais sans extension. Une recherche sémantique (pgvector) se justifiera avec plus de volume.
+
+Aucun appel au modèle ne tient de connexion à la base : la Knowledge Base est lue dans une transaction courte, chaque recherche ouvre la sienne, et le résultat est écrit dans une troisième. Pour une conversation réelle (`handleInboundMessage`), SOFIA se tait si elle n'est pas active pour l'établissement ou si l'équipe a pris la main ; sa réponse est enregistrée `PENDING` pour que l'adaptateur du canal l'envoie ; si aucun modèle ne répond, l'équipe est prévenue. Le banc de test (`npm run ai:bench`) rejoue des scénarios contre le vrai modèle pour mesurer la variance.
 
 ## 8. Canaux
 

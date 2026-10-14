@@ -6,7 +6,6 @@ import { ONBOARDING_STEPS, SETUP_ITEMS, type OnboardingSlug, type SetupChecklist
 
 /** Phase of a step whose feature is not built yet. */
 export function stepPhase(slug: OnboardingSlug): number | undefined {
-  if (slug === "test") return 3;
   return SETUP_ITEMS.find((item) => item.step === slug)?.phase;
 }
 

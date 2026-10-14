@@ -19,10 +19,12 @@
     "db:seed": "tsx --conditions=react-server scripts/seed.ts",
     "db:setup": "tsx --conditions=react-server scripts/db-setup.ts",
     "db:studio": "drizzle-kit studio",
+    "ai:bench": "tsx --conditions=react-server scripts/ai-bench.ts",
     "setup:env": "node scripts/setup-env.mjs",
     "check": "npm run lint && npm run typecheck && npm run test"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.133.0",
     "@dnd-kit/core": "^6.3.1",
     "@dnd-kit/utilities": "^3.2.2",
     "@node-rs/argon2": "^2.2.1",

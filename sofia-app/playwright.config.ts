@@ -23,6 +23,8 @@ const serverEnv = {
   TRUST_PROXY: "false",
   LOG_LEVEL: "warn",
   SHOW_DESIGN_SYSTEM: "true",
+  // Fixed answers chosen by keywords: the tests never call a real model.
+  AI_PROVIDER: "scripted",
 };
 
 const prepare = "tsx --conditions=react-server scripts/e2e-prepare.ts";

@@ -17,5 +17,11 @@ test.describe("mobile", () => {
     await expect(page.getByRole("dialog")).toHaveCount(0);
     await expect(page.getByText("Hydrafacial Signature", { exact: true })).toBeVisible();
     await expect(page.getByText("Sur consultation").first()).toBeVisible();
+
+    // The knowledge base tabs scroll on their own: the page never scrolls sideways.
+    await page.goto("/knowledge/test");
+    await expect(page.getByRole("textbox", { name: "Message de la cliente" })).toBeVisible();
+    const consoleOverflow = await page.evaluate(() => document.documentElement.scrollWidth - window.innerWidth);
+    expect(consoleOverflow).toBeLessThanOrEqual(1);
   });
 });

@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import type * as React from "react";
 
-import { PageHeader } from "@/components/app/page-header";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
@@ -56,18 +55,16 @@ export default async function KnowledgePage() {
 
   return (
     <>
-      <PageHeader
-        title="Knowledge Base"
-        description="Tout ce que SOFIA a le droit de dire sur votre établissement. Ce qui n'est pas ici, elle ne l'invente pas : elle vérifie ou passe la main à votre équipe."
-        actions={<Badge variant="muted">FAQ et documents en phase 3</Badge>}
-      />
-
       <Alert variant="info" className="mb-8">
         <BookOpenCheckIcon aria-hidden />
-        <AlertTitle>Exactement ce que SOFIA saura</AlertTitle>
+        <AlertTitle>Exactement ce que SOFIA sait</AlertTitle>
         <AlertDescription className="text-info/85">
-          L&apos;établissement, les prestations et les horaires se modifient depuis la mise en route. La FAQ et les documents arrivent avec
-          l&apos;AI Orchestrator en phase 3.
+          L&apos;établissement, les prestations et les horaires se modifient depuis la mise en route, le reste depuis les onglets ci-dessus. Avant
+          qu&apos;une cliente ne lui écrive, vérifiez ses réponses dans{" "}
+          <Link href="/knowledge/test" className="font-medium underline underline-offset-4">
+            Tester SOFIA
+          </Link>
+          .
         </AlertDescription>
       </Alert>
 
@@ -99,6 +96,7 @@ export default async function KnowledgePage() {
               <Field label="Annulation" value={profile?.cancellationPolicy} />
               <Field label="Réservation" value={profile?.bookingPolicy} />
               <Field label="Informations importantes" value={profile?.importantInfo} />
+              <Field label="Questions médicales" value={profile?.medicalReferent ? `Transmises à ${profile.medicalReferent}` : "Transmises à votre équipe"} />
             </dl>
           </CardContent>
         </Card>
@@ -216,6 +214,7 @@ export default async function KnowledgePage() {
         <Card>
           <CardHeader>
             <CardTitle>Praticiens</CardTitle>
+            {canEdit ? <EditLink href="/knowledge/practitioners" label="Modifier les praticiens" /> : null}
           </CardHeader>
           <CardContent>
             {knowledge.practitioners.length === 0 ? (
@@ -239,6 +238,7 @@ export default async function KnowledgePage() {
         <Card>
           <CardHeader>
             <CardTitle>FAQ et promotions</CardTitle>
+            {canEdit ? <EditLink href="/knowledge/faq" label="Modifier la FAQ" /> : null}
           </CardHeader>
           <CardContent className="space-y-5">
             {knowledge.faqs.length === 0 ? (

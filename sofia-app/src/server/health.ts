@@ -2,6 +2,7 @@ import "server-only";
 
 import { sql } from "drizzle-orm";
 
+import { describeAiConfiguration } from "@/server/ai/config";
 import { getDb } from "@/server/db/client";
 import { env } from "@/server/env";
 
@@ -11,6 +12,8 @@ export interface HealthReport {
     database: { ok: boolean; latencyMs?: number; error?: string };
     rowLevelSecurity: { ok: boolean; enforced?: boolean; unprotectedTables?: string[]; error?: string };
     email: { ok: boolean; transport: string };
+    /** Informational: without a model SOFIA stays silent and the team answers, the app itself is fine. */
+    ai: { configured: boolean; provider: string; model: string | null; fallbackModel: string | null };
   };
 }
 
@@ -28,6 +31,7 @@ export async function runHealthChecks(): Promise<HealthReport> {
       database: { ok: false },
       rowLevelSecurity: { ok: false },
       email: { ok: config.EMAIL_TRANSPORT === "smtp" || config.APP_ENV !== "production", transport: config.EMAIL_TRANSPORT },
+      ai: describeAiConfiguration(),
     },
   };
 

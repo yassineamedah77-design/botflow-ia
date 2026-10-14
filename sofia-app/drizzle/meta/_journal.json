@@ -22,6 +22,13 @@
       "when": 1791277497860,
       "tag": "0002_phase2_crm_import",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1791993065702,
+      "tag": "0003_phase3_knowledge_ai",
+      "breakpoints": true
     }
   ]
 }

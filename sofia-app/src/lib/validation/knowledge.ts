@@ -75,6 +75,7 @@ export const establishmentSchema = z.object({
   cancellationPolicy: optionalText(1000),
   bookingPolicy: optionalText(1000),
   importantInfo: optionalText(1000),
+  medicalReferent: optionalText(80),
 });
 
 export type EstablishmentInput = z.infer<typeof establishmentSchema>;
@@ -153,3 +154,93 @@ export const businessHoursSchema = z
   });
 
 export type BusinessHoursInput = z.infer<typeof businessHoursSchema>;
+
+/*
+ * The rest of the knowledge base (Phase 3): questions and answers,
+ * promotions, practitioners, exceptional closures and documents.
+ */
+
+/** A select left on "none" posts an empty string. */
+const optionalUuid = z
+  .string()
+  .trim()
+  .optional()
+  .transform((value, ctx) => {
+    if (!value) return null;
+    if (z.uuid().safeParse(value).success) return value;
+    ctx.addIssue({ code: "custom", message: "Prestation introuvable." });
+    return z.NEVER;
+  });
+
+const isoDate = (message: string) => z.string({ error: message }).trim().regex(/^\d{4}-\d{2}-\d{2}$/, { error: message });
+
+const optionalIsoDate = z
+  .string()
+  .trim()
+  .optional()
+  .transform((value, ctx) => {
+    if (!value) return null;
+    if (/^\d{4}-\d{2}-\d{2}$/.test(value) && !Number.isNaN(Date.parse(value))) return value;
+    ctx.addIssue({ code: "custom", message: "Date invalide." });
+    return z.NEVER;
+  });
+
+export const FAQ_LANGUAGES = ["fr", "pt", "en"] as const;
+
+export const faqSchema = z.object({
+  question: requiredText(3, 300, "Écrivez la question telle qu'une cliente la pose."),
+  answer: requiredText(2, 2000, "Écrivez la réponse que SOFIA doit donner."),
+  language: z.enum(FAQ_LANGUAGES, { error: "Langue invalide." }),
+  serviceId: optionalUuid,
+});
+
+export type FaqInput = z.infer<typeof faqSchema>;
+
+export const promotionSchema = z
+  .object({
+    title: requiredText(3, 120, "Donnez un titre à la promotion."),
+    description: optionalText(1000),
+    serviceId: optionalUuid,
+    startsOn: optionalIsoDate,
+    endsOn: optionalIsoDate,
+  })
+  .superRefine((value, ctx) => {
+    if (value.startsOn && value.endsOn && value.endsOn < value.startsOn) {
+      ctx.addIssue({ code: "custom", path: ["endsOn"], message: "La fin doit suivre le début." });
+    }
+  });
+
+export type PromotionInput = z.infer<typeof promotionSchema>;
+
+export const practitionerSchema = z.object({
+  name: requiredText(2, 80, "Indiquez le nom de la praticienne ou du praticien."),
+  title: optionalText(80),
+  bio: optionalText(600),
+  serviceIds: z.array(z.uuid({ error: "Prestation introuvable." })).max(200).default([]),
+});
+
+export type PractitionerInput = z.infer<typeof practitionerSchema>;
+
+export const closureSchema = z
+  .object({
+    startsOn: isoDate("Indiquez le premier jour de fermeture."),
+    endsOn: isoDate("Indiquez le dernier jour de fermeture."),
+    reason: optionalText(200),
+  })
+  .superRefine((value, ctx) => {
+    if (value.endsOn < value.startsOn) {
+      ctx.addIssue({ code: "custom", path: ["endsOn"], message: "Le dernier jour doit suivre le premier." });
+    }
+  });
+
+export type ClosureInput = z.infer<typeof closureSchema>;
+
+/** About 15 pages of text: enough for a price list, a protocol or a policy. */
+export const DOCUMENT_MAX_LENGTH = 50_000;
+
+export const documentSchema = z.object({
+  title: requiredText(3, 120, "Donnez un titre au document."),
+  content: requiredText(20, DOCUMENT_MAX_LENGTH, "Collez le texte du document (20 caractères minimum)."),
+});
+
+export type DocumentInput = z.infer<typeof documentSchema>;
