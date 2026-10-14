@@ -65,6 +65,6 @@
   },
   "description": "SOFIA — AI Revenue Recovery & Booking System for Beauty Clinics (BotFlow IA)",
   "engines": {
-    "node": ">=20.9.0"
+    "node": "22.x"
   }
 }
