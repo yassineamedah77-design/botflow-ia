@@ -200,7 +200,7 @@ describe("SOFIA on a live conversation", () => {
   let serviceSlug: string;
 
   beforeAll(async () => {
-    owner = await createEstablishment("Maison Lumière");
+    owner = await createEstablishment("Institut Orchidée");
     await saveEstablishmentProfile(
       owner.ctx,
       {
@@ -211,7 +211,7 @@ describe("SOFIA on a live conversation", () => {
         postalCode: "69003",
         city: "Lyon",
         phone: "04 78 00 00 00",
-        email: "bonjour@maison-lumiere.example",
+        email: "bonjour@institut-orchidee.example",
         websiteUrl: null,
         instagramHandle: null,
         cancellationPolicy: null,
