@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // SOFIA is a separate application with its own lint configuration.
+    "sofia-app/**",
   ]),
 ]);
 

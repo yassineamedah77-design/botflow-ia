@@ -1,0 +1,70 @@
+# Local services for SOFIA.
+#
+#   docker compose up -d
+#       PostgreSQL + Mailpit, to work with `npm run dev`.
+#   ENCRYPTION_KEY=$(openssl rand -base64 32) docker compose --profile app up -d --build
+#       + the production image on http://localhost:3000 (migrations run first).
+#
+# Local use only: the passwords below are public. Mailpit shows every email
+# the app sends on http://localhost:8025.
+
+name: sofia
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./docker/postgres-init.sql:/docker-entrypoint-initdb.d/01-sofia.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  mailpit:
+    image: axllent/mailpit:v1.31
+    ports:
+      - "127.0.0.1:8025:8025" # web interface
+      - "127.0.0.1:1025:1025" # SMTP
+
+  migrate:
+    profiles: [app]
+    build: .
+    image: sofia:local
+    command: ["node", "scripts/migrate.cjs"]
+    environment:
+      DATABASE_URL: postgres://sofia:sofia@postgres:5432/sofia
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  app:
+    profiles: [app]
+    build: .
+    image: sofia:local
+    environment:
+      # staging: production build without the https / real SMTP requirements.
+      APP_ENV: staging
+      APP_URL: http://localhost:3000
+      DATABASE_URL: postgres://sofia:sofia@postgres:5432/sofia
+      ENCRYPTION_KEY: ${ENCRYPTION_KEY:-}
+      EMAIL_TRANSPORT: smtp
+      SMTP_URL: smtp://mailpit:1025
+      EMAIL_FROM: SOFIA <no-reply@sofia.local>
+      TRUST_PROXY: "false"
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      mailpit:
+        condition: service_started
+
+volumes:
+  postgres-data:

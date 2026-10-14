@@ -1,0 +1,20 @@
+# Only what the build needs goes into the Docker context.
+.git
+node_modules
+.next
+dist
+coverage
+test-results
+playwright-report
+blob-report
+.mail-outbox
+*.tsbuildinfo
+next-env.d.ts
+
+# Secrets never enter the image: configuration is passed at runtime.
+.env*
+!.env.example
+
+Dockerfile
+.dockerignore
+docker-compose.yml
