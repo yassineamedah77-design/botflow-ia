@@ -40,8 +40,8 @@ Renseigne ensuite les variables d'environnement, séparément pour **Production*
 | `APP_URL` | `https://sofia.botflow-ia.fr` en production (l'adresse publique, en https). Rien pour Preview : l'application prend l'adresse de la branche prévisualisée |
 | `APP_ENV` | `production` pour Production, `staging` pour Preview |
 | `ENCRYPTION_KEY` | Générée une fois avec `openssl rand -base64 32`, et sauvegardée hors de Vercel |
-| `EMAIL_TRANSPORT` | `smtp` |
-| `SMTP_URL` | L'URL SMTP de Brevo (voir l'étape 5) |
+| `EMAIL_TRANSPORT` | `smtp` pour Production. `console` pour Preview : une version de test n'envoie aucun email, elle l'écrit dans les journaux de Vercel |
+| `SMTP_URL` | L'URL SMTP de Brevo (voir l'étape 5), pour Production seulement |
 | `EMAIL_FROM` | Une adresse du sous-domaine d'envoi, par exemple `SOFIA <sofia@mail.botflow-ia.fr>` |
 | `SIGNUP_ENABLED` | `true` au lancement : l'inscription est aujourd'hui le seul moyen de créer un établissement, le tien comme ceux de tes clientes. Avec `false`, seules les invitations dans un établissement existant restent possibles |
 | `HEALTHCHECK_TOKEN` | Une valeur aléatoire, pour lire le détail de `/api/health` |
