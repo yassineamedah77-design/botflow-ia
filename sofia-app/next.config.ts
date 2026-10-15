@@ -11,7 +11,6 @@ const projectRoot = path.resolve(__dirname);
 const securityHeaders = [
   { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
   { key: "X-Content-Type-Options", value: "nosniff" },
-  { key: "X-Frame-Options", value: "DENY" },
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
   {
     key: "Permissions-Policy",
@@ -31,7 +30,12 @@ const nextConfig: NextConfig = {
   // Native argon2 bindings must be required at runtime, never bundled.
   serverExternalPackages: ["@node-rs/argon2"],
   async headers() {
-    return [{ source: "/:path*", headers: securityHeaders }];
+    return [
+      { source: "/:path*", headers: securityHeaders },
+      // Every page refuses to be framed, except the widget's chat window: its CSP
+      // frame-ancestors (src/proxy.ts) lists the establishment's allowed domains.
+      { source: "/((?!widget/).*)", headers: [{ key: "X-Frame-Options", value: "DENY" }] },
+    ];
   },
 };
 

@@ -4,7 +4,7 @@ SOFIA est l'assistante IA de BotFlow IA pour les instituts de beauté et cliniqu
 
 Ce dossier contient l'application SaaS multi-établissements. Elle est indépendante du site vitrine situé à la racine du dépôt (dépendances, configuration et déploiement séparés).
 
-Trois phases sont livrées. La **Phase 1** pose l'architecture, la base de données avec isolation stricte entre établissements, l'authentification, les rôles, l'équipe et le design system ([`docs/PHASE-1.md`](docs/PHASE-1.md)). La **Phase 2** apporte le CRM et son pipeline, l'import du fichier clients et la réactivation des anciennes clientes, l'inbox unifiée avec prise de main, les notifications, le dashboard du chiffre d'affaires récupéré et l'onboarding en 10 étapes ([`docs/PHASE-2.md`](docs/PHASE-2.md)). La **Phase 3** donne à SOFIA son moteur d'intelligence artificielle : la Knowledge Base complète (FAQ, promotions, praticiens, fermetures, documents), l'AI Orchestrator avec ses garde-fous, la console « Tester SOFIA » et le banc de test ([`docs/PHASE-3.md`](docs/PHASE-3.md)). L'architecture cible est dans [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), le plan des phases suivantes dans [`docs/ROADMAP.md`](docs/ROADMAP.md), la mise en ligne sur Vercel dans [`docs/VERCEL.md`](docs/VERCEL.md).
+Quatre phases sont livrées. La **Phase 1** pose l'architecture, la base de données avec isolation stricte entre établissements, l'authentification, les rôles, l'équipe et le design system ([`docs/PHASE-1.md`](docs/PHASE-1.md)). La **Phase 2** apporte le CRM et son pipeline, l'import du fichier clients et la réactivation des anciennes clientes, l'inbox unifiée avec prise de main, les notifications, le dashboard du chiffre d'affaires récupéré et l'onboarding en 10 étapes ([`docs/PHASE-2.md`](docs/PHASE-2.md)). La **Phase 3** donne à SOFIA son moteur d'intelligence artificielle : la Knowledge Base complète (FAQ, promotions, praticiens, fermetures, documents), l'AI Orchestrator avec ses garde-fous, la console « Tester SOFIA » et le banc de test ([`docs/PHASE-3.md`](docs/PHASE-3.md)). La **Phase 4** branche le premier canal, le widget du site web, installable en une ligne et protégé contre les abus, et l'activation de SOFIA par établissement ([`docs/PHASE-4.md`](docs/PHASE-4.md)). Ce qui reste à faire de ton côté, à optimiser ou à ajouter est suivi dans [`docs/BACKLOG.md`](docs/BACKLOG.md). L'architecture cible est dans [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), le plan des phases suivantes dans [`docs/ROADMAP.md`](docs/ROADMAP.md), la mise en ligne sur Vercel dans [`docs/VERCEL.md`](docs/VERCEL.md).
 
 ## Prérequis
 
@@ -26,7 +26,7 @@ L'application tourne sur http://localhost:3000.
 
 Avec ton propre PostgreSQL au lieu de Docker, renseigne `DATABASE_ADMIN_URL` dans `.env.local` (une connexion administrateur, par exemple l'utilisateur `postgres`) puis remplace `npm run db:migrate` par `npm run db:setup -- --with-test`. Ce script crée le rôle applicatif `sofia` sans privilège d'administration, les bases de développement, de test et de test de bout en bout, puis applique les migrations. Si le port 5432 est déjà utilisé par un PostgreSQL local, c'est cette seconde voie qu'il faut prendre.
 
-Pour que SOFIA réponde dans la console « Tester SOFIA », ajoutez `ANTHROPIC_API_KEY` dans `.env.local`. Sans clé, l'application fonctionne normalement et la console indique que le modèle n'est pas configuré ; `AI_PROVIDER=scripted` donne des réponses fixes, sans modèle, pour essayer l'interface.
+Pour que SOFIA réponde dans la console « Tester SOFIA » et dans le widget, ajoutez `ANTHROPIC_API_KEY` dans `.env.local`. Le widget s'essaie sans site externe depuis Canaux → Site web → Aperçu, qui charge le vrai `widget.js` dans l'application. Sans clé, l'application fonctionne normalement et la console indique que le modèle n'est pas configuré ; `AI_PROVIDER=scripted` donne des réponses fixes, sans modèle, pour essayer l'interface.
 
 En développement, les emails (vérification d'adresse, mot de passe oublié, invitations) sont affichés dans le terminal avec leurs liens. Pour les voir comme une vraie cliente, mets `EMAIL_TRANSPORT=smtp` et `SMTP_URL=smtp://localhost:1025` dans `.env.local`, puis ouvre Mailpit sur http://localhost:8025.
 
@@ -59,11 +59,11 @@ Maison Éclat est un établissement de démonstration : trois mois de leads, de 
 | `npm run db:seed` | Crée Maison Éclat (`-- --reset` pour la recréer) |
 | `npm run db:setup` | Crée le rôle et les bases avec un compte administrateur PostgreSQL |
 | `npm run db:studio` | Explorateur visuel de la base (Drizzle Studio) |
-| `npm run ai:bench` | Rejoue les conversations de test contre le vrai modèle et mesure la variance (`ANTHROPIC_API_KEY` requis, appels payants). `npm run ai:bench -- --replay` (ou `--replay=wrong`) vérifie le banc lui-même, sans modèle ni clé |
+| `npm run ai:bench` | Rejoue les conversations de test contre le vrai modèle et mesure la variance (`ANTHROPIC_API_KEY` requis, appels payants). `npm run ai:bench -- --replay` (ou `--replay=wrong`) vérifie le banc lui-même, sans modèle ni clé. Le workflow GitHub « SOFIA AI bench », lancé à la main depuis l'onglet Actions, fait tourner le banc avec la clé gardée en secret GitHub |
 
 ## Tests
 
-Les tests unitaires couvrent les permissions, la validation des formulaires, la lecture des fichiers clients, la cryptographie et les helpers. Les tests d'intégration tournent sur une vraie base PostgreSQL, avec le même rôle sans privilège que la production : c'est la seule façon de prouver que l'isolation entre établissements tient réellement. La base `sofia_test` est entièrement reconstruite à chaque lancement. Les tests de bout en bout pilotent un vrai navigateur sur le build de production : inscription et mise en route, vérification d'email, mot de passe oublié, invitation d'un membre, droits par rôle, CRM et Kanban, import d'un fichier clients, prise de main dans l'inbox, dashboard, notifications, en-têtes de sécurité et affichage mobile. Ils lisent les emails écrits sur disque pour suivre les vrais liens.
+Les tests unitaires couvrent les permissions, la validation des formulaires, la lecture des fichiers clients, la cryptographie et les helpers. Les tests d'intégration tournent sur une vraie base PostgreSQL, avec le même rôle sans privilège que la production : c'est la seule façon de prouver que l'isolation entre établissements tient réellement. La base `sofia_test` est entièrement reconstruite à chaque lancement. Les tests de bout en bout pilotent un vrai navigateur sur le build de production : inscription et mise en route, vérification d'email, mot de passe oublié, invitation d'un membre, droits par rôle, CRM et Kanban, import d'un fichier clients, prise de main dans l'inbox, dashboard, notifications, widget installé sur un faux site tiers (conversation avec SOFIA puis avec l'équipe, refus sur un site non autorisé), en-têtes de sécurité et affichage mobile. Ils lisent les emails écrits sur disque pour suivre les vrais liens.
 
 Avant le premier lancement des tests de bout en bout, installe le navigateur avec `npx playwright install chromium`. Les noms des bases de test peuvent être changés avec `TEST_DATABASE_URL` et `E2E_DATABASE_URL` ; par sécurité, seules les bases dont le nom finit par `_test` ou `_e2e` peuvent être effacées par les tests.
 
@@ -73,14 +73,14 @@ La CI GitHub (`.github/workflows/sofia-ci.yml` à la racine du dépôt) rejoue t
 
 | Dossier | Contenu |
 |---|---|
-| `src/app` | Pages et actions serveur (App Router de Next.js) : `(auth)` pour les pages publiques, `(app)` pour l'application connectée, `onboarding` pour la mise en route, `api` pour la santé, l'import de fichiers et les notifications |
+| `src/app` | Pages et actions serveur (App Router de Next.js) : `(auth)` pour les pages publiques, `(app)` pour l'application connectée, `onboarding` pour la mise en route, `api` pour la santé, l'import de fichiers, les notifications et l'API publique du widget, `widget` pour la fenêtre de conversation affichée sur les sites des établissements |
 | `src/components` | Interface : composants de base (`ui`), shell, formulaires, écrans métier |
 | `src/lib` | Code partagé client et serveur : rôles et permissions, validation, formatage |
 | `src/server` | Code exclusivement serveur : base de données, authentification, services métier, emails, sécurité, journaux |
 | `drizzle` | Migrations SQL versionnées |
 | `scripts` | Migration, seed, création de la base, préparation des tests |
 | `tests` | Tests unitaires, d'intégration et de bout en bout |
-| `docs` | Audit, architecture, plan des phases, bilans des phases, graphiques, mise en ligne sur Vercel |
+| `docs` | Audit, architecture, plan des phases, bilans des phases, backlog, graphiques, mise en ligne sur Vercel |
 
 Trois règles structurent le code. Toute lecture ou écriture de données d'un établissement passe par `withTenant(organizationId, …)`, qui active l'isolation PostgreSQL (Row-Level Security) : une requête oubliée ou mal filtrée ne renvoie rien plutôt que les données d'un autre établissement. Les composants d'interface n'importent jamais `@/server/*`, et ESLint le vérifie. Enfin, aucune fonctionnalité n'est simulée : un module pas encore construit est affiché comme tel, et un canal non connecté apparaît comme non connecté.
 

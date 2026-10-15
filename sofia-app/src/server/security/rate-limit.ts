@@ -34,6 +34,16 @@ export const rateLimitPolicies = {
   contactImportsByOrganization: { limit: 30, windowSeconds: 60 * 60 },
   /** Messages sent to SOFIA from the test console, per establishment: each one is a paid model call. */
   sofiaTestsByOrganization: { limit: 200, windowSeconds: 24 * 60 * 60 },
+  // Website widget (public, untrusted visitors).
+  /** New widget conversations per visitor IP. */
+  widgetConversationsByIp: { limit: 10, windowSeconds: 60 * 60 },
+  /** Widget messages per visitor IP, all establishments together. */
+  widgetMessagesByIp: { limit: 60, windowSeconds: 60 * 60 },
+  /** Bursts within one conversation. */
+  widgetMessagesByConversation: { limit: 8, windowSeconds: 60 },
+  widgetContactsByIp: { limit: 10, windowSeconds: 60 * 60 },
+  /** SOFIA replies to widget visitors per establishment and per day: bounds the model cost of any abuse. */
+  widgetAiRepliesByOrganization: { limit: 1000, windowSeconds: 24 * 60 * 60 },
 } as const satisfies Record<string, RateLimitPolicy>;
 
 export type RateLimitPolicyName = keyof typeof rateLimitPolicies;

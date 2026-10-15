@@ -5,10 +5,10 @@ import { AppError } from "@/server/errors";
 
 /*
  * Outbound messages go through one adapter per channel (specification §36:
- * architecture, adapter, mock, visible status). WhatsApp Cloud API, Instagram
- * Messaging and the website widget plug in here in phases 4 to 6. Until a
- * channel is really connected, sending is refused with a clear message:
- * nothing pretends to be delivered.
+ * architecture, adapter, mock, visible status). The website widget is live
+ * (Phase 4); WhatsApp Cloud API and Instagram Messaging plug in here in
+ * phases 5 and 6. Until a channel is really connected, sending is refused
+ * with a clear message: nothing pretends to be delivered.
  */
 
 export type ChannelName = "WHATSAPP" | "INSTAGRAM" | "WEBSITE";
@@ -37,6 +37,18 @@ const AVAILABLE_IN_PHASE: Record<ChannelName, number> = { WEBSITE: 4, WHATSAPP: 
 
 const CHANNEL_NAMES: Record<ChannelName, string> = { WHATSAPP: "WhatsApp", INSTAGRAM: "Instagram", WEBSITE: "le widget du site" };
 
+/**
+ * The website widget has no provider to call: the visitor's chat window reads
+ * new messages from SOFIA itself. A stored message is a sent message; it
+ * becomes DELIVERED when the window fetches it.
+ */
+const websiteAdapter: ChannelAdapter = {
+  channel: "WEBSITE",
+  async send() {
+    return { externalMessageId: null, status: "SENT", simulated: false };
+  },
+};
+
 /** Demo establishments only: fictional contacts, nothing is sent anywhere. */
 const sandboxAdapter = (channel: ChannelName): ChannelAdapter => ({
   channel,
@@ -56,7 +68,7 @@ export class ChannelNotConnectedError extends AppError {
 
 /**
  * The adapter able to deliver on `channel` for this establishment, or a
- * ChannelNotConnectedError. Phases 4 to 6 register the widget, WhatsApp and
+ * ChannelNotConnectedError. Phases 5 and 6 register the WhatsApp and
  * Instagram adapters here, each after checking its integration is CONNECTED.
  */
 export async function getChannelAdapter(
@@ -64,6 +76,8 @@ export async function getChannelAdapter(
   organization: { id: string; isDemo: boolean },
   channel: ChannelName,
 ): Promise<ChannelAdapter> {
+  // A widget conversation only exists because a visitor wrote from the widget: its window can always read the reply.
+  if (channel === "WEBSITE") return websiteAdapter;
   if (organization.isDemo) return sandboxAdapter(channel);
   throw new ChannelNotConnectedError(channel);
 }
