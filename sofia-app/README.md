@@ -59,7 +59,7 @@ Maison Éclat est un établissement de démonstration : trois mois de leads, de 
 | `npm run db:seed` | Crée Maison Éclat (`-- --reset` pour la recréer) |
 | `npm run db:setup` | Crée le rôle et les bases avec un compte administrateur PostgreSQL |
 | `npm run db:studio` | Explorateur visuel de la base (Drizzle Studio) |
-| `npm run ai:bench` | Rejoue les conversations de test contre le vrai modèle et mesure la variance (`ANTHROPIC_API_KEY` requis, appels payants) |
+| `npm run ai:bench` | Rejoue les conversations de test contre le vrai modèle et mesure la variance (`ANTHROPIC_API_KEY` requis, appels payants). `npm run ai:bench -- --replay` (ou `--replay=wrong`) vérifie le banc lui-même, sans modèle ni clé |
 
 ## Tests
 

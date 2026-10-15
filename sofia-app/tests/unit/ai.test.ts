@@ -4,7 +4,7 @@ import { describe, expect, it, vi } from "vitest";
 import { dayRangeState, formatDayRange, isoDayInZone } from "@/lib/knowledge-dates";
 import { buildSearchQuery, chunkDocument, normalizeForSearch } from "@/lib/knowledge-text";
 import { AnthropicProvider, FailoverProvider } from "@/server/ai/anthropic";
-import { applyGuards, extractAmounts, extractEmails, extractHosts, extractPhones } from "@/server/ai/guards";
+import { applyGuards, extractAmounts, extractEmails, extractHosts, extractPercentages, extractPhones } from "@/server/ai/guards";
 import { toStrictJsonSchema } from "@/server/ai/json-schema";
 import { memoryKnowledgeSearch } from "@/server/ai/knowledge";
 import { runSofiaTurn, splitConversation } from "@/server/ai/orchestrator";
@@ -123,10 +123,62 @@ describe("guard extraction", () => {
     expect(extractPhones("Rendez-vous le 2026-10-14 à 9 h 30")).toEqual([]);
     expect(extractEmails("Écrivez à Ola@Clinica-Lumina.example.")).toEqual(["ola@clinica-lumina.example"]);
     expect(extractHosts("Voir https://www.exemple.fr/tarifs, ou autre-site.com").map((link) => link.host)).toEqual(["exemple.fr", "autre-site.com"]);
+    // Any domain followed by a path is a link, whatever its extension.
+    expect(extractHosts("Réservez sur bit.ly/rdv ou lumina.salon/tarifs").map((link) => link.host)).toEqual(["bit.ly", "lumina.salon"]);
+    expect(extractHosts("Ouvert 24h/24, 7j/7, avec la Dre. Marques.")).toEqual([]);
+  });
+
+  it("finds percentages", () => {
+    expect(extractPercentages("-20 % sur le peeling, ou 12,5% sur le forfait").map((found) => found.percent)).toEqual([20, 12.5]);
   });
 });
 
 describe("guards", () => {
+  const plain = (reply: string) => applyGuards(turn({ reply }), guardContext());
+
+  it("never blocks a correct reply, however it writes prices, hours, numbers and links", () => {
+    const correct = [
+      "Le laser jambes complètes est à 140€, séance unique d'environ 60 min.",
+      "La consultation coûte 40,00 € et ce montant est déduit du premier acte.",
+      "A consulta custa €40 e é descontada no primeiro ato.",
+      "The laser for full legs is 140 EUR, about 60 minutes.",
+      "Nous sommes ouverts du lundi au vendredi de 9h30 à 19h, et le samedi de 9h30 à 13h.",
+      "Horaires : 09:30 – 19:00 en semaine, 09.30 - 13.00 le samedi.",
+      "Nous sommes au Av. Central 120, 4710-229 Braga.",
+      "Notre adresse : Av. Central 120 4710-229 Braga, parking gratuit au sous-sol.",
+      "Appelez-nous au 253 000 000, au +351 253 000 000 ou au (+351) 253-000-000.",
+      "En cas d'urgence vitale, composez le 112.",
+      "La fermeture a lieu du 12/11 au 14/11/2026.",
+      "Annulation gratuite jusqu'à 24 heures avant le rendez-vous, nous répondons 24h/24.",
+      "Retrouvez-nous sur Instagram : @clinica.lumina ou instagram.com/clinica.lumina",
+      "Our website is clinica-lumina.example and you can email ola@clinica-lumina.example.",
+    ];
+    for (const reply of correct) expect({ reply, violations: plain(reply).violations }).toEqual({ reply, violations: [] });
+  });
+
+  it("blocks invented prices, discounts, numbers and links, however they are written", () => {
+    const invented: Array<[string, string]> = [
+      ["Le microneedling est à 120 euros.", "unknown_amount"],
+      ["Comptez 99€.", "unknown_amount"],
+      ["C'est € 75 la séance.", "unknown_amount"],
+      ["Environ 1 200 € le forfait.", "unknown_amount"],
+      ["Profitez de -20 % sur votre première séance.", "unknown_percentage"],
+      ["On vous fait 10% de réduction.", "unknown_percentage"],
+      ["Appelez le 06 12 34 56 78.", "unknown_phone"],
+      ["Écrivez à rdv@lumina.pt.", "unknown_email"],
+      ["Réservez sur bit.ly/lumina-rdv", "unknown_link"],
+      ["Prenez rendez-vous sur https://calendly.com/lumina", "unknown_link"],
+    ];
+    for (const [reply, kind] of invented) expect({ reply, kinds: plain(reply).violations.map((violation) => violation.kind) }).toEqual({ reply, kinds: [kind] });
+    // An invented discount is a price question for the team.
+    expect(plain("-20 % pour vous !").turn.action).toMatchObject({ type: "handoff", reason: "price_unknown" });
+  });
+
+  it("allows a discount written in a running promotion", () => {
+    const snapshot = luminaSnapshot({ promotions: [{ title: "-20 % sur le peeling", description: null, serviceName: "Peeling superficiel", endsOn: "2026-10-31" }] });
+    expect(applyGuards(turn({ reply: "En ce moment, -20 % sur le peeling superficiel." }), guardContext({ snapshot })).violations).toEqual([]);
+  });
+
   it("lets configured prices through", () => {
     const result = applyGuards(turn({ reply: "L'épilation laser jambes complètes est à 140 €, pour 60 minutes.", intent: "PRICE_REQUEST" }), guardContext());
     expect(result.replaced).toBe(false);
@@ -272,6 +324,33 @@ describe("structured output schema", () => {
     expect(booking.properties.email!.type).toEqual(["string", "null"]);
     expect(JSON.stringify(schema)).not.toContain("oneOf");
   });
+
+  it("only uses JSON Schema features the API accepts", async () => {
+    // Structured outputs and strict tools reject numeric and length constraints, open
+    // objects and unknown formats with a 400: the first real call must not be the test.
+    const KEYWORDS = new Set(["type", "properties", "required", "additionalProperties", "enum", "const", "anyOf", "allOf", "items", "description", "format", "$ref", "$defs"]);
+    const FORMATS = new Set(["date-time", "time", "date", "duration", "email", "hostname", "uri", "ipv4", "ipv6", "uuid"]);
+    const problems: string[] = [];
+    const walk = (node: Record<string, unknown>, path: string) => {
+      for (const key of Object.keys(node)) if (!KEYWORDS.has(key)) problems.push(`${path}: ${key}`);
+      if (node.format !== undefined && !FORMATS.has(node.format as string)) problems.push(`${path}: format ${String(node.format)}`);
+      if (node.type === "object") {
+        const keys = Object.keys((node.properties as object | undefined) ?? {});
+        if (node.additionalProperties !== false) problems.push(`${path}: open object`);
+        if (JSON.stringify(node.required) !== JSON.stringify(keys)) problems.push(`${path}: optional property`);
+        for (const [key, child] of Object.entries((node.properties as Record<string, Record<string, unknown>>) ?? {})) walk(child, `${path}.${key}`);
+      }
+      for (const child of [...((node.anyOf as []) ?? []), ...((node.allOf as []) ?? [])]) walk(child, `${path}|`);
+      if (node.items) walk(node.items as Record<string, unknown>, `${path}[]`);
+      for (const [key, child] of Object.entries((node.$defs as Record<string, Record<string, unknown>>) ?? {})) walk(child, `${path}$${key}`);
+    };
+    walk(toStrictJsonSchema(sofiaTurnSchema), "answer");
+
+    const provider = new QueueProvider([turn()]);
+    await runSofiaTurn({ provider, snapshot: luminaSnapshot(), conversation: [{ author: "customer", text: "Bonjour" }], customer: null, channel: "TEST", search: async () => [] });
+    walk(provider.requests[0]!.tools[0]!.inputSchema as Record<string, unknown>, "search_knowledge_base");
+    expect(problems).toEqual([]);
+  });
 });
 
 describe("orchestrator", () => {
@@ -353,10 +432,22 @@ describe("providers", () => {
     }) as unknown as Anthropic.Beta.BetaMessage;
 
   it("runs the tool loop, caches the stable layers and validates the answer", async () => {
-    const create = vi
-      .fn()
-      .mockResolvedValueOnce(message({ stop_reason: "tool_use", content: [{ type: "tool_use", id: "tool-1", name: "search_knowledge_base", input: { query: "parking" } }] as never }))
-      .mockResolvedValueOnce(message({ content: [{ type: "text", text: JSON.stringify(turn({ reply: "Bonjour, que puis-je pour vous ?" })) }] as never }));
+    const responses = [
+      message({
+        stop_reason: "tool_use",
+        content: [
+          { type: "thinking", thinking: "", signature: "signed-reasoning" },
+          { type: "tool_use", id: "tool-1", name: "search_knowledge_base", input: { query: "parking" } },
+        ] as never,
+      }),
+      message({ content: [{ type: "text", text: JSON.stringify(turn({ reply: "Bonjour, que puis-je pour vous ?" })) }] as never }),
+    ];
+    // The SDK receives the live messages array: keep a copy of each request as sent.
+    const sent: Array<{ messages: Array<{ role: string }> }> = [];
+    const create = vi.fn(async (params: { messages: Array<{ role: string }> }) => {
+      sent.push(structuredClone(params));
+      return responses.shift()!;
+    });
     const client = { beta: { messages: { create } } } as unknown as Anthropic;
     const provider = new AnthropicProvider({ apiKey: "test-key-not-used-000000", model: "claude-opus-5-5", effort: "medium", client });
 
@@ -365,15 +456,21 @@ describe("providers", () => {
     expect(result.toolCalls).toEqual([{ name: "search_knowledge_base", input: { query: "parking" }, ok: true }]);
     expect(result.usage).toEqual({ inputTokens: 200, outputTokens: 40, cacheReadTokens: 160, cacheWriteTokens: 0 });
 
-    const first = create.mock.calls[0]![0];
-    expect(first.system[0]).toMatchObject({ text: "Règles", cache_control: { type: "ephemeral" } });
-    expect(first.system[1]).toMatchObject({ text: "Établissement", cache_control: { type: "ephemeral" } });
-    expect(first.system[2]).toEqual({ type: "text", text: "Contexte" });
-    expect(first.tools[0]).toMatchObject({ name: "search_knowledge_base", strict: true });
+    const first = create.mock.calls[0]![0] as unknown as Anthropic.Beta.MessageCreateParamsNonStreaming & Record<string, unknown>;
+    expect(first.system![0]).toMatchObject({ text: "Règles", cache_control: { type: "ephemeral" } });
+    expect(first.system![1]).toMatchObject({ text: "Établissement", cache_control: { type: "ephemeral" } });
+    expect(first.system![2]).toEqual({ type: "text", text: "Contexte" });
+    expect(first.tools![0]).toMatchObject({ name: "search_knowledge_base", strict: true });
     expect(first.output_config).toMatchObject({ effort: "medium", format: { type: "json_schema" } });
     expect(first).toMatchObject({ model: "claude-opus-5-5", fallbacks: "default", betas: ["server-side-fallback-2026-07-01"] });
     expect(first.messages[1]).toEqual({ role: "assistant", content: "[Message écrit par l'équipe de l'établissement]\nBonjour, l'équipe ici." });
-    const second = create.mock.calls[1]![0];
+    // What the default model rejects with a 400: forced tool choice, sampling parameters,
+    // a thinking budget, an assistant prefill.
+    for (const field of ["tool_choice", "temperature", "top_p", "top_k", "thinking"]) expect(first).not.toHaveProperty(field);
+    expect(sent[0]!.messages.map((sentMessage) => sentMessage.role)).toEqual(["user", "assistant", "user"]);
+    const second = create.mock.calls[1]![0] as unknown as Anthropic.Beta.MessageCreateParamsNonStreaming;
+    // The assistant turn goes back untouched, its signed thinking block first.
+    expect((second.messages.at(-2)!.content as unknown[])[0]).toEqual({ type: "thinking", thinking: "", signature: "signed-reasoning" });
     expect(second.messages.at(-1)).toEqual({ role: "user", content: [{ type: "tool_result", tool_use_id: "tool-1", content: "Aucun passage trouvé." }] });
   });
 

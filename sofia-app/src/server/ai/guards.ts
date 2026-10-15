@@ -10,7 +10,7 @@ import type { HandoffAction, ReplyLanguage, SofiaTurn } from "./reply";
  * and a booking request must name a real service.
  */
 
-export type GuardViolationKind = "unknown_amount" | "unknown_phone" | "unknown_email" | "unknown_link" | "empty_reply";
+export type GuardViolationKind = "unknown_amount" | "unknown_percentage" | "unknown_phone" | "unknown_email" | "unknown_link" | "empty_reply";
 
 export interface GuardViolation {
   kind: GuardViolationKind;
@@ -60,6 +60,13 @@ export function extractAmounts(text: string): Array<{ cents: number; value: stri
   return found;
 }
 
+const PERCENTAGE = /(\d{1,3}(?:[.,]\d{1,2})?)\s?%/gu;
+
+/** Every percentage written in `text` ("-20 %", "10%"), as a number: an invented discount is an invented price. */
+export function extractPercentages(text: string): Array<{ percent: number; value: string }> {
+  return [...text.matchAll(PERCENTAGE)].map((match) => ({ percent: Number(match[1]!.replace(",", ".")), value: match[0].trim() }));
+}
+
 const EMAIL = /[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/giu;
 
 export function extractEmails(text: string): string[] {
@@ -75,7 +82,8 @@ export function extractPhones(text: string): Array<{ digits: string; value: stri
     .filter((phone) => phone.digits.length >= 9 && phone.digits.length <= 15);
 }
 
-const LINK = /\bhttps?:\/\/[^\s<>"')]+|\bwww\.[^\s<>"')]+|\b[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:fr|pt|com|net|org|eu|be|ch|io|co|shop|beauty|me)\b(?:\/[^\s<>"')]*)?/giu;
+const LINK =
+  /\bhttps?:\/\/[^\s<>"')]+|\bwww\.[^\s<>"')]+|\b[a-z0-9-]+(?:\.[a-z0-9-]+)*\.[a-z]{2,24}\/[^\s<>"')]*|\b[a-z0-9-]+(?:\.[a-z0-9-]+)*\.(?:fr|pt|com|net|org|eu|be|ch|lu|es|de|it|uk|io|co|ai|app|ly|gl|link|page|site|online|store|shop|info|biz|beauty|salon|spa|clinic|health|studio|me)\b(?:\/[^\s<>"')]*)?/giu;
 
 export function extractHosts(text: string): Array<{ host: string; value: string }> {
   return [...text.replace(EMAIL, " ").matchAll(LINK)].map((match) => {
@@ -113,6 +121,9 @@ function knowledgeTexts(snapshot: KnowledgeSnapshot, hits: SearchHit[]): string[
 
 interface Allowed {
   amounts: Set<number>;
+  percentages: Set<number>;
+  /** Digits of the establishment's address: "Av. Central 120 4710-229" is not a phone number. */
+  addressDigits: string;
   phones: Set<string>;
   emails: Set<string>;
   hosts: Set<string>;
@@ -123,12 +134,14 @@ function allowedValues(context: GuardContext, turn: SofiaTurn): Allowed {
   const texts = knowledgeTexts(snapshot, context.searchHits);
   const profile = snapshot.profile;
   const amounts = new Set<number>(snapshot.services.map((service) => service.priceCents).filter((cents): cents is number => cents !== null));
+  const percentages = new Set<number>();
   const phones = new Set<string>();
   const emails = new Set<string>();
   const hosts = new Set<string>(["instagram.com", "wa.me"]);
 
   for (const text of [...texts, context.customerText]) {
     for (const amount of extractAmounts(text)) if (text !== context.customerText) amounts.add(amount.cents);
+    for (const { percent } of extractPercentages(text)) if (text !== context.customerText) percentages.add(percent);
     for (const phone of extractPhones(text)) phones.add(phoneKey(phone.digits));
     for (const email of extractEmails(text)) emails.add(email);
     for (const { host } of extractHosts(text)) if (text !== context.customerText) hosts.add(host);
@@ -147,7 +160,7 @@ function allowedValues(context: GuardContext, turn: SofiaTurn): Allowed {
       // An invalid stored URL simply allows nothing.
     }
   }
-  return { amounts, phones, emails, hosts };
+  return { amounts, percentages, addressDigits: profile?.address?.replace(/\D/g, "") ?? "", phones, emails, hosts };
 }
 
 export function findViolations(reply: string, allowed: Allowed): GuardViolation[] {
@@ -156,8 +169,12 @@ export function findViolations(reply: string, allowed: Allowed): GuardViolation[
   for (const amount of extractAmounts(reply)) {
     if (!allowed.amounts.has(amount.cents)) violations.push({ kind: "unknown_amount", value: amount.value });
   }
+  for (const { percent, value } of extractPercentages(reply)) {
+    if (!allowed.percentages.has(percent)) violations.push({ kind: "unknown_percentage", value });
+  }
   for (const phone of extractPhones(reply)) {
-    if (!allowed.phones.has(phoneKey(phone.digits))) violations.push({ kind: "unknown_phone", value: phone.value });
+    const fromAddress = allowed.addressDigits.includes(phone.digits);
+    if (!fromAddress && !allowed.phones.has(phoneKey(phone.digits))) violations.push({ kind: "unknown_phone", value: phone.value });
   }
   for (const email of extractEmails(reply)) {
     if (!allowed.emails.has(email)) violations.push({ kind: "unknown_email", value: email });
@@ -179,6 +196,7 @@ const NEUTRAL_REPLY: Record<ReplyLanguage, string> = {
 
 const VIOLATION_LABELS: Record<GuardViolationKind, string> = {
   unknown_amount: "un prix absent de la Knowledge Base",
+  unknown_percentage: "un pourcentage absent de la Knowledge Base",
   unknown_phone: "un numéro absent de la fiche",
   unknown_email: "un email absent de la fiche",
   unknown_link: "un lien absent de la fiche",
@@ -238,7 +256,7 @@ export function applyGuards(input: SofiaTurn, context: GuardContext): GuardResul
   const language: ReplyLanguage = snapshot.organization.allowedLanguages.includes(turn.language)
     ? turn.language
     : ((["fr", "pt", "en"] as const).find((code) => code === snapshot.organization.defaultLanguage) ?? "fr");
-  const reason = violations.some((violation) => violation.kind === "unknown_amount") ? "price_unknown" : "other";
+  const reason = violations.some((violation) => violation.kind === "unknown_amount" || violation.kind === "unknown_percentage") ? "price_unknown" : "other";
   return {
     turn: {
       ...turn,
