@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 
 const LINKS = [
   { href: "/settings", label: "Établissement" },
+  { href: "/settings/sofia", label: "SOFIA" },
   { href: "/settings/account", label: "Mon compte" },
 ];
 
