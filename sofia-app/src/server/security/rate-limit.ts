@@ -32,6 +32,8 @@ export const rateLimitPolicies = {
   invitationAcceptByIp: { limit: 20, windowSeconds: 60 * 60 },
   /** Client file checks and imports per establishment (each one reads a whole file). */
   contactImportsByOrganization: { limit: 30, windowSeconds: 60 * 60 },
+  /** Messages sent to SOFIA from the test console, per establishment: each one is a paid model call. */
+  sofiaTestsByOrganization: { limit: 200, windowSeconds: 24 * 60 * 60 },
 } as const satisfies Record<string, RateLimitPolicy>;
 
 export type RateLimitPolicyName = keyof typeof rateLimitPolicies;

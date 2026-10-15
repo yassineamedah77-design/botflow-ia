@@ -45,6 +45,8 @@ Renseigne ensuite les variables d'environnement, séparément pour **Production*
 | `EMAIL_FROM` | Une adresse du sous-domaine d'envoi, par exemple `SOFIA <sofia@mail.botflow-ia.fr>` |
 | `SIGNUP_ENABLED` | `true` au lancement : l'inscription est aujourd'hui le seul moyen de créer un établissement, le tien comme ceux de tes clientes. Avec `false`, seules les invitations dans un établissement existant restent possibles |
 | `HEALTHCHECK_TOKEN` | Une valeur aléatoire, pour lire le détail de `/api/health` |
+| `ANTHROPIC_API_KEY` | La clé API Anthropic qui permet à SOFIA de répondre (console Anthropic, compte facturable). Sans elle, l'application fonctionne et l'équipe garde la main. Pour Preview, une clé séparée permet de suivre les coûts des tests à part |
+| `SOFIA_AI_MODEL`, `SOFIA_AI_FALLBACK_MODEL`, `SOFIA_AI_EFFORT` | Facultatifs : `claude-opus-5-5`, `claude-sonnet-5-5` et `medium` par défaut |
 
 La liste complète, avec les valeurs par défaut, est dans `.env.example`. Une variable invalide est signalée dans les journaux de Vercel dès le démarrage, et l'application refuse alors de servir les pages plutôt que de fonctionner à moitié.
 

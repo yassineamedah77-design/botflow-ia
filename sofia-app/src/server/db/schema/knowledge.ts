@@ -46,6 +46,8 @@ export const businessProfiles = pgTable("business_profiles", {
   cancellationPolicy: text(),
   bookingPolicy: text(),
   importantInfo: text(),
+  /** Who answers health questions, as SOFIA names them: "la Dre Marques", "notre médecin". */
+  medicalReferent: text(),
   updatedAt: updatedAt(),
 });
 
@@ -187,7 +189,7 @@ export const promotions = pgTable(
   ],
 );
 
-/** Source documents for the knowledge base. Chunks and embeddings (RAG) arrive in Phase 3. */
+/** Source documents for the knowledge base, split into searchable chunks. */
 export const knowledgeDocuments = pgTable(
   "knowledge_documents",
   {
@@ -204,4 +206,30 @@ export const knowledgeDocuments = pgTable(
     updatedAt: updatedAt(),
   },
   (t) => [index("knowledge_documents_organization_idx").on(t.organizationId, t.status)],
+);
+
+/**
+ * Passages of a document that SOFIA's search tool returns. `search_text` is
+ * the content lowercased and without accents, so "épilation" matches
+ * "epilation": PostgreSQL full-text search with the language-neutral
+ * `simple` configuration, which handles French, Portuguese and English alike
+ * and needs no extension.
+ */
+export const knowledgeChunks = pgTable(
+  "knowledge_chunks",
+  {
+    id: primaryId(),
+    organizationId: organizationId(),
+    documentId: uuid()
+      .notNull()
+      .references(() => knowledgeDocuments.id, { onDelete: "cascade" }),
+    position: integer().notNull(),
+    content: text().notNull(),
+    searchText: text().notNull(),
+    createdAt: createdAt(),
+  },
+  (t) => [
+    index("knowledge_chunks_document_idx").on(t.documentId, t.position),
+    index("knowledge_chunks_search_idx").using("gin", sql`to_tsvector('simple', ${t.searchText})`),
+  ],
 );

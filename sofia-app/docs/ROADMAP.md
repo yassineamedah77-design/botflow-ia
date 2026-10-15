@@ -16,13 +16,15 @@ Chaque phase se termine par le même contrôle : lint, typecheck, tests unitaire
 
 ## Phase 3 — AI Orchestrator et Knowledge Base
 
-Knowledge Base complète : l'établissement, les prestations et les horaires sont déjà modifiables depuis la Phase 2 ; s'y ajoutent les FAQ (générales et par prestation), les promotions, les praticiens, les fermetures exceptionnelles et les documents. Interface `LlmProvider` avec implémentations Anthropic et OpenAI et bascule automatique. Prompt dynamique en couches, outils typés et validés, classification d'intention (12 catégories + question médicale) et niveau d'intention, détection de langue (FR / PT-PT / EN) limitée aux langues autorisées par l'établissement, garde-fous (aucune invention, escalade médicale, anti-injection). Banc de test : jeu de conversations rejoué contre le vrai modèle avec mesure de la variance, en reprenant les scénarios du prototype `sofia/test-conversations.md`. Console « Tester SOFIA » dans l'interface.
+**Livré dans cette phase** (bilan détaillé dans [`PHASE-3.md`](PHASE-3.md)). Knowledge Base complète : FAQ (générales et par prestation), promotions datées, praticiens, fermetures exceptionnelles, documents découpés en passages et recherchés en plein texte, référent pour les questions médicales. Interface `LlmProvider` avec l'implémentation Anthropic (Claude Opus 5.5) et bascule automatique sur un second modèle Claude en cas d'indisponibilité. Prompt dynamique en trois couches mises en cache, outil de recherche en lecture seule, réponse au format imposé et vérifié (message, langue, intention parmi 12 catégories plus question médicale, niveau d'intention, action unique). Détection de la langue limitée aux langues de l'établissement, PT-PT strict. Garde-fous dans le code : aucun prix, remise, numéro, email ou lien inventé n'est envoyé, escalade médicale toujours appliquée, aucune instruction prise dans un message de cliente. Traitement des conversations réelles prêt pour les canaux, actions appliquées par le code (transmission, demande de rendez-vous, désinscription). Banc de test : quinze scénarios, dont les cinq du prototype, rejoués contre le vrai modèle avec mesure de la variance (`npm run ai:bench`), et calibrés sans modèle sur des réponses de référence et vingt-cinq erreurs typiques. Console « Tester SOFIA » dans l'interface.
 
-**À préparer de ton côté :** une clé API Anthropic (et OpenAI en secours) sur un compte facturable.
+**Écart avec le plan :** OpenAI n'est pas implémenté comme secours. Deux modèles Claude partagent le même format de réponse et les mêmes outils, donc le comportement mesuré par le banc de test reste valable en secours. L'interface permet d'ajouter OpenAI plus tard.
+
+**À préparer de ton côté :** une clé API Anthropic sur un compte facturable, pour activer les réponses et lancer le banc de test.
 
 ## Phase 4 — Widget site web
 
-Script `widget.js` intégrable en une ligne, iframe isolée, bouton flottant, interface premium, collecte nom / téléphone / email avec consentement, transfert vers WhatsApp. Clé publique par établissement, domaines autorisés, rate limiting par visiteur, protection anti-abus.
+Script `widget.js` intégrable en une ligne, iframe isolée, bouton flottant, interface premium, collecte nom / téléphone / email avec consentement, transfert vers WhatsApp. Clé publique par établissement, domaines autorisés, rate limiting par visiteur, protection anti-abus. Premier canal branché sur l'AI Orchestrator de la Phase 3 (chaque message reçu obtient sa réponse vérifiée), et activation de SOFIA par établissement, avec mise en pause à tout moment.
 
 ## Phase 5 — Adapter WhatsApp
 

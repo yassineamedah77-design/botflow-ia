@@ -4,7 +4,7 @@ SOFIA est l'assistante IA de BotFlow IA pour les instituts de beauté et cliniqu
 
 Ce dossier contient l'application SaaS multi-établissements. Elle est indépendante du site vitrine situé à la racine du dépôt (dépendances, configuration et déploiement séparés).
 
-Deux phases sont livrées. La **Phase 1** pose l'architecture, la base de données avec isolation stricte entre établissements, l'authentification, les rôles, l'équipe et le design system ([`docs/PHASE-1.md`](docs/PHASE-1.md)). La **Phase 2** apporte le CRM et son pipeline, l'import du fichier clients et la réactivation des anciennes clientes, l'inbox unifiée avec prise de main, les notifications, le dashboard du chiffre d'affaires récupéré et l'onboarding en 10 étapes ([`docs/PHASE-2.md`](docs/PHASE-2.md)). L'architecture cible est dans [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), le plan des phases suivantes dans [`docs/ROADMAP.md`](docs/ROADMAP.md), la mise en ligne sur Vercel dans [`docs/VERCEL.md`](docs/VERCEL.md).
+Trois phases sont livrées. La **Phase 1** pose l'architecture, la base de données avec isolation stricte entre établissements, l'authentification, les rôles, l'équipe et le design system ([`docs/PHASE-1.md`](docs/PHASE-1.md)). La **Phase 2** apporte le CRM et son pipeline, l'import du fichier clients et la réactivation des anciennes clientes, l'inbox unifiée avec prise de main, les notifications, le dashboard du chiffre d'affaires récupéré et l'onboarding en 10 étapes ([`docs/PHASE-2.md`](docs/PHASE-2.md)). La **Phase 3** donne à SOFIA son moteur d'intelligence artificielle : la Knowledge Base complète (FAQ, promotions, praticiens, fermetures, documents), l'AI Orchestrator avec ses garde-fous, la console « Tester SOFIA » et le banc de test ([`docs/PHASE-3.md`](docs/PHASE-3.md)). L'architecture cible est dans [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md), le plan des phases suivantes dans [`docs/ROADMAP.md`](docs/ROADMAP.md), la mise en ligne sur Vercel dans [`docs/VERCEL.md`](docs/VERCEL.md).
 
 ## Prérequis
 
@@ -17,7 +17,7 @@ cd sofia-app
 npm install
 npm run setup:env    # crée .env.local avec une clé de chiffrement générée
 docker compose up -d # PostgreSQL + Mailpit (sauter si tu as ton propre PostgreSQL)
-npm run db:migrate   # crée les 32 tables et applique l'isolation entre établissements
+npm run db:migrate   # crée les 34 tables et applique l'isolation entre établissements
 npm run db:seed      # crée « Maison Éclat », avec trois mois d'activité de démonstration
 npm run dev
 ```
@@ -25,6 +25,8 @@ npm run dev
 L'application tourne sur http://localhost:3000.
 
 Avec ton propre PostgreSQL au lieu de Docker, renseigne `DATABASE_ADMIN_URL` dans `.env.local` (une connexion administrateur, par exemple l'utilisateur `postgres`) puis remplace `npm run db:migrate` par `npm run db:setup -- --with-test`. Ce script crée le rôle applicatif `sofia` sans privilège d'administration, les bases de développement, de test et de test de bout en bout, puis applique les migrations. Si le port 5432 est déjà utilisé par un PostgreSQL local, c'est cette seconde voie qu'il faut prendre.
+
+Pour que SOFIA réponde dans la console « Tester SOFIA », ajoutez `ANTHROPIC_API_KEY` dans `.env.local`. Sans clé, l'application fonctionne normalement et la console indique que le modèle n'est pas configuré ; `AI_PROVIDER=scripted` donne des réponses fixes, sans modèle, pour essayer l'interface.
 
 En développement, les emails (vérification d'adresse, mot de passe oublié, invitations) sont affichés dans le terminal avec leurs liens. Pour les voir comme une vraie cliente, mets `EMAIL_TRANSPORT=smtp` et `SMTP_URL=smtp://localhost:1025` dans `.env.local`, puis ouvre Mailpit sur http://localhost:8025.
 
@@ -57,6 +59,7 @@ Maison Éclat est un établissement de démonstration : trois mois de leads, de 
 | `npm run db:seed` | Crée Maison Éclat (`-- --reset` pour la recréer) |
 | `npm run db:setup` | Crée le rôle et les bases avec un compte administrateur PostgreSQL |
 | `npm run db:studio` | Explorateur visuel de la base (Drizzle Studio) |
+| `npm run ai:bench` | Rejoue les conversations de test contre le vrai modèle et mesure la variance (`ANTHROPIC_API_KEY` requis, appels payants). `npm run ai:bench -- --replay` (ou `--replay=wrong`) vérifie le banc lui-même, sans modèle ni clé |
 
 ## Tests
 

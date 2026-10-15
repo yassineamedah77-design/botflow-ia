@@ -4,12 +4,17 @@ import { randomUUID } from "node:crypto";
 
 import { eq } from "drizzle-orm";
 
+import { chunkDocument, normalizeForSearch } from "@/lib/knowledge-text";
+import { isoDayInZone } from "@/lib/knowledge-dates";
 import { hashPassword } from "@/server/auth/password";
 import { withSystem, withTenant } from "@/server/db/context";
 import {
+  businessClosures,
   businessHours,
   businessProfiles,
   faqs,
+  knowledgeChunks,
+  knowledgeDocuments,
   memberships,
   organizations,
   practitionerServices,
@@ -185,6 +190,18 @@ const FAQS = [
   },
 ];
 
+/** A reference document SOFIA searches when the FAQ is not enough. */
+const LASER_GUIDE = {
+  title: "Préparer sa séance d'épilation laser",
+  content: [
+    "Avant la séance : rasez la zone la veille ou le matin même. Pas de cire, de pince ni de crème dépilatoire pendant les quatre semaines qui précèdent : le laser a besoin du poil sous la peau.",
+    "Évitez le soleil et les autobronzants pendant les deux semaines qui précèdent et qui suivent la séance. Venez la peau propre, sans crème, déodorant ni maquillage sur la zone traitée.",
+    "Le jour de la séance, prévenez l'équipe de tout traitement en cours : certaines situations demandent l'avis de la Dre Rousseau avant de commencer.",
+    "Après la séance : une légère rougeur peut apparaître. Hydratez la zone, évitez le hammam, le sauna et la piscine pendant 48 heures.",
+    "Les séances sont espacées de quatre à huit semaines selon la zone. Le nombre de séances se décide avec l'équipe après la première séance.",
+  ].join("\n\n"),
+};
+
 export interface SeedResult {
   organizationId: string;
   created: boolean;
@@ -261,8 +278,8 @@ export async function seedMaisonEclat(options: { password: string; reset?: boole
         cancellationPolicy:
           "Annulation ou report gratuits jusqu'à 24 h avant le rendez-vous. En deçà, 30 % du soin peuvent être retenus.",
         bookingPolicy: "Un acompte de 30 % est demandé pour les soins de plus de 150 €.",
-        importantInfo:
-          "Toute question médicale (contre-indication, réaction après un soin, grossesse) est transmise à la Dre Rousseau.",
+        importantInfo: "Métro Hôtel de Ville à 5 minutes à pied. Paiement par carte, espèces ou chèque.",
+        medicalReferent: "la Dre Rousseau",
       })
       .where(eq(businessProfiles.organizationId, organizationId));
 
@@ -315,6 +332,23 @@ export async function seedMaisonEclat(options: { password: string; reset?: boole
       startsAt: now,
       endsAt: new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000),
     });
+
+    // An exceptional closure in about six weeks, so SOFIA has one to announce.
+    const closureStart = isoDayInZone(now, "Europe/Paris", 42);
+    await tx.insert(businessClosures).values({
+      organizationId,
+      startsOn: closureStart,
+      endsOn: isoDayInZone(now, "Europe/Paris", 44),
+      reason: "Formation de l'équipe",
+    });
+
+    const [guide] = await tx
+      .insert(knowledgeDocuments)
+      .values({ organizationId, type: "TEXT", title: LASER_GUIDE.title, content: LASER_GUIDE.content, status: "READY", createdByUserId: userIds.get(owner.email)! })
+      .returning({ id: knowledgeDocuments.id });
+    await tx.insert(knowledgeChunks).values(
+      chunkDocument(LASER_GUIDE.content).map((content, position) => ({ organizationId, documentId: guide!.id, position, content, searchText: normalizeForSearch(content) })),
+    );
 
     return seedDemoActivity(tx, {
       organizationId,

@@ -55,8 +55,28 @@ const envSchema = z
     SHOW_DESIGN_SYSTEM: booleanFlag.default(false),
     /** When set, /api/health returns detailed checks only with this bearer token. */
     HEALTHCHECK_TOKEN: z.string().min(16).optional(),
+
+    /**
+     * Language model behind SOFIA. `anthropic` calls Claude with
+     * ANTHROPIC_API_KEY; `scripted` answers from fixed rules without any
+     * model, for automated tests only.
+     */
+    AI_PROVIDER: z.enum(["anthropic", "scripted"]).default("anthropic"),
+    ANTHROPIC_API_KEY: z.string().min(20).optional(),
+    /** Main model, and the one used when it is unavailable ("none" = no fallback model). */
+    SOFIA_AI_MODEL: z.string().min(3).default("claude-opus-5-5"),
+    SOFIA_AI_FALLBACK_MODEL: z.string().default("claude-sonnet-5-5"),
+    /** How much the model thinks before answering: more is slower, costlier and steadier. */
+    SOFIA_AI_EFFORT: z.enum(["low", "medium", "high"]).default("medium"),
   })
   .superRefine((env, ctx) => {
+    if (env.AI_PROVIDER === "scripted" && (env.APP_ENV === "production" || env.APP_ENV === "staging")) {
+      ctx.addIssue({
+        code: "custom",
+        path: ["AI_PROVIDER"],
+        message: "scripted is for automated tests only: it never calls a real model",
+      });
+    }
     if (env.EMAIL_TRANSPORT === "smtp" && !env.SMTP_URL) {
       ctx.addIssue({ code: "custom", path: ["SMTP_URL"], message: "is required when EMAIL_TRANSPORT=smtp" });
     }

@@ -25,6 +25,7 @@ export interface EstablishmentDefaults {
   bookingPolicy: string;
   cancellationPolicy: string;
   importantInfo: string;
+  medicalReferent: string;
 }
 
 function Group({ title, description, children }: { title: string; description: string; children: React.ReactNode }) {
@@ -123,6 +124,14 @@ export function EstablishmentForm({
           </FormField>
           <FormField id="importantInfo" label="Informations utiles" error={fieldError(state, "importantInfo")} hint="Accès, parking, paiement accepté…">
             {(props) => <Textarea {...props} name="importantInfo" defaultValue={value("importantInfo")} rows={2} maxLength={1000} />}
+          </FormField>
+          <FormField
+            id="medicalReferent"
+            label="Questions médicales"
+            error={fieldError(state, "medicalReferent")}
+            hint="SOFIA ne répond jamais à une question de santé : elle la transmet. À qui, tel qu'elle le dira : « la Dre Marques », « notre médecin ». Vide : « l'équipe »."
+          >
+            {(props) => <Input {...props} name="medicalReferent" defaultValue={value("medicalReferent")} maxLength={80} placeholder="la Dre Marques" />}
           </FormField>
         </Group>
       </fieldset>

@@ -43,7 +43,7 @@ export const SETUP_ITEMS: SetupItem[] = [
   { key: "whatsapp", label: "WhatsApp", description: "Connexion officielle WhatsApp Business Platform (Meta).", step: "whatsapp", phase: 5 },
   { key: "instagram", label: "Instagram", description: "Messages privés Instagram via l'API officielle de Meta.", step: "instagram", phase: 6 },
   { key: "widget", label: "Widget", description: "Une ligne de code à ajouter sur votre site.", step: "widget", phase: 4 },
-  { key: "sofiaActive", label: "SOFIA activée", description: "SOFIA commence à répondre à vos clientes, 24 h/24.", step: "activation", phase: 3 },
+  { key: "sofiaActive", label: "SOFIA activée", description: "SOFIA commence à répondre à vos clientes, 24 h/24.", step: "activation", phase: 4 },
 ];
 
 export function setupProgress(state: SetupChecklistState) {
