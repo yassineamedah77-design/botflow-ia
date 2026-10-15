@@ -73,7 +73,7 @@ export default async function WebsiteChannelPage() {
       />
 
       <div className="grid gap-6 lg:grid-cols-3">
-        <div className="grid content-start gap-6 lg:col-span-2">
+        <div className="grid min-w-0 content-start gap-6 lg:col-span-2">
           <Card>
             <CardHeader>
               <CardTitle>Installation</CardTitle>

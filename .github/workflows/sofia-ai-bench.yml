@@ -1,0 +1,89 @@
+# SOFIA (sofia-app/) — the AI test bench against the real model.
+# Started by hand from the Actions tab: every run is billed by Anthropic, so it
+# never runs on its own. The key is the repository secret ANTHROPIC_API_KEY and
+# never leaves GitHub. The bench needs no database (in-memory knowledge base).
+
+name: SOFIA AI bench
+
+on:
+  workflow_dispatch:
+    inputs:
+      runs:
+        description: "Runs per scenario (variance needs several)"
+        required: true
+        default: "5"
+      scenarios:
+        description: "Scenario ids separated by spaces (e.g. C1 C7), empty for all fifteen"
+        required: false
+        default: ""
+      model:
+        description: "Main model, empty for the application default"
+        required: false
+        default: ""
+      effort:
+        description: "Thinking effort"
+        type: choice
+        options: [medium, low, high]
+        default: medium
+
+concurrency:
+  group: sofia-ai-bench
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  bench:
+    name: Bench against the real model
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: sofia-app
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: sofia-app/package-lock.json
+
+      - run: npm ci
+
+      - name: Run the bench
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          RUNS: ${{ inputs.runs }}
+          SCENARIOS: ${{ inputs.scenarios }}
+          MODEL: ${{ inputs.model }}
+          SOFIA_AI_EFFORT: ${{ inputs.effort }}
+        run: |
+          if [ -z "$ANTHROPIC_API_KEY" ]; then
+            echo "::error::Add the repository secret ANTHROPIC_API_KEY (Settings > Secrets and variables > Actions) before running the bench."
+            exit 1
+          fi
+          [[ "$RUNS" =~ ^[1-9][0-9]?$ ]] || { echo "::error::runs must be a number from 1 to 99"; exit 1; }
+          [[ "$SCENARIOS" =~ ^[A-Za-z0-9\ ]*$ ]] || { echo "::error::scenarios must be ids such as C1 C7"; exit 1; }
+          [[ "$MODEL" =~ ^[a-z0-9.-]*$ ]] || { echo "::error::model must be a model id such as claude-sonnet-5-5"; exit 1; }
+          export BENCH_RUNS="$RUNS"
+          if [ -n "$MODEL" ]; then export SOFIA_AI_MODEL="$MODEL"; fi
+          mkdir -p bench-results
+          set +e
+          # Scenario ids are word-split on purpose: one argument per scenario.
+          # shellcheck disable=SC2086
+          npm run --silent ai:bench -- $SCENARIOS | tee bench-results/summary.txt
+          status=${PIPESTATUS[0]}
+          set -e
+          { echo '```'; cat bench-results/summary.txt; echo '```'; } >> "$GITHUB_STEP_SUMMARY"
+          exit "$status"
+
+      - name: Keep the full report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sofia-ai-bench
+          path: sofia-app/bench-results/
+          if-no-files-found: ignore
+          retention-days: 30

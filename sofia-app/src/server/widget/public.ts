@@ -93,24 +93,30 @@ export function isWidgetOpen(widget: PublicWidget) {
   return widget.organizationActive && widget.settings.enabled;
 }
 
-// The chat window's frame-ancestors is read on every widget page load (src/proxy.ts):
-// a short in-memory cache keeps that off the database without delaying a settings change much.
-const EMBEDDING_TTL_MS = 30_000;
-const embeddingCache = new Map<string, { domains: string[] | null; expiresAt: number }>();
+// Read on every page view of the establishment's website (widget.js asks for its
+// config) and every chat window load (frame-ancestors, src/proxy.ts): a short
+// in-memory cache per server instance keeps that off the database without
+// delaying a settings change by more than a few seconds.
+const CACHE_TTL_MS = 30_000;
+const widgetCache = new Map<string, { widget: PublicWidget | null; expiresAt: number }>();
+
+export async function loadPublicWidgetCached(publicId: string, now = Date.now()): Promise<PublicWidget | null> {
+  const cached = widgetCache.get(publicId);
+  if (cached && cached.expiresAt > now) return cached.widget;
+  const widget = await loadPublicWidget(publicId);
+  if (widgetCache.size > 5000) widgetCache.clear();
+  widgetCache.set(publicId, { widget, expiresAt: now + CACHE_TTL_MS });
+  return widget;
+}
 
 /** Allowed domains of a widget, or null when it does not exist or is closed. */
 export async function widgetEmbeddingDomains(publicId: string, now = Date.now()): Promise<string[] | null> {
-  const cached = embeddingCache.get(publicId);
-  if (cached && cached.expiresAt > now) return cached.domains;
-  const widget = await loadPublicWidget(publicId);
-  const domains = widget && isWidgetOpen(widget) ? widget.settings.allowedDomains : null;
-  if (embeddingCache.size > 5000) embeddingCache.clear();
-  embeddingCache.set(publicId, { domains, expiresAt: now + EMBEDDING_TTL_MS });
-  return domains;
+  const widget = await loadPublicWidgetCached(publicId, now);
+  return widget && isWidgetOpen(widget) ? widget.settings.allowedDomains : null;
 }
 
-/** Test helper and settings save: forget cached embedding rules. */
+/** Test helper and settings save: forget cached widgets. */
 export function forgetWidgetEmbedding(publicId?: string) {
-  if (publicId) embeddingCache.delete(publicId);
-  else embeddingCache.clear();
+  if (publicId) widgetCache.delete(publicId);
+  else widgetCache.clear();
 }

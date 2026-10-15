@@ -22,9 +22,9 @@ export function WidgetInstall({ snippet }: { snippet: string }) {
   }
 
   return (
-    <div className="grid gap-3">
-      <div className="relative">
-        <pre className="overflow-x-auto rounded-xl border border-border bg-[#161514] p-4 pr-14 font-mono text-[0.8125rem] leading-relaxed text-[#f3efe9]">
+    <div className="grid min-w-0 gap-3">
+      <div className="relative min-w-0">
+        <pre className="max-w-full overflow-x-auto rounded-xl border border-border bg-[#161514] p-4 pr-14 font-mono text-[0.8125rem] leading-relaxed text-[#f3efe9]">
           <code data-testid="widget-snippet">{snippet}</code>
         </pre>
         <Button

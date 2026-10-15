@@ -54,4 +54,4 @@ SOFIA ne répond à aucune cliente réelle tant qu'aucun canal n'est connecté. 
 
 ## Ce que tu dois faire
 
-Créer une clé API Anthropic sur un compte facturable, puis me l'envoyer. Je l'ajouterai à Vercel (`ANTHROPIC_API_KEY`) et lancerai le banc de test pour mesurer la variance, avant que SOFIA ne parle à une vraie cliente.
+Créer une clé API Anthropic sur un compte facturable, et l'ajouter à Vercel (`ANTHROPIC_API_KEY`) et aux secrets GitHub du dépôt, comme l'explique [`BACKLOG.md`](BACKLOG.md). Je lancerai alors le banc de test pour mesurer la variance, avant que SOFIA ne parle à une vraie cliente.

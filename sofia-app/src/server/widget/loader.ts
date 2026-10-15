@@ -4,9 +4,9 @@
  *   <script src="https://sofia.botflow-ia.fr/widget.js" data-sofia="sof_…" async></script>
  *
  * It asks SOFIA whether the widget may show on this domain, then draws a
- * launcher button in a closed shadow root (the site's CSS cannot reach it, and
- * it cannot reach the site's) and opens the conversation in a sandboxed
- * iframe served by SOFIA. Nothing from the host page is read except its
+ * launcher button in a shadow root (the site's CSS cannot reach it, and it
+ * cannot reach the site's) and opens the conversation in a sandboxed iframe
+ * served by SOFIA: the conversation itself is out of the page's reach. Nothing from the host page is read except its
  * address and the browser's languages. Plain ES2017, no dependencies.
  */
 export const WIDGET_LOADER = String.raw`(function () {
@@ -57,7 +57,7 @@ export const WIDGET_LOADER = String.raw`(function () {
     var host = document.createElement("div");
     host.setAttribute("data-sofia-widget", "");
     host.style.cssText = "position:fixed;bottom:0;" + side + ":0;width:0;height:0;z-index:2147483000;";
-    var root = host.attachShadow ? host.attachShadow({ mode: "closed" }) : host;
+    var root = host.attachShadow ? host.attachShadow({ mode: "open" }) : host;
 
     var style = document.createElement("style");
     style.textContent =

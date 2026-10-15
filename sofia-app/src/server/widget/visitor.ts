@@ -7,6 +7,7 @@ import { visitorContactSchema, visitorMessageSchema } from "@/lib/validation/wid
 import { conversationReference, fillText, isOriginAllowed, pickWidgetLanguage, WIDGET_TEXTS, type WidgetLanguage } from "@/lib/widget";
 import { getLlmProvider } from "@/server/ai/config";
 import { handleInboundMessage, type InboundOutcome } from "@/server/ai/orchestrator";
+import type { LlmProvider } from "@/server/ai/provider";
 import { withTenant, type Transaction } from "@/server/db/context";
 import { consentRecords, conversations, integrations, leads, messages } from "@/server/db/schema";
 import { recordAudit, recordEvent } from "@/server/observability/audit";
@@ -276,7 +277,12 @@ export async function postVisitorMessage(
  * sent (`after()`): the chat window shows SOFIA writing and reads the answer
  * from its next poll. Over the daily budget, the team answers instead.
  */
-export async function answerVisitorMessage(widget: PublicWidget, conversationId: string, now = new Date()): Promise<InboundOutcome> {
+export async function answerVisitorMessage(
+  widget: PublicWidget,
+  conversationId: string,
+  options: { provider?: LlmProvider | null; now?: Date } = {},
+): Promise<InboundOutcome> {
+  const now = options.now ?? new Date();
   const budget = await consumeRateLimit("widgetAiRepliesByOrganization", widget.organizationId);
   if (!budget.allowed) {
     await withTenant(widget.organizationId, async (tx) => {
@@ -302,7 +308,8 @@ export async function answerVisitorMessage(widget: PublicWidget, conversationId:
     return { status: "skipped", reason: "nothing_to_answer" };
   }
 
-  const outcome = await handleInboundMessage(widget.organizationId, conversationId, { provider: getLlmProvider(), now });
+  const provider = options.provider === undefined ? getLlmProvider() : options.provider;
+  const outcome = await handleInboundMessage(widget.organizationId, conversationId, { provider, now });
   if (outcome.status === "answered") {
     // Delivered by the widget itself: the visitor's next poll reads it.
     await withTenant(widget.organizationId, (tx) =>

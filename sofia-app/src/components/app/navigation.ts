@@ -60,7 +60,7 @@ export const NAVIGATION: NavSection[] = [
     items: [
       { label: "WhatsApp", href: "/channels/whatsapp", icon: WhatsAppIcon, channel: "whatsapp" },
       { label: "Instagram", href: "/channels/instagram", icon: InstagramIcon, channel: "instagram" },
-      { label: "Website", href: "/channels/website", icon: GlobeIcon, channel: "website" },
+      { label: "Site web", href: "/channels/website", icon: GlobeIcon, channel: "website" },
     ],
   },
   {

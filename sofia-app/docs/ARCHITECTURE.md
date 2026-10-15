@@ -63,9 +63,10 @@ sofia-app/
 │   │   ├── security/           rate limiting, chiffrement, contexte de requête
 │   │   ├── ai/                 orchestrateur, providers, prompt, garde-fous, recherche
 │   │   ├── channels/           (Phases 4-6) adapters website / WhatsApp / Instagram + mocks
+│   │   ├── widget/             (Phase 4) API publique du widget, visiteuses, script widget.js
 │   │   ├── calendar/           (Phase 7) adapters agenda interne / Google / Calendly
 │   │   └── jobs/               (Phase 8) file de jobs en base + workers
-│   └── proxy.ts                CSP par requête + redirection optimiste vers /login
+│   └── proxy.ts                CSP par requête (frame-ancestors du widget) + redirection optimiste vers /login
 ├── drizzle/                    migrations SQL (générées + RLS)
 ├── scripts/                    migrate, seed, db-setup, setup-env
 ├── tests/                      unit/, integration/, e2e/
@@ -147,7 +148,9 @@ Chaque canal implémente la même interface `ChannelAdapter` : vérifier et pars
 
 WhatsApp utilise exclusivement la **WhatsApp Business Platform (Cloud API)** officielle de Meta, avec vérification de signature `X-Hub-Signature-256`, idempotence par identifiant de message, et respect de la fenêtre de 24 heures (au-delà, seuls des templates approuvés peuvent être envoyés). Instagram utilise l'API Messaging officielle de Meta avec les mêmes garanties. Le widget site est un script léger (`widget.js`) identifié par la clé publique unique de l'établissement (`organizations.widget_public_id`), qui ouvre une iframe servie par SOFIA.
 
-Un canal n'est affiché `CONNECTED` que si la connexion a été réellement établie et vérifiée ; sinon l'interface affiche `NOT CONNECTED` et ce qui manque.
+Le widget site est le premier canal livré (Phase 4). Le script `widget.js` lit la clé publique et demande d'abord la configuration (`/api/widget/{id}/config`), qui ne répond « activé » que pour un domaine autorisé ; il monte alors le bouton et le panneau dans un shadow DOM, et la conversation dans une iframe sandboxée servie par SOFIA (`/widget/{id}`). Cette page n'est affichable que par les domaines autorisés : `proxy.ts` construit son en-tête `frame-ancestors` à partir de la liste, gardée 30 secondes en mémoire, tandis que toutes les autres pages gardent `frame-ancestors 'none'` et `X-Frame-Options: DENY`. L'iframe écrit dans l'API publique (`messages`, `contact`, `whatsapp`) uniquement depuis sa propre origine. La recherche de l'établissement par clé publique est la seule lecture qui traverse les établissements (`withSystem`, `src/server/widget/public.ts`) ; tout le reste s'exécute dans le contexte RLS de l'établissement. La visiteuse est identifiée par un jeton aléatoire de 256 bits gardé dans le stockage local de l'iframe, dont la base ne conserve que l'empreinte SHA-256 (`conversations.external_thread_id`). La réponse de SOFIA est calculée après l'envoi de la réponse HTTP (`after()`), dans la limite d'un budget quotidien par établissement, et la fenêtre la lit en interrogeant l'API à intervalles adaptés à son état. L'adaptateur `website` marque les réponses de l'équipe comme envoyées, et la fenêtre les lit de la même façon.
+
+Un canal n'est affiché `CONNECTED` que si la connexion a été réellement établie et vérifiée (pour le widget, un premier chargement sur un domaine autorisé) ; sinon l'interface affiche `NOT CONNECTED` et ce qui manque.
 
 ## 9. Rendez-vous
 
@@ -173,7 +176,7 @@ Aucune erreur silencieuse : un échec d'envoi WhatsApp, d'appel LLM ou de calend
 
 ## 14. Sécurité
 
-En-têtes de sécurité stricts (HSTS, `nosniff`, `frame-ancestors 'none'`, Permissions-Policy) et Content-Security-Policy avec *nonce* par requête générée dans `proxy.ts`. Server actions protégées par la vérification d'origine de Next.js et par une ré-autorisation systématique dans chaque action. Rate limiting en base sur les points sensibles. Chiffrement AES-256-GCM des identifiants d'intégration (`ENCRYPTION_KEY`, format versionné pour la rotation). Vérification de signature de tous les webhooks. Secrets uniquement en variables d'environnement, validées au démarrage.
+En-têtes de sécurité stricts (HSTS, `nosniff`, `frame-ancestors 'none'` partout sauf sur la fenêtre de conversation du widget, réservée aux domaines autorisés de l'établissement, Permissions-Policy) et Content-Security-Policy avec *nonce* par requête générée dans `proxy.ts`. Server actions protégées par la vérification d'origine de Next.js et par une ré-autorisation systématique dans chaque action. Rate limiting en base sur les points sensibles, dont l'API publique du widget (par adresse IP, par conversation et par établissement). Chiffrement AES-256-GCM des identifiants d'intégration (`ENCRYPTION_KEY`, format versionné pour la rotation). Vérification de signature de tous les webhooks. Secrets uniquement en variables d'environnement, validées au démarrage.
 
 ## 15. RGPD
 
