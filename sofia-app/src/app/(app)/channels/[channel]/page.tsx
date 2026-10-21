@@ -101,17 +101,6 @@ export default async function ChannelPage(props: PageProps<"/channels/[channel]"
                 Connecter {definition.title}
               </Button>
             </div>
-            {channel === "website" ? (
-              <div className="rounded-xl border border-border p-4">
-                <p className="text-sm font-medium">Identifiant de votre widget</p>
-                <p className="mt-1 text-[0.8125rem] text-muted-foreground">
-                  Généré à la création de votre établissement. Il identifiera votre widget dans le script d&apos;intégration.
-                </p>
-                <code className="mt-3 inline-block rounded-md bg-muted px-2.5 py-1.5 font-mono text-[0.8125rem]">
-                  {ctx.organization.widgetPublicId}
-                </code>
-              </div>
-            ) : null}
           </CardContent>
         </Card>
 

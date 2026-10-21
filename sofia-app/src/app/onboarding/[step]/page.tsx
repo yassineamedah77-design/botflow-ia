@@ -18,12 +18,14 @@ import { notFound } from "next/navigation";
 import type * as React from "react";
 
 import { channelStatusLabel, StatusDot } from "@/components/app/status-dot";
+import { WidgetInstall } from "@/components/channels/widget-install";
 import { InstagramIcon, WhatsAppIcon } from "@/components/brand/channel-icons";
 import { SetupChecklist } from "@/components/dashboard/setup-checklist";
 import { EstablishmentForm } from "@/components/onboarding/establishment-form";
 import { HoursEditor } from "@/components/onboarding/hours-editor";
 import { ServicesManager } from "@/components/onboarding/services-manager";
 import { StepList, stepPhase } from "@/components/onboarding/step-list";
+import { SofiaActivation } from "@/components/sofia/sofia-activation";
 import { Badge } from "@/components/ui/badge";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -32,9 +34,13 @@ import { ONBOARDING_STEPS, isOnboardingSlug, type OnboardingSlug } from "@/lib/o
 import { describePrice, WEEKDAYS } from "@/lib/pricing";
 import { requireTenant } from "@/server/auth/dal";
 import { withTenant } from "@/server/db/context";
+import { env } from "@/server/env";
 import { getSetupChecklist, listIntegrations } from "@/server/services/organizations";
 import { getEstablishmentProfile, listActiveServices, listOpeningHours } from "@/server/services/setup";
+import { getSofiaReadiness } from "@/server/services/sofia";
+import { getWidgetChannel } from "@/server/services/widget-settings";
 
+import { setSofiaStatusAction } from "../../(app)/settings/sofia/actions";
 import { archiveServiceAction, createServiceAction, saveEstablishmentAction, saveHoursAction, updateServiceAction } from "../actions";
 
 const DESCRIPTIONS: Record<OnboardingSlug, string> = {
@@ -104,6 +110,8 @@ export default async function OnboardingStepPage(props: PageProps<"/onboarding/[
     services: step === "services" || step === "test" || step === "activation" ? await listActiveServices(tx, organizationId) : [],
     hours: step === "hours" || step === "test" ? await listOpeningHours(tx, organizationId) : [],
     integrations: await listIntegrations(tx, organizationId),
+    widget: step === "widget" || step === "activation" ? await getWidgetChannel(tx, ctx.organization) : null,
+    readiness: step === "activation" ? await getSofiaReadiness(tx, organizationId) : null,
   }));
 
   const index = ONBOARDING_STEPS.findIndex((candidate) => candidate.slug === step);
@@ -116,7 +124,6 @@ export default async function OnboardingStepPage(props: PageProps<"/onboarding/[
   const pricedServices = data.services.filter((service) => describePrice(service.priceType, service.priceCents).configured);
   const unpricedServices = data.services.filter((service) => !describePrice(service.priceType, service.priceCents).configured);
   const openDays = new Set(data.hours.map((range) => range.day));
-  const channelConnected = ["WHATSAPP_CLOUD", "INSTAGRAM_MESSAGING", "WEBSITE_WIDGET"].some((provider) => statusOf(provider) === "CONNECTED");
 
   let content: React.ReactNode;
   switch (step) {
@@ -156,8 +163,8 @@ export default async function OnboardingStepPage(props: PageProps<"/onboarding/[
                 horaires se renseignent dès aujourd&apos;hui : comptez une dizaine de minutes.
               </p>
               <p>
-                Les connexions (calendrier, WhatsApp, Instagram, widget) et l&apos;activation arrivent avec les prochaines versions de SOFIA. Elles sont
-                marquées « Phase » : rien n&apos;est simulé, chaque coche correspond à votre configuration réelle.
+                Le widget de votre site et l&apos;activation de SOFIA sont disponibles. Le calendrier, WhatsApp et Instagram arrivent avec les prochaines
+                versions et sont marqués « Phase » : rien n&apos;est simulé, chaque coche correspond à votre configuration réelle.
               </p>
             </CardContent>
           </Card>
@@ -244,10 +251,52 @@ export default async function OnboardingStepPage(props: PageProps<"/onboarding/[
       );
       break;
 
-    case "whatsapp":
-    case "instagram":
     case "widget": {
-      const channel = CHANNEL_SETUP[step === "widget" ? "website" : step];
+      const widget = data.widget!;
+      const status = widget.status === "DISCONNECTED" ? "DISCONNECTED" : widget.status;
+      content = (
+        <div className="grid gap-6">
+          <Card>
+            <CardHeader>
+              <div className="flex items-start justify-between gap-4">
+                <div className="flex items-center gap-3">
+                  <span className="flex size-10 items-center justify-center rounded-xl border border-border bg-card shadow-xs">
+                    <GlobeIcon className="size-5" aria-hidden />
+                  </span>
+                  <div>
+                    <CardTitle>Site web</CardTitle>
+                    <CardDescription>{CHANNEL_SETUP.website.description}</CardDescription>
+                  </div>
+                </div>
+                <span className="flex shrink-0 items-center gap-2 text-xs text-muted-foreground">
+                  <StatusDot status={status} />
+                  {status === "CONNECTED" && widget.seenOn ? `Installé sur ${widget.seenOn}` : channelStatusLabel(status)}
+                </span>
+              </div>
+            </CardHeader>
+            <CardContent className="grid min-w-0 gap-5">
+              <WidgetInstall snippet={`<script src="${new URL(env().APP_URL).origin}/widget.js" data-sofia="${widget.publicId}" async></script>`} />
+              <div className="flex flex-col gap-3 rounded-xl border border-border bg-muted/30 p-4 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  {widget.settings.allowedDomains.length > 0
+                    ? `Autorisé sur ${widget.settings.allowedDomains.join(", ")}.`
+                    : "Indiquez d'abord le domaine de votre site : ailleurs, le widget ne s'affiche pas."}
+                </p>
+                <Link href="/channels/website" className={buttonVariants({ variant: "outline", className: "shrink-0" })}>
+                  Domaines et apparence
+                  <ArrowRightIcon aria-hidden />
+                </Link>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      );
+      break;
+    }
+
+    case "whatsapp":
+    case "instagram": {
+      const channel = CHANNEL_SETUP[step];
       const Icon = CHANNEL_ICONS[channel.slug];
       const status = statusOf(channel.provider);
       content = (
@@ -346,25 +395,25 @@ export default async function OnboardingStepPage(props: PageProps<"/onboarding/[
     case "activation":
       content = (
         <div className="grid gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle>Avant d&apos;activer SOFIA</CardTitle>
-              <CardDescription>Chaque point est vérifié sur votre configuration réelle.</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ul className="grid gap-3">
-                <Requirement done={data.checklist.profile}>Établissement renseigné</Requirement>
-                <Requirement done={pricedServices.length > 0}>Au moins une prestation avec un prix</Requirement>
-                <Requirement done={data.checklist.hours}>Horaires d&apos;ouverture</Requirement>
-                <Requirement done={channelConnected}>Au moins un canal connecté (WhatsApp, Instagram ou site)</Requirement>
-              </ul>
+          <SofiaActivation
+            status={ctx.organization.sofiaStatus}
+            checks={data.readiness!.checks}
+            canToggle={ctx.can("sofia:toggle")}
+            widget={{ connected: data.widget!.status === "CONNECTED", seenOn: data.widget!.seenOn }}
+            action={setSofiaStatusAction}
+          />
+          <Card className="bg-sofia-soft/40 shadow-none">
+            <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm leading-relaxed text-muted-foreground">
+                <span className="block font-medium text-foreground">Un dernier essai avant d&apos;activer ?</span>
+                La console de test montre ce que SOFIA répondrait, sans rien envoyer.
+              </p>
+              <Link href="/knowledge/test" className={buttonVariants({ variant: "outline", className: "shrink-0" })}>
+                Tester SOFIA
+                <ArrowRightIcon aria-hidden />
+              </Link>
             </CardContent>
           </Card>
-          <PhaseNotice phase={4}>
-            SOFIA sait déjà répondre : essayez-la dans la console de test. L&apos;activation arrive avec le premier canal, le widget du site, car elle
-            demande au moins un canal connecté. Vous pourrez la mettre en pause à tout moment : vos conversations restent alors entre les mains de votre
-            équipe.
-          </PhaseNotice>
         </div>
       );
       break;

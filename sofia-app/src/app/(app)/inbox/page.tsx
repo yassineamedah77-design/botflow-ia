@@ -68,7 +68,8 @@ export default async function InboxPage(props: PageProps<"/inbox">) {
     if (!thread.whatsappWindowOpen) {
       return "La dernière réponse de la cliente date de plus de 24 h : WhatsApp n'autorise alors que les modèles de messages approuvés par Meta (phase 5).";
     }
-    if (!ctx.organization.isDemo) {
+    // The website widget delivers replies itself; WhatsApp and Instagram connect in phases 5 and 6.
+    if (!ctx.organization.isDemo && thread.conversation.channel !== "WEBSITE") {
       return `Pour répondre depuis SOFIA, ${CHANNEL_LABELS[thread.conversation.channel]} doit être connecté (phase ${channelAvailabilityPhase(thread.conversation.channel)}).`;
     }
     return null;

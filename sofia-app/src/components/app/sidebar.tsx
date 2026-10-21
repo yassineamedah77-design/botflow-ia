@@ -144,7 +144,10 @@ const SOFIA_STATUS = {
 function SofiaStatus({ status }: { status: ShellData["organization"]["sofiaStatus"] }) {
   const copy = SOFIA_STATUS[status];
   return (
-    <div className="flex items-center gap-2.5 rounded-xl px-3 py-2">
+    <Link
+      href="/settings/sofia"
+      className="flex items-center gap-2.5 rounded-xl px-3 py-2 transition-colors outline-none hover:bg-sidebar-accent/70 focus-visible:ring-3 focus-visible:ring-sidebar-ring/40"
+    >
       <span className="relative flex size-2.5 shrink-0">
         {copy.pulse ? <span className="absolute inline-flex size-full animate-ping rounded-full bg-sofia/60" /> : null}
         <span className={cn("relative inline-flex size-2.5 rounded-full", copy.dot)} />
@@ -153,7 +156,7 @@ function SofiaStatus({ status }: { status: ShellData["organization"]["sofiaStatu
         <span className="block truncate text-[0.8125rem] font-medium text-foreground">{copy.label}</span>
         <span className="block truncate text-xs text-muted-foreground">{copy.detail}</span>
       </span>
-    </div>
+    </Link>
   );
 }
 

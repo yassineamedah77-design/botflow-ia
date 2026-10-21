@@ -20,11 +20,13 @@ Chaque phase se termine par le même contrôle : lint, typecheck, tests unitaire
 
 **Écart avec le plan :** OpenAI n'est pas implémenté comme secours. Deux modèles Claude partagent le même format de réponse et les mêmes outils, donc le comportement mesuré par le banc de test reste valable en secours. L'interface permet d'ajouter OpenAI plus tard.
 
-**À préparer de ton côté :** une clé API Anthropic sur un compte facturable, pour activer les réponses et lancer le banc de test.
+**À préparer de ton côté :** une clé API Anthropic sur un compte facturable, pour activer les réponses et lancer le banc de test (marche à suivre dans [`BACKLOG.md`](BACKLOG.md)).
 
 ## Phase 4 — Widget site web
 
-Script `widget.js` intégrable en une ligne, iframe isolée, bouton flottant, interface premium, collecte nom / téléphone / email avec consentement, transfert vers WhatsApp. Clé publique par établissement, domaines autorisés, rate limiting par visiteur, protection anti-abus. Premier canal branché sur l'AI Orchestrator de la Phase 3 (chaque message reçu obtient sa réponse vérifiée), et activation de SOFIA par établissement, avec mise en pause à tout moment.
+**Livré dans cette phase** (bilan détaillé dans [`PHASE-4.md`](PHASE-4.md)). Script `widget.js` intégrable en une ligne, qui ne s'affiche que sur les domaines autorisés par l'établissement, avec bouton flottant et conversation dans une iframe isolée du site, en plein écran sur mobile, en français, portugais du Portugal et anglais. Réglages du canal (domaines, couleur, position, accueil, WhatsApp, politique de confidentialité), aperçu dans SOFIA, statut « Connecté » seulement après un vrai chargement sur un domaine autorisé. Collecte du prénom, du nom et d'un téléphone ou d'un email avec consentement marketing séparé et prouvé, fusion avec un contact existant, passage sur WhatsApp avec la référence de la conversation. Premier canal branché sur l'AI Orchestrator de la Phase 3 ; l'équipe reprend et répond depuis l'inbox, et la visiteuse lit la réponse dans le widget. Activation, pause et reprise de SOFIA par établissement, refusées tant que la fiche ou le moteur d'IA ne sont pas prêts. Protection anti-abus : limites par adresse IP et par conversation, champ piège, jeton de visiteuse dont seule l'empreinte est stockée, budget quotidien de réponses de SOFIA par établissement.
+
+**Ajouté en cours de phase, à ta demande :** le [`BACKLOG.md`](BACKLOG.md), qui rassemble ce que toi seul peux faire (clé Anthropic, contrats, comptes Meta, Google et Stripe), ce qui est à optimiser et ce qui mériterait d'être ajouté, et le workflow GitHub « SOFIA AI bench », qui lance le banc de test contre le vrai modèle avec une clé gardée en secret GitHub.
 
 ## Phase 5 — Adapter WhatsApp
 

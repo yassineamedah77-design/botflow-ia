@@ -27,6 +27,13 @@ const serverEnv = {
   AI_PROVIDER: "scripted",
 };
 
+// The widget tests serve an establishment's website on a fake domain that loads
+// widget.js from this local server. Chrome blocks a page of unknown origin from
+// reaching localhost (Local Network Access); in production both sides are public.
+const launchOptions = {
+  args: ["--disable-features=LocalNetworkAccessChecks,BlockInsecurePrivateNetworkRequests,PrivateNetworkAccessRespectPreflightResults"],
+};
+
 const prepare = "tsx --conditions=react-server scripts/e2e-prepare.ts";
 const start = `npx next start -p ${PORT}`;
 
@@ -47,8 +54,8 @@ export default defineConfig({
     screenshot: "only-on-failure",
   },
   projects: [
-    { name: "desktop", use: { ...devices["Desktop Chrome"] }, testIgnore: /responsive\.spec\.ts/ },
-    { name: "mobile", use: { ...devices["Pixel 7"] }, testMatch: /responsive\.spec\.ts/ },
+    { name: "desktop", use: { ...devices["Desktop Chrome"], launchOptions }, testIgnore: /responsive\.spec\.ts/ },
+    { name: "mobile", use: { ...devices["Pixel 7"], launchOptions }, testMatch: /responsive\.spec\.ts/ },
   ],
   webServer: {
     command: process.env.E2E_SKIP_BUILD ? `${prepare} && ${start}` : `${prepare} && npm run build && ${start}`,

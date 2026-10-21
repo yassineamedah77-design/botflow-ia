@@ -1,5 +1,8 @@
 import { NextResponse, type NextRequest } from "next/server";
 
+import { frameAncestors } from "@/lib/widget";
+import { widgetEmbeddingDomains } from "@/server/widget/public";
+
 /**
  * Runs before every page request.
  *
@@ -11,6 +14,8 @@ import { NextResponse, type NextRequest } from "next/server";
  *    action and route handler verifies the session in the database.
  * 3. Sliding session cookie: Server Components cannot set cookies, so the
  *    cookie lifetime is extended here on navigations.
+ * 4. The website widget's chat window (/widget/…) may only be framed by the
+ *    domains its establishment allowed: `frame-ancestors` is built from them.
  */
 
 const SESSION_COOKIES = ["__Host-sofia_session", "sofia_session"] as const;
@@ -25,6 +30,7 @@ const PUBLIC_PREFIXES = [
   "/invitations",
   "/session-expired",
   "/design-system",
+  "/widget",
 ];
 
 function isPublicPath(pathname: string) {
@@ -32,7 +38,7 @@ function isPublicPath(pathname: string) {
   return PUBLIC_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`));
 }
 
-function contentSecurityPolicy(nonce: string, options: { dev: boolean; https: boolean }) {
+function contentSecurityPolicy(nonce: string, options: { dev: boolean; https: boolean; frameAncestors: string }) {
   return [
     "default-src 'self'",
     `script-src 'self' 'nonce-${nonce}' 'strict-dynamic'${options.dev ? " 'unsafe-eval'" : ""}`,
@@ -45,12 +51,24 @@ function contentSecurityPolicy(nonce: string, options: { dev: boolean; https: bo
     "object-src 'none'",
     "base-uri 'self'",
     "form-action 'self'",
-    "frame-ancestors 'none'",
+    `frame-ancestors ${options.frameAncestors}`,
     ...(options.https ? ["upgrade-insecure-requests"] : []),
   ].join("; ");
 }
 
-export function proxy(request: NextRequest) {
+/** Who may frame this page: nobody, except the widget's chat window on its allowed domains. */
+async function framePolicy(pathname: string): Promise<string> {
+  const match = /^\/widget\/([^/]+)\/?$/.exec(pathname);
+  if (!match) return "'none'";
+  try {
+    return frameAncestors((await widgetEmbeddingDomains(decodeURIComponent(match[1]!))) ?? []);
+  } catch {
+    // Unknown or unreadable widget: only SOFIA itself may show it.
+    return "'self'";
+  }
+}
+
+export async function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
   const hasSessionCookie = SESSION_COOKIES.some((name) => request.cookies.has(name));
 
@@ -64,6 +82,7 @@ export function proxy(request: NextRequest) {
   const csp = contentSecurityPolicy(nonce, {
     dev: process.env.NODE_ENV === "development",
     https: request.nextUrl.protocol === "https:",
+    frameAncestors: await framePolicy(pathname),
   });
 
   const requestHeaders = new Headers(request.headers);
@@ -94,7 +113,7 @@ export function proxy(request: NextRequest) {
 export const config = {
   matcher: [
     {
-      source: "/((?!api|_next/static|_next/image|favicon.ico|robots.txt|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
+      source: "/((?!api|_next/static|_next/image|favicon.ico|robots.txt|widget\\.js|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)",
       missing: [
         { type: "header", key: "next-router-prefetch" },
         { type: "header", key: "purpose", value: "prefetch" },
