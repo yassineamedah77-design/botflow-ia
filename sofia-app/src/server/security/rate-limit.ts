@@ -42,6 +42,11 @@ export const rateLimitPolicies = {
   /** Bursts within one conversation. */
   widgetMessagesByConversation: { limit: 8, windowSeconds: 60 },
   widgetContactsByIp: { limit: 10, windowSeconds: 60 * 60 },
+  /** Public demo copies created per visitor IP, and in total, per day: each one is a database copy, and its SOFIA calls are paid. */
+  demoSandboxesByIp: { limit: 3, windowSeconds: 24 * 60 * 60 },
+  demoSandboxesTotal: { limit: 200, windowSeconds: 24 * 60 * 60 },
+  /** Paid model calls across every demo copy (widget and test console), per day. */
+  demoAiCallsTotal: { limit: 3000, windowSeconds: 24 * 60 * 60 },
   /** SOFIA replies to widget visitors per establishment and per day: bounds the model cost of any abuse. */
   widgetAiRepliesByOrganization: { limit: 1000, windowSeconds: 24 * 60 * 60 },
 } as const satisfies Record<string, RateLimitPolicy>;

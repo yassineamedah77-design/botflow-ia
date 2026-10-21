@@ -19,6 +19,8 @@ export default async function LoginPage(props: PageProps<"/login">) {
   if (await getCurrentSession()) {
     redirect(safeRedirectPath(next));
   }
+  // The public demo has no accounts to sign in to: each visitor gets a copy.
+  if (env().DEMO_MODE) redirect("/demo");
 
   return (
     <>

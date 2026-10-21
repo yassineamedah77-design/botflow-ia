@@ -51,6 +51,11 @@ const envSchema = z
     TRUST_PROXY: booleanFlag.default(true),
     /** Public self-service signup. Turn off to onboard establishments by invitation only. */
     SIGNUP_ENABLED: booleanFlag.default(true),
+    /**
+     * Public prospect demo (a separate deployment with its own database):
+     * /demo gives every visitor a fictional copy of Maison Éclat for 24 hours.
+     */
+    DEMO_MODE: booleanFlag.default(false),
     /** Exposes /design-system outside development (staging reviews). */
     SHOW_DESIGN_SYSTEM: booleanFlag.default(false),
     /** When set, /api/health returns detailed checks only with this bearer token. */
@@ -76,6 +81,19 @@ const envSchema = z
         path: ["AI_PROVIDER"],
         message: "scripted is for automated tests only: it never calls a real model",
       });
+    }
+    if (env.DEMO_MODE) {
+      // Anyone on the internet gets an account on the demo: it must never be
+      // the database of real establishments, nor send a real email.
+      if (env.APP_ENV === "production") {
+        ctx.addIssue({ code: "custom", path: ["DEMO_MODE"], message: "is for the separate demo deployment (APP_ENV=staging), never production" });
+      }
+      if (env.SIGNUP_ENABLED) {
+        ctx.addIssue({ code: "custom", path: ["SIGNUP_ENABLED"], message: "must be false with DEMO_MODE: real establishments sign up on the production app" });
+      }
+      if (env.EMAIL_TRANSPORT === "smtp") {
+        ctx.addIssue({ code: "custom", path: ["EMAIL_TRANSPORT"], message: "must not be smtp with DEMO_MODE: demo visitors could make SOFIA email any address" });
+      }
     }
     if (env.EMAIL_TRANSPORT === "smtp" && !env.SMTP_URL) {
       ctx.addIssue({ code: "custom", path: ["SMTP_URL"], message: "is required when EMAIL_TRANSPORT=smtp" });

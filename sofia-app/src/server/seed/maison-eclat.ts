@@ -36,10 +36,10 @@ import { seedDemoActivity, type DemoSeedSummary } from "./demo-activity";
 export const DEMO_ORGANIZATION_SLUG = "maison-eclat";
 
 export const DEMO_USERS = [
-  { email: "camille@maison-eclat.example", name: "Camille Laurent", role: "OWNER" as const },
-  { email: "ines@maison-eclat.example", name: "Inès Moreau", role: "ADMIN" as const },
-  { email: "lea@maison-eclat.example", name: "Léa Martin", role: "STAFF" as const },
-];
+  { email: "camille@maison-eclat.example", name: "Camille Laurent", role: "OWNER" },
+  { email: "ines@maison-eclat.example", name: "Inès Moreau", role: "ADMIN" },
+  { email: "lea@maison-eclat.example", name: "Léa Martin", role: "STAFF" },
+] as const satisfies readonly [DemoUser, DemoUser, DemoUser];
 
 const euros = (amount: number) => Math.round(amount * 100);
 
@@ -225,12 +225,33 @@ export async function seedMaisonEclat(options: { password: string; reset?: boole
   }
 
   const passwordHash = await hashPassword(options.password);
+  const { organizationId, activity } = await createDemoEstablishment({ users: DEMO_USERS, passwordHash });
+  return { organizationId, created: true, activity };
+}
+
+export interface DemoUser {
+  email: string;
+  name: string;
+  role: "OWNER" | "ADMIN" | "STAFF";
+}
+
+/**
+ * Creates one copy of Maison Éclat for the given team (owner first, then an
+ * admin and a staff member): the fixed demo establishment of `db:seed`, or a
+ * prospect's own copy in the public demo (src/server/demo/sandbox.ts).
+ */
+export async function createDemoEstablishment(input: {
+  users: readonly [DemoUser, DemoUser, DemoUser];
+  passwordHash: string;
+  now?: Date;
+}): Promise<{ organizationId: string; userIds: Map<string, string>; activity: DemoSeedSummary }> {
+  const { users: team, passwordHash } = input;
   const organizationId = randomUUID();
-  const now = new Date();
+  const now = input.now ?? new Date();
+  const userIds = new Map<string, string>();
 
   const activity = await withTenant(organizationId, async (tx) => {
-    const userIds = new Map<string, string>();
-    for (const demoUser of DEMO_USERS) {
+    for (const demoUser of team) {
       const [user] = await tx
         .insert(users)
         .values({
@@ -245,7 +266,7 @@ export async function seedMaisonEclat(options: { password: string; reset?: boole
       userIds.set(demoUser.email, user!.id);
     }
 
-    const owner = DEMO_USERS[0]!;
+    const owner = team[0];
     await provisionOrganization(tx, {
       organizationId,
       name: "Maison Éclat",
@@ -256,7 +277,7 @@ export async function seedMaisonEclat(options: { password: string; reset?: boole
       .set({ allowedLanguages: ["fr", "en", "pt"], defaultLanguage: "fr", isDemo: true })
       .where(eq(organizations.id, organizationId));
 
-    for (const demoUser of DEMO_USERS.slice(1)) {
+    for (const demoUser of team.slice(1)) {
       await tx.insert(memberships).values({ organizationId, userId: userIds.get(demoUser.email)!, role: demoUser.role });
     }
 
@@ -355,14 +376,14 @@ export async function seedMaisonEclat(options: { password: string; reset?: boole
       timeZone: "Europe/Paris",
       now,
       team: {
-        ownerId: userIds.get(DEMO_USERS[0]!.email)!,
-        adminId: userIds.get(DEMO_USERS[1]!.email)!,
-        staffId: userIds.get(DEMO_USERS[2]!.email)!,
+        ownerId: userIds.get(team[0].email)!,
+        adminId: userIds.get(team[1].email)!,
+        staffId: userIds.get(team[2].email)!,
       },
       services: insertedServices,
       practitioners: insertedPractitioners,
     });
   });
 
-  return { organizationId, created: true, activity };
+  return { organizationId, userIds, activity };
 }

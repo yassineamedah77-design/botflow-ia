@@ -3,9 +3,11 @@ import { signOutAction } from "@/app/(auth)/actions";
 import { AppShell } from "@/components/app/app-shell";
 import type { ChannelKey, ChannelStatus } from "@/components/app/navigation";
 import { VerifyEmailBanner } from "@/components/app/verify-email-banner";
+import { DemoBanner } from "@/components/demo/demo-banner";
 import { permissionsFor } from "@/lib/auth/roles";
 import { requireTenant } from "@/server/auth/dal";
 import { withTenant } from "@/server/db/context";
+import { env } from "@/server/env";
 import { listIntegrations, listUserOrganizations, type IntegrationProvider } from "@/server/services/organizations";
 import { getShellFeed } from "@/server/services/shell";
 
@@ -51,7 +53,11 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
       }}
       actions={{ switchOrganization: switchOrganizationAction, signOut: signOutAction, markNotificationsRead: markNotificationsReadAction }}
       banner={
-        ctx.user.emailVerifiedAt ? null : <VerifyEmailBanner email={ctx.user.email} action={resendVerificationEmailAction} />
+        env().DEMO_MODE && ctx.organization.isDemo ? (
+          <DemoBanner organizationName={ctx.organization.name} />
+        ) : ctx.user.emailVerifiedAt ? null : (
+          <VerifyEmailBanner email={ctx.user.email} action={resendVerificationEmailAction} />
+        )
       }
     >
       {children}
