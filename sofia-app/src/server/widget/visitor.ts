@@ -15,6 +15,7 @@ import { logger } from "@/server/observability/logger";
 import { generateToken, sha256Hex } from "@/server/security/crypto";
 import { consumeRateLimit, type RateLimitPolicyName } from "@/server/security/rate-limit";
 import type { RequestMeta } from "@/server/security/request";
+import { consumeDemoAiBudget } from "@/server/demo/sandbox";
 import { notify } from "@/server/services/notifications";
 
 import { isWidgetOpen, type PublicWidget } from "./public";
@@ -284,7 +285,7 @@ export async function answerVisitorMessage(
 ): Promise<InboundOutcome> {
   const now = options.now ?? new Date();
   const budget = await consumeRateLimit("widgetAiRepliesByOrganization", widget.organizationId);
-  if (!budget.allowed) {
+  if (!budget.allowed || !(await consumeDemoAiBudget(now))) {
     await withTenant(widget.organizationId, async (tx) => {
       const [conversation] = await tx
         .select({ humanRequestedAt: conversations.humanRequestedAt })

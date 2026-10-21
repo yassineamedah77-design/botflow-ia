@@ -28,6 +28,10 @@ Chaque phase se termine par le même contrôle : lint, typecheck, tests unitaire
 
 **Ajouté en cours de phase, à ta demande :** le [`BACKLOG.md`](BACKLOG.md), qui rassemble ce que toi seul peux faire (clé Anthropic, contrats, comptes Meta, Google et Stripe), ce qui est à optimiser et ce qui mériterait d'être ajouté, et le workflow GitHub « SOFIA AI bench », qui lance le banc de test contre le vrai modèle avec une clé gardée en secret GitHub.
 
+## Démo prospects (avant la Phase 5, à ta demande)
+
+**Livré** (mode d'emploi dans [`DEMO.md`](DEMO.md)). Un lien public où chaque prospect reçoit, sans inscription, sa propre copie de Maison Éclat pour 24 heures : le site web de l'institut avec SOFIA installée, puis le tableau de bord complet avec trois mois d'activité. Déploiement et base séparés de la production, coût de l'IA plafonné.
+
 ## Phase 5 — Adapter WhatsApp
 
 WhatsApp Business Platform (Cloud API) officielle : connexion via Embedded Signup Meta, webhooks signés, idempotence, statuts d'envoi (envoyé, délivré, lu, échec), fenêtre de 24 heures, templates approuvés pour les relances, retries avec backoff, statut de canal visible et alerte admin en cas d'erreur. Mock complet pour les tests.

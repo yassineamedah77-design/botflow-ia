@@ -31,6 +31,7 @@ const PUBLIC_PREFIXES = [
   "/session-expired",
   "/design-system",
   "/widget",
+  "/demo",
 ];
 
 function isPublicPath(pathname: string) {

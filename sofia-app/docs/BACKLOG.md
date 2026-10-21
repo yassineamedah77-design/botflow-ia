@@ -12,6 +12,10 @@ Crée la clé dans la console Anthropic (console.anthropic.com), sur un compte a
 
 Le plus sûr est que tu ajoutes la clé toi-même, à deux endroits, plutôt que de me l'envoyer dans la conversation, où elle resterait dans l'historique. Dans Vercel, projet `sofia-saas`, Settings → Environment Variables : `ANTHROPIC_API_KEY`, environnement Production. Une variable ajoutée ne s'applique qu'aux nouveaux déploiements : relance le dernier déploiement (Deployments → Redeploy), ou attends la prochaine fusion. Dans GitHub, dépôt `botflow-ia`, Settings → Secrets and variables → Actions : un secret `ANTHROPIC_API_KEY`. Ce secret sert au workflow « SOFIA AI bench », qui lance le banc de test contre le vrai modèle uniquement quand on le déclenche à la main, et garde le rapport complet trente jours. Dis-moi quand c'est fait : je lance le banc, je t'envoie les résultats et le coût mesuré, puis tu peux activer SOFIA sur ton établissement.
 
+### Mettre la démo prospects en ligne
+
+La démo est prête dans le code. Il reste à créer sa base Neon et son projet Vercel, puis à brancher `demo.botflow-ia.fr`, comme l'explique [`DEMO.md`](DEMO.md). Si tu autorises le connecteur Neon dans Claude, je peux créer la base moi-même ; sinon, c'est un quart d'heure de ton côté.
+
 ### Ménage des accès
 
 Si ce n'est pas déjà fait, supprime la clé API Brevo, le jeton API Infomaniak et le jeton Vercel créés pendant la mise en ligne : ils ne servent plus. Garde absolument la clé SMTP de Brevo : c'est elle qui envoie les emails de mot de passe, de vérification et d'invitation de la production.

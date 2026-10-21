@@ -93,6 +93,12 @@ const resolveCurrentTenant = cache(async () => {
   return resolveTenant(session);
 });
 
+/** The signed-in user's active establishment, or null (public pages that adapt to a visitor). */
+export async function getCurrentTenant(): Promise<TenantContext | null> {
+  const resolution = await resolveCurrentTenant();
+  return resolution?.kind === "ok" ? resolution.context : null;
+}
+
 /** For pages: the signed-in user's active establishment, or a redirect. */
 export async function requireTenant(): Promise<TenantContext> {
   await requireSession();

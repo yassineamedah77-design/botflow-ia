@@ -179,6 +179,17 @@ describe("environment validation", () => {
     expect(parseEnv({ ...base, SIGNUP_ENABLED: "1" }).SIGNUP_ENABLED).toBe(true);
   });
 
+  it("keeps the public demo away from real establishments and real emails", () => {
+    const demo = { ...base, APP_ENV: "staging", APP_URL: "https://demo.example", DEMO_MODE: "true", SIGNUP_ENABLED: "false" };
+    expect(parseEnv(demo).DEMO_MODE).toBe(true);
+    expect(parseEnv(base).DEMO_MODE).toBe(false);
+    expect(() => parseEnv({ ...demo, SIGNUP_ENABLED: "true" })).toThrow(/SIGNUP_ENABLED/);
+    expect(() => parseEnv({ ...demo, EMAIL_TRANSPORT: "smtp", SMTP_URL: "smtp://localhost:1025" })).toThrow(/EMAIL_TRANSPORT/);
+    expect(() =>
+      parseEnv({ ...demo, APP_ENV: "production", EMAIL_TRANSPORT: "smtp", SMTP_URL: "smtp://localhost:1025" }),
+    ).toThrow(/DEMO_MODE/);
+  });
+
   it("defaults APP_URL to the branch address on Vercel previews only", () => {
     const preview = {
       DATABASE_URL: base.DATABASE_URL,

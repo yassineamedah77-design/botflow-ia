@@ -8,6 +8,7 @@ import { databaseKnowledgeSearch, loadKnowledgeSnapshot } from "@/server/ai/know
 import { runSofiaTurn } from "@/server/ai/orchestrator";
 import type { SofiaAction } from "@/server/ai/reply";
 import type { TenantContext } from "@/server/auth/context";
+import { consumeDemoAiBudget } from "@/server/demo/sandbox";
 import { withTenant } from "@/server/db/context";
 import { AppError } from "@/server/errors";
 import { recordEventDetached } from "@/server/observability/audit";
@@ -65,6 +66,9 @@ export async function testSofia(ctx: TenantContext, transcript: ConsoleTranscrip
   const limit = await consumeRateLimit("sofiaTestsByOrganization", ctx.organization.id);
   if (!limit.allowed) {
     throw new AppError("RATE_LIMITED", `Limite de tests atteinte pour aujourd'hui. Réessayez dans ${formatRetryAfter(limit.retryAfterSeconds)}.`);
+  }
+  if (!(await consumeDemoAiBudget())) {
+    throw new AppError("RATE_LIMITED", "La démonstration a atteint sa limite de tests pour aujourd'hui. Réessayez demain.");
   }
 
   const now = new Date();
