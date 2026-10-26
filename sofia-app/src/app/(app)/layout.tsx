@@ -7,6 +7,7 @@ import { DemoBanner } from "@/components/demo/demo-banner";
 import { permissionsFor } from "@/lib/auth/roles";
 import { requireTenant } from "@/server/auth/dal";
 import { withTenant } from "@/server/db/context";
+import { findPreparedDemo } from "@/server/demo/prepared";
 import { env } from "@/server/env";
 import { listIntegrations, listUserOrganizations, type IntegrationProvider } from "@/server/services/organizations";
 import { getShellFeed } from "@/server/services/shell";
@@ -20,12 +21,14 @@ const CHANNEL_PROVIDERS: Record<ChannelKey, IntegrationProvider> = {
 export default async function AppLayout({ children }: LayoutProps<"/">) {
   const ctx = await requireTenant();
   const organizationId = ctx.organization.id;
-  const [organizations, tenant] = await Promise.all([
+  const demoMode = env().DEMO_MODE && ctx.organization.isDemo;
+  const [organizations, tenant, prepared] = await Promise.all([
     listUserOrganizations(ctx.user.id),
     withTenant(organizationId, async (tx) => ({
       integrations: await listIntegrations(tx, organizationId),
       feed: await getShellFeed(tx, organizationId, ctx.user.id),
     })),
+    demoMode ? findPreparedDemo(ctx.organization.slug) : null,
   ]);
   const { integrations } = tenant;
 
@@ -53,8 +56,8 @@ export default async function AppLayout({ children }: LayoutProps<"/">) {
       }}
       actions={{ switchOrganization: switchOrganizationAction, signOut: signOutAction, markNotificationsRead: markNotificationsReadAction }}
       banner={
-        env().DEMO_MODE && ctx.organization.isDemo ? (
-          <DemoBanner organizationName={ctx.organization.name} />
+        demoMode ? (
+          <DemoBanner organizationName={ctx.organization.name} preparedSlug={prepared?.slug} />
         ) : ctx.user.emailVerifiedAt ? null : (
           <VerifyEmailBanner email={ctx.user.email} action={resendVerificationEmailAction} />
         )

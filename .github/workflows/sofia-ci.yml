@@ -25,7 +25,8 @@ permissions:
 jobs:
   checks:
     name: Lint, types, tests, build, E2E
-    runs-on: ubuntu-latest
+    # Pinned: Playwright cannot install its browser on newer runner images yet.
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     defaults:
       run:
@@ -90,7 +91,8 @@ jobs:
 
   docker:
     name: Docker image
-    runs-on: ubuntu-latest
+    # Same image as the checks job.
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5

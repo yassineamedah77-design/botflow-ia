@@ -56,6 +56,8 @@ const envSchema = z
      * /demo gives every visitor a fictional copy of Maison Éclat for 24 hours.
      */
     DEMO_MODE: booleanFlag.default(false),
+    /** Opens /demo/cliniques, where prospect clinics are prepared for sales calls (demo only). */
+    DEMO_ADMIN_KEY: z.string().min(24, "must be at least 24 characters (openssl rand -base64 32)").optional(),
     /** Exposes /design-system outside development (staging reviews). */
     SHOW_DESIGN_SYSTEM: booleanFlag.default(false),
     /** When set, /api/health returns detailed checks only with this bearer token. */

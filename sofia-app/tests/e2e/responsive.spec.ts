@@ -35,10 +35,11 @@ test.describe("mobile", () => {
     // On a phone the conversation takes the whole screen.
     const frame = page.locator('iframe[title="Conversation"]');
     await expect(page.frameLocator('iframe[title="Conversation"]').getByRole("textbox", { name: "Écrivez votre message…" })).toBeVisible();
-    const box = await frame.boundingBox();
     const viewport = page.viewportSize()!;
-    // (dynamic viewport units round to a fraction of a pixel)
-    expect(box!.width).toBeGreaterThanOrEqual(viewport.width - 2);
-    expect(box!.height).toBeGreaterThanOrEqual(viewport.height - 2);
+    // The panel opens with a short scale-in transition, which the bounding box
+    // includes: measure once it has settled. (Dynamic viewport units round to a
+    // fraction of a pixel.)
+    await expect.poll(async () => (await frame.boundingBox())?.width ?? 0).toBeGreaterThanOrEqual(viewport.width - 2);
+    await expect.poll(async () => (await frame.boundingBox())?.height ?? 0).toBeGreaterThanOrEqual(viewport.height - 2);
   });
 });
