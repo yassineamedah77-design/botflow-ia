@@ -36,7 +36,8 @@ permissions:
 jobs:
   bench:
     name: Bench against the real model
-    runs-on: ubuntu-latest
+    # Same image as SOFIA CI.
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     defaults:
       run:
