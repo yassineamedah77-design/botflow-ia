@@ -32,6 +32,7 @@ const PUBLIC_PREFIXES = [
   "/design-system",
   "/widget",
   "/demo",
+  "/d",
 ];
 
 function isPublicPath(pathname: string) {

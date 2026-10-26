@@ -10,7 +10,7 @@ import { hashPassword } from "@/server/auth/password";
 import { createSession } from "@/server/auth/sessions";
 import { getDb } from "@/server/db/client";
 import { withSystem, withTenant } from "@/server/db/context";
-import { integrations, organizations, users } from "@/server/db/schema";
+import { integrations, memberships, organizations, users } from "@/server/db/schema";
 import { env } from "@/server/env";
 import { logger } from "@/server/observability/logger";
 import { consumeRateLimit } from "@/server/security/rate-limit";
@@ -100,10 +100,24 @@ export async function createDemoSandbox(meta: RequestMeta, now = new Date()): Pr
 export async function deleteExpiredSandboxes(now = new Date()): Promise<number> {
   const cutoff = new Date(now.getTime() - SANDBOX_TTL_MS);
   return withSystem(async (tx) => {
-    const expired = await tx
-      .delete(organizations)
-      .where(and(eq(organizations.isDemo, true), ne(organizations.slug, DEMO_ORGANIZATION_SLUG), lt(organizations.createdAt, cutoff)))
-      .returning({ id: organizations.id });
+    // Visitor copies only: their owner has a visitor account. Prepared clinics
+    // (src/server/demo/prepared.ts) and real establishments are never touched.
+    const copies = await tx
+      .selectDistinct({ id: organizations.id })
+      .from(organizations)
+      .innerJoin(memberships, eq(memberships.organizationId, organizations.id))
+      .innerJoin(users, eq(users.id, memberships.userId))
+      .where(
+        and(
+          eq(organizations.isDemo, true),
+          ne(organizations.slug, DEMO_ORGANIZATION_SLUG),
+          lt(organizations.createdAt, cutoff),
+          like(users.email, `%@${SANDBOX_EMAIL_DOMAIN}`),
+        ),
+      );
+    const expired = copies.length
+      ? await tx.delete(organizations).where(inArray(organizations.id, copies.map((copy) => copy.id))).returning({ id: organizations.id })
+      : [];
     const accounts = await tx
       .select({ id: users.id })
       .from(users)

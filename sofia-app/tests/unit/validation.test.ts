@@ -7,6 +7,7 @@ import {
   resetPasswordSchema,
   signUpSchema,
 } from "@/lib/validation/auth";
+import { preparedDemoFromForm, preparedDemoSchema } from "@/lib/validation/demo";
 import { organizationSettingsSchema } from "@/lib/validation/organization";
 
 describe("password policy", () => {
@@ -106,5 +107,40 @@ describe("establishment settings form", () => {
         allowedLanguages: ["pt", "de"],
       }).success,
     ).toBe(false);
+  });
+});
+
+describe("prospect clinic for a demo", () => {
+  const filled = (services: Array<[string, string, string?]>, extra: Record<string, string> = {}) => {
+    const form: Record<string, string> = { name: "Clínica Sorriso", city: "Porto", language: "pt", weekdayOpens: "09:30", weekdayCloses: "19:00", ...extra };
+    services.forEach(([name, price, duration = ""], index) => {
+      form[`service${index}Name`] = name;
+      form[`service${index}Price`] = price;
+      form[`service${index}Duration`] = duration;
+    });
+    return preparedDemoSchema.safeParse(preparedDemoFromForm(form));
+  };
+
+  it("keeps only the prices on the clinic's website, and never invents one", () => {
+    const parsed = filled([
+      ["Limpeza de pele", "60", "60"],
+      ["Peeling", "45,50 €"],
+      ["Consulta de medicina estética", ""],
+    ]);
+    expect(parsed.success && parsed.data.services).toEqual([
+      { name: "Limpeza de pele", price: 6_000, duration: 60 },
+      { name: "Peeling", price: 4_550, duration: null },
+      { name: "Consulta de medicina estética", price: null, duration: null },
+    ]);
+  });
+
+  it("refuses incomplete or incoherent clinics", () => {
+    expect(filled([]).success).toBe(false);
+    expect(filled([["Limpeza", "gratuit"]]).success).toBe(false);
+    expect(filled([["", "60"]]).success).toBe(false);
+    expect(filled([["Limpeza", "60"]], { weekdayOpens: "19:00", weekdayCloses: "09:00" }).success).toBe(false);
+    expect(filled([["Limpeza", "60"]], { saturdayOpens: "09:30" }).success).toBe(false);
+    expect(filled([["Limpeza", "60"]], { language: "es" }).success).toBe(false);
+    expect(filled([["Limpeza", "60"]], { saturdayOpens: "09:30", saturdayCloses: "13:00" }).success).toBe(true);
   });
 });

@@ -4,7 +4,8 @@ import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 
 /** Top of every page of the public demo: where the visitor is, and the way back to the website. */
-export function DemoBanner({ organizationName }: { organizationName: string }) {
+export function DemoBanner({ organizationName, preparedSlug }: { organizationName: string; preparedSlug?: string | null }) {
+  if (preparedSlug) return <PreparedClinicBanner organizationName={organizationName} slug={preparedSlug} />;
   return (
     <div className="border-b border-sofia/25 bg-sofia-soft px-4 py-2.5 sm:px-8 lg:px-10">
       <div className="mx-auto flex max-w-6xl flex-col gap-2 text-sm text-sofia-strong sm:flex-row sm:items-center sm:justify-between">
@@ -24,6 +25,34 @@ export function DemoBanner({ organizationName }: { organizationName: string }) {
             className={buttonVariants({ size: "sm", variant: "outline", className: "border-sofia/30 bg-transparent text-sofia-strong hover:bg-sofia/10" })}
           >
             Recommencer
+          </Link>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/** A clinic prepared for a sales call: back to its page, or to the list of clinics. */
+function PreparedClinicBanner({ organizationName, slug }: { organizationName: string; slug: string }) {
+  return (
+    <div className="border-b border-sofia/25 bg-sofia-soft px-4 py-2.5 sm:px-8 lg:px-10">
+      <div className="mx-auto flex max-w-6xl flex-col gap-2 text-sm text-sofia-strong sm:flex-row sm:items-center sm:justify-between">
+        <p className="flex items-start gap-2 sm:items-center">
+          <SparklesIcon className="mt-0.5 size-4 shrink-0 sm:mt-0" aria-hidden />
+          <span>
+            <strong className="font-semibold">Démo SOFIA</strong> · {organizationName}, clinique préparée pour un rendez-vous.
+          </span>
+        </p>
+        <div className="flex flex-wrap gap-2">
+          <Link href={`/d/${slug}`} className={buttonVariants({ size: "sm" })}>
+            <ExternalLinkIcon aria-hidden />
+            Page de la clinique
+          </Link>
+          <Link
+            href="/demo/cliniques"
+            className={buttonVariants({ size: "sm", variant: "outline", className: "border-sofia/30 bg-transparent text-sofia-strong hover:bg-sofia/10" })}
+          >
+            Mes cliniques
           </Link>
         </div>
       </div>

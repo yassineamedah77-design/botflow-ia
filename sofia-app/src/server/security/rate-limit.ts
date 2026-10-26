@@ -47,6 +47,8 @@ export const rateLimitPolicies = {
   demoSandboxesTotal: { limit: 200, windowSeconds: 24 * 60 * 60 },
   /** Paid model calls across every demo copy (widget and test console), per day. */
   demoAiCallsTotal: { limit: 3000, windowSeconds: 24 * 60 * 60 },
+  /** Attempts at the demo's clinic-preparation key, per IP. */
+  demoAdminByIp: { limit: 10, windowSeconds: 60 * 60 },
   /** SOFIA replies to widget visitors per establishment and per day: bounds the model cost of any abuse. */
   widgetAiRepliesByOrganization: { limit: 1000, windowSeconds: 24 * 60 * 60 },
 } as const satisfies Record<string, RateLimitPolicy>;
