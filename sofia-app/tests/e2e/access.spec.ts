@@ -44,7 +44,15 @@ test.describe("access control", () => {
     await page.waitForURL("**/dashboard");
     await page.goto("/channels/whatsapp");
     await expect(page.getByText("Non connecté").first()).toBeVisible();
-    await expect(page.getByRole("button", { name: "Connecter WhatsApp" })).toBeDisabled();
+    // Connecting is checked with Meta: a made-up token never shows "Connecté".
+    await page.getByLabel("Identifiant du numéro").fill("106540352242922");
+    await page.getByLabel("Identifiant du compte WhatsApp Business").fill("102290129340398");
+    await page.getByLabel("Jeton d'accès permanent").fill("EAAGinventedTokenForTheE2ETests0123");
+    await page.getByRole("button", { name: "Connecter WhatsApp" }).click();
+    await expect(page.getByText("Un établissement de démonstration ne peut pas être relié à un vrai numéro WhatsApp.")).toBeVisible();
+    await expect(page.getByText("Non connecté").first()).toBeVisible();
+    await page.goto("/channels/instagram");
+    await expect(page.getByRole("button", { name: "Connecter Instagram" })).toBeDisabled();
     await page.goto("/channels/unknown");
     await expect(page.getByRole("heading", { name: "Page introuvable" })).toBeVisible();
   });

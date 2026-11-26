@@ -1,6 +1,6 @@
 # Backlog de SOFIA
 
-Ce document rassemble tout ce qui reste à faire en dehors du code des phases : ce que toi seul peux faire (comptes, clés, contrats), ce qui est à optimiser dans ce qui existe déjà, et ce qui mériterait d'être ajouté. Il est mis à jour à chaque phase. Le plan des phases elles-mêmes reste dans [`ROADMAP.md`](ROADMAP.md). Dernière mise à jour : fin de la Phase 4 (widget site web), octobre 2026.
+Ce document rassemble tout ce qui reste à faire en dehors du code des phases : ce que toi seul peux faire (comptes, clés, contrats), ce qui est à optimiser dans ce qui existe déjà, et ce qui mériterait d'être ajouté. Il est mis à jour à chaque phase. Le plan des phases elles-mêmes reste dans [`ROADMAP.md`](ROADMAP.md). Dernière mise à jour : fin de la Phase 5 (WhatsApp), novembre 2026.
 
 ## 1. Ce que toi seul peux faire
 
@@ -11,6 +11,10 @@ Sans elle, SOFIA ne peut pas être activée en production (le contrôle « Moteu
 Crée la clé dans la console Anthropic (console.anthropic.com), sur un compte avec un moyen de paiement et du crédit, puis fixe une limite de dépense mensuelle dans la même console : c'est le garde-fou budgétaire au-dessus de celui de SOFIA (1 000 réponses par jour et par établissement sur le widget). Une seconde clé pour les prévisualisations permet de suivre le coût des tests à part, mais elle est facultative.
 
 Le plus sûr est que tu ajoutes la clé toi-même, à deux endroits, plutôt que de me l'envoyer dans la conversation, où elle resterait dans l'historique. Dans Vercel, projet `sofia-saas`, Settings → Environment Variables : `ANTHROPIC_API_KEY`, environnement Production. Une variable ajoutée ne s'applique qu'aux nouveaux déploiements : relance le dernier déploiement (Deployments → Redeploy), ou attends la prochaine fusion. Dans GitHub, dépôt `botflow-ia`, Settings → Secrets and variables → Actions : un secret `ANTHROPIC_API_KEY`. Ce secret sert au workflow « SOFIA AI bench », qui lance le banc de test contre le vrai modèle uniquement quand on le déclenche à la main, et garde le rapport complet trente jours. Dis-moi quand c'est fait : je lance le banc, je t'envoie les résultats et le coût mesuré, puis tu peux activer SOFIA sur ton établissement.
+
+### Brancher WhatsApp en production
+
+Le code est prêt (voir [`PHASE-5.md`](PHASE-5.md), section « Ce que tu dois faire ») : ton app Meta, deux variables dans Vercel (`META_APP_SECRET`, `WHATSAPP_WEBHOOK_VERIFY_TOKEN`), l'adresse du webhook dans Meta, puis ton propre numéro connecté dans Canaux → WhatsApp pour une première semaine de test avant celui d'une cliente.
 
 ### Mettre la démo prospects en ligne
 
@@ -36,7 +40,7 @@ Si ce n'est pas déjà fait, supprime la clé API Brevo, le jeton API Infomaniak
 
 | Phase | Ce qu'il faut préparer | Délai à prévoir |
 |---|---|---|
-| 5 — WhatsApp | Meta Business Manager vérifié (justificatifs de l'entreprise), app Meta de type Business, numéro dédié jamais utilisé dans l'application WhatsApp, idéalement le statut de Tech Provider pour connecter les numéros de tes clientes | De quelques jours à plusieurs semaines pour la vérification de l'entreprise |
+| 5 — WhatsApp (livrée) | Le statut de Tech Provider, pour remplacer le formulaire de connexion par l'Embedded Signup de Meta (la cliente connecte son numéro en trois clics, sans manipuler de jeton) | Plusieurs semaines : vérification de l'entreprise, puis revue de l'app par Meta |
 | 6 — Instagram | Compte Instagram professionnel relié à une page Facebook (le tien pour les tests), et la revue d'app Meta pour les permissions de messagerie | La revue Meta se compte en jours, parfois en semaines, et demande une vidéo de démonstration que je préparerai |
 | 7 — Rendez-vous | Un projet Google Cloud avec son écran de consentement, à faire vérifier par Google : l'accès aux agendas est un accès « sensible ». Un compte Calendly pour l'adaptateur Calendly | Plusieurs jours à plusieurs semaines pour la vérification Google ; sans elle, l'écran d'autorisation affiche un avertissement et le nombre d'utilisateurs est plafonné |
 | 8 — Relances et campagnes | Le sous-domaine d'envoi des campagnes dans Brevo (enregistrements DNS chez Infomaniak), le nom d'expéditeur des SMS et des crédits SMS, et la vérification des règles portugaises de prospection par SMS et email | Quelques jours pour le DNS et l'expéditeur ; la vérification juridique portugaise avant d'ouvrir ce pays |
@@ -58,6 +62,9 @@ Rien de ce tableau ne bloque le lancement. Chaque ligne dit quand l'amélioratio
 | Documents de la Knowledge Base | Collés en texte | Import de PDF et de pages web | Quand une cliente le demande |
 | Conservation des conversations anonymes | Une visiteuse qui ne laisse pas ses coordonnées garde une fiche anonyme, conservée comme les autres contacts (3 ans par défaut) | Une durée plus courte pour les conversations sans coordonnées, appliquée par la purge automatique, au nom de la minimisation des données du RGPD | Phase 10, avec la purge |
 | Accessibilité | Soignée à la conception (libellés des champs et des boutons, contraste calculé), sans contrôle automatique | Un contrôle automatique (axe) dans les tests de bout en bout, pour l'application et le widget | Au fil de l'eau |
+| Messages vocaux et photos sur WhatsApp | Rangés dans l'inbox avec la mention « Message vocal reçu » ; l'équipe est prévenue mais ne peut pas encore les écouter ni les voir dans SOFIA | Afficher les médias dans l'inbox (téléchargés chez Meta à la demande), puis transcrire les messages vocaux pour que SOFIA y réponde | Dès la première cliente WhatsApp : au Portugal surtout, le vocal est très courant |
+| Connexion WhatsApp | Formulaire à trois valeurs copiées du WhatsApp Manager | Embedded Signup de Meta | Dès le statut de Tech Provider obtenu |
+| Modèles de messages WhatsApp | Envoi prêt dans le code, sans écran | Liste des modèles approuvés et envoi depuis l'inbox quand la fenêtre de 24 h est fermée | Phase 8, avec les relances |
 | Site vitrine (racine du dépôt) | 26 erreurs de lint relevées à l'audit, et la route `/api/lead` écrit le formulaire complet dans les journaux de Vercel | Corriger le lint, et ne plus écrire de données personnelles en clair dans les journaux (point RGPD) | À planifier, c'est hors de SOFIA |
 
 ## 3. À ajouter

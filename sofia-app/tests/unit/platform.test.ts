@@ -169,6 +169,13 @@ describe("environment validation", () => {
     ).not.toThrow();
   });
 
+  it("sends WhatsApp tokens to Meta only, in production", () => {
+    const production = { ...base, APP_ENV: "production", APP_URL: "https://app.example", EMAIL_TRANSPORT: "smtp", SMTP_URL: "smtp://localhost:1025" };
+    expect(parseEnv(production)).toMatchObject({ WHATSAPP_GRAPH_URL: "https://graph.facebook.com", WHATSAPP_GRAPH_VERSION: "v23.0" });
+    expect(() => parseEnv({ ...production, WHATSAPP_GRAPH_URL: "https://graph.test" })).toThrow(/WHATSAPP_GRAPH_URL/);
+    expect(() => parseEnv({ ...base, WHATSAPP_WEBHOOK_VERIFY_TOKEN: "court" })).toThrow(/WHATSAPP_WEBHOOK_VERIFY_TOKEN/);
+  });
+
   it("rejects weak encryption keys and non-postgres URLs", () => {
     expect(() => parseEnv({ ...base, ENCRYPTION_KEY: "short" })).toThrow(/ENCRYPTION_KEY/);
     expect(() => parseEnv({ ...base, DATABASE_URL: "mysql://localhost/db" })).toThrow(/DATABASE_URL/);

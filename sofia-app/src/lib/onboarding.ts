@@ -40,7 +40,7 @@ export const SETUP_ITEMS: SetupItem[] = [
   { key: "services", label: "Prestations", description: "SOFIA ne donne que les prix et durées que vous avez renseignés.", step: "services" },
   { key: "hours", label: "Horaires", description: "Utilisés pour proposer des créneaux réels, jamais inventés.", step: "hours" },
   { key: "calendar", label: "Calendrier", description: "Agenda SOFIA, Google Calendar ou Calendly pour réserver sans double réservation.", step: "calendar", phase: 7 },
-  { key: "whatsapp", label: "WhatsApp", description: "Connexion officielle WhatsApp Business Platform (Meta).", step: "whatsapp", phase: 5 },
+  { key: "whatsapp", label: "WhatsApp", description: "Connexion officielle WhatsApp Business Platform (Meta).", step: "whatsapp" },
   { key: "instagram", label: "Instagram", description: "Messages privés Instagram via l'API officielle de Meta.", step: "instagram", phase: 6 },
   { key: "widget", label: "Widget", description: "Une ligne de code à ajouter sur votre site.", step: "widget" },
   { key: "sofiaActive", label: "SOFIA activée", description: "SOFIA commence à répondre à vos clientes, 24 h/24.", step: "activation" },

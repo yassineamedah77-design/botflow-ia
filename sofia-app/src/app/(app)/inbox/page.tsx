@@ -66,11 +66,13 @@ export default async function InboxPage(props: PageProps<"/inbox">) {
     if (!thread) return null;
     if (thread.conversation.handlingMode !== "HUMAN_ACTIVE") return "SOFIA répond à cette conversation. Prenez-la pour répondre vous-même.";
     if (!thread.whatsappWindowOpen) {
-      return "La dernière réponse de la cliente date de plus de 24 h : WhatsApp n'autorise alors que les modèles de messages approuvés par Meta (phase 5).";
+      return "La dernière réponse de la cliente date de plus de 24 h : WhatsApp n'autorise alors que les modèles de messages approuvés par Meta, qui serviront aux relances automatiques.";
     }
-    // The website widget delivers replies itself; WhatsApp and Instagram connect in phases 5 and 6.
-    if (!ctx.organization.isDemo && thread.conversation.channel !== "WEBSITE") {
-      return `Pour répondre depuis SOFIA, ${CHANNEL_LABELS[thread.conversation.channel]} doit être connecté (phase ${channelAvailabilityPhase(thread.conversation.channel)}).`;
+    // The website widget delivers replies itself; WhatsApp needs its number connected, Instagram arrives in phase 6.
+    if (!ctx.organization.isDemo && !thread.channelConnected) {
+      return thread.conversation.channel === "INSTAGRAM"
+        ? `Pour répondre depuis SOFIA, ${CHANNEL_LABELS.INSTAGRAM} doit être connecté (phase ${channelAvailabilityPhase("INSTAGRAM")}).`
+        : `Pour répondre depuis SOFIA, ${CHANNEL_LABELS[thread.conversation.channel]} doit être connecté : Canaux → ${CHANNEL_LABELS[thread.conversation.channel]}.`;
     }
     return null;
   })();

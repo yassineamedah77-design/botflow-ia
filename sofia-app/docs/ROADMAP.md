@@ -34,9 +34,9 @@ Chaque phase se termine par le même contrôle : lint, typecheck, tests unitaire
 
 ## Phase 5 — Adapter WhatsApp
 
-WhatsApp Business Platform (Cloud API) officielle : connexion via Embedded Signup Meta, webhooks signés, idempotence, statuts d'envoi (envoyé, délivré, lu, échec), fenêtre de 24 heures, templates approuvés pour les relances, retries avec backoff, statut de canal visible et alerte admin en cas d'erreur. Mock complet pour les tests.
+**Livré dans cette phase** (bilan détaillé dans [`PHASE-5.md`](PHASE-5.md)). WhatsApp Business Platform (Cloud API) officielle : connexion d'un numéro vérifiée auprès de Meta avant d'afficher « Connecté », jeton chiffré, webhook signé et vérifié, messages rejoués ignorés, statuts d'envoi (envoyé, remis, lu, échec) qui n'avancent que dans le bon sens, fenêtre de 24 heures respectée, nouvelles tentatives avec délai croissant quand Meta est saturé, statut du canal et alerte à l'équipe quand Meta refuse le jeton ou qu'un message n'est pas remis. SOFIA répond aux messages écrits, regroupe les rafales de messages en une seule réponse, et laisse à l'équipe les messages vocaux, photos et documents. Serveur Meta simulé pour les tests.
 
-**À préparer de ton côté dès maintenant**, car les délais Meta se comptent en jours voire en semaines : un Meta Business Manager vérifié (justificatifs de l'entreprise), une app Meta de type Business, un numéro de téléphone dédié non utilisé dans l'application WhatsApp, et idéalement le statut de Tech Provider pour connecter les numéros de tes clientes.
+**Écart avec le plan :** la connexion se fait en collant trois valeurs du WhatsApp Manager (identifiant du numéro, identifiant du compte, jeton permanent d'utilisateur système), pas encore par l'Embedded Signup de Meta. L'Embedded Signup demande le statut de Tech Provider, que BotFlow n'a pas encore ; il remplacera ce formulaire dès que ce statut sera obtenu. L'envoi des modèles de messages approuvés est prêt côté code et servira aux relances de la Phase 8.
 
 ## Phase 6 — Adapter Instagram
 
