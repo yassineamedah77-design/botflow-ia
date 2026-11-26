@@ -163,8 +163,8 @@ export default async function OnboardingStepPage(props: PageProps<"/onboarding/[
                 horaires se renseignent dès aujourd&apos;hui : comptez une dizaine de minutes.
               </p>
               <p>
-                Le widget de votre site et l&apos;activation de SOFIA sont disponibles. Le calendrier, WhatsApp et Instagram arrivent avec les prochaines
-                versions et sont marqués « Phase » : rien n&apos;est simulé, chaque coche correspond à votre configuration réelle.
+                Le widget de votre site, WhatsApp et l&apos;activation de SOFIA sont disponibles. Le calendrier et Instagram arrivent avec les
+                prochaines versions et sont marqués « Phase » : rien n&apos;est simulé, chaque coche correspond à votre configuration réelle.
               </p>
             </CardContent>
           </Card>
@@ -329,15 +329,33 @@ export default async function OnboardingStepPage(props: PageProps<"/onboarding/[
                   </li>
                 ))}
               </ul>
-              <p className="mt-4 text-[0.8125rem] leading-relaxed text-muted-foreground">
-                Préparez ces éléments dès maintenant : la connexion prendra ensuite quelques minutes.
-              </p>
+              {step === "instagram" ? (
+                <p className="mt-4 text-[0.8125rem] leading-relaxed text-muted-foreground">
+                  Préparez ces éléments dès maintenant : la connexion prendra ensuite quelques minutes.
+                </p>
+              ) : null}
             </CardContent>
           </Card>
-          <PhaseNotice phase={channel.phase}>
-            La connexion {channel.title === "Site web" ? "du widget" : channel.title} sera disponible en phase {channel.phase}. Le statut
-            « Connecté » ne s&apos;affichera qu&apos;après une connexion réellement vérifiée.
-          </PhaseNotice>
+          {step === "whatsapp" ? (
+            <Card>
+              <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <p className="text-sm leading-relaxed text-muted-foreground">
+                  {status === "CONNECTED"
+                    ? "Votre numéro est connecté : SOFIA reçoit les messages WhatsApp et y répond."
+                    : "Collez l'identifiant de votre numéro, celui de votre compte WhatsApp Business et un jeton d'accès permanent : SOFIA les vérifie auprès de Meta."}
+                </p>
+                <Link href="/channels/whatsapp" className={buttonVariants({ variant: status === "CONNECTED" ? "outline" : "default", className: "shrink-0" })}>
+                  {status === "CONNECTED" ? "Voir le numéro" : "Connecter le numéro"}
+                  <ArrowRightIcon aria-hidden />
+                </Link>
+              </CardContent>
+            </Card>
+          ) : (
+            <PhaseNotice phase={channel.phase}>
+              La connexion {channel.title} sera disponible en phase {channel.phase}. Le statut « Connecté » ne s&apos;affichera qu&apos;après une
+              connexion réellement vérifiée.
+            </PhaseNotice>
+          )}
         </div>
       );
       break;

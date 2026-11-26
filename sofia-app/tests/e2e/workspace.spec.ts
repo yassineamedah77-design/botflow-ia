@@ -93,8 +93,10 @@ test.describe("onboarding", () => {
     else await expect(page.getByRole("switch").nth(6)).toBeChecked();
 
     // Steps that depend on later phases say so, without fake buttons.
-    await page.goto("/onboarding/whatsapp");
-    await expect(page.getByText("Disponible en phase 5", { exact: true })).toBeVisible();
+    await page.goto("/onboarding/instagram");
+    await expect(page.getByText("Disponible en phase 6", { exact: true })).toBeVisible();
     await expect(page.getByRole("button", { name: /Connecter/ })).toHaveCount(0);
+    await page.goto("/onboarding/whatsapp");
+    await expect(page.getByRole("link", { name: "Connecter le numéro" })).toHaveAttribute("href", "/channels/whatsapp");
   });
 });

@@ -51,6 +51,10 @@ export const rateLimitPolicies = {
   demoAdminByIp: { limit: 10, windowSeconds: 60 * 60 },
   /** SOFIA replies to widget visitors per establishment and per day: bounds the model cost of any abuse. */
   widgetAiRepliesByOrganization: { limit: 1000, windowSeconds: 24 * 60 * 60 },
+  /** The same bound for WhatsApp: a flood of messages on the number cannot run up the model bill. */
+  whatsappAiRepliesByOrganization: { limit: 1000, windowSeconds: 24 * 60 * 60 },
+  /** Connection attempts per establishment: each one calls Meta with the token typed in. */
+  whatsappConnectionsByOrganization: { limit: 10, windowSeconds: 60 * 60 },
 } as const satisfies Record<string, RateLimitPolicy>;
 
 export type RateLimitPolicyName = keyof typeof rateLimitPolicies;

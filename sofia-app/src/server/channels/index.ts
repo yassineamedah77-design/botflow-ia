@@ -1,13 +1,18 @@
 import "server-only";
 
+import { and, eq } from "drizzle-orm";
+
 import type { Transaction } from "@/server/db/context";
+import { integrations } from "@/server/db/schema";
 import { AppError } from "@/server/errors";
+import { markWhatsappTokenRejected, readWhatsappCredentials } from "@/server/whatsapp/connection";
+import { GraphError, sendTextMessage } from "@/server/whatsapp/graph";
 
 /*
  * Outbound messages go through one adapter per channel (specification §36:
- * architecture, adapter, mock, visible status). The website widget is live
- * (Phase 4); WhatsApp Cloud API and Instagram Messaging plug in here in
- * phases 5 and 6. Until a channel is really connected, sending is refused
+ * architecture, adapter, mock, visible status). The website widget (Phase 4)
+ * and the WhatsApp Cloud API (Phase 5) are live; Instagram Messaging plugs in
+ * here in Phase 6. Until a channel is really connected, sending is refused
  * with a clear message: nothing pretends to be delivered.
  */
 
@@ -61,24 +66,75 @@ export class ChannelNotConnectedError extends AppError {
   constructor(channel: ChannelName) {
     super(
       "UNAVAILABLE",
-      `Pour répondre depuis SOFIA, ${CHANNEL_NAMES[channel]} doit être connecté. Cette connexion arrive en phase ${AVAILABLE_IN_PHASE[channel]}.`,
+      channel === "INSTAGRAM"
+        ? `Pour répondre depuis SOFIA, ${CHANNEL_NAMES[channel]} doit être connecté. Cette connexion arrive en phase ${AVAILABLE_IN_PHASE[channel]}.`
+        : `Pour répondre depuis SOFIA, ${CHANNEL_NAMES[channel]} doit être connecté : Canaux → ${channel === "WHATSAPP" ? "WhatsApp" : "Site web"}.`,
     );
   }
 }
 
+/** WhatsApp accepted nothing: the message is not sent, and the reason is one the team can act on. */
+export class ChannelDeliveryError extends AppError {
+  constructor(
+    message: string,
+    readonly providerCode: number | null,
+  ) {
+    super("UNAVAILABLE", message);
+  }
+}
+
+function whatsappFailureMessage(error: GraphError): string {
+  if (error.isAuthError) return "Meta refuse le jeton d'accès de votre numéro WhatsApp : reconnectez-le dans Canaux → WhatsApp.";
+  if (error.isOutsideWindow) return "La dernière réponse de la cliente date de plus de 24 h : WhatsApp n'autorise alors que les modèles de messages approuvés par Meta.";
+  if (error.code === 131026) return "Ce numéro ne peut pas recevoir de message WhatsApp (il n'utilise pas WhatsApp, ou n'a pas accepté les conditions récentes).";
+  if (error.code === 131021) return "WhatsApp refuse d'envoyer un message à votre propre numéro.";
+  if (error.isTransient) return "WhatsApp est momentanément indisponible : le message n'est pas parti. Réessayez dans quelques minutes.";
+  return `WhatsApp a refusé le message : ${error.message}`;
+}
+
+/** Sends on the establishment's own number, with the token kept encrypted in its integration. */
+function whatsappAdapter(integration: { id: string; organizationId: string; phoneNumberId: string; accessToken: string }): ChannelAdapter {
+  return {
+    channel: "WHATSAPP",
+    async send(message) {
+      if (!message.externalThreadId) throw new ChannelDeliveryError("Cette conversation WhatsApp n'a pas de destinataire.", null);
+      try {
+        const id = await sendTextMessage(integration.phoneNumberId, message.externalThreadId, message.body, { accessToken: integration.accessToken });
+        // Accepted by WhatsApp; "delivered" and "read" arrive later through the webhook.
+        return { externalMessageId: id, status: "SENT", simulated: false };
+      } catch (error) {
+        if (!(error instanceof GraphError)) throw error;
+        if (error.isAuthError) await markWhatsappTokenRejected(integration.organizationId, integration.id, error.message);
+        throw new ChannelDeliveryError(whatsappFailureMessage(error), error.code);
+      }
+    },
+  };
+}
+
 /**
  * The adapter able to deliver on `channel` for this establishment, or a
- * ChannelNotConnectedError. Phases 5 and 6 register the WhatsApp and
- * Instagram adapters here, each after checking its integration is CONNECTED.
+ * ChannelNotConnectedError. WhatsApp sends only while its integration is
+ * CONNECTED; Phase 6 registers Instagram the same way.
  */
 export async function getChannelAdapter(
-  _tx: Transaction,
+  tx: Transaction,
   organization: { id: string; isDemo: boolean },
   channel: ChannelName,
 ): Promise<ChannelAdapter> {
   // A widget conversation only exists because a visitor wrote from the widget: its window can always read the reply.
   if (channel === "WEBSITE") return websiteAdapter;
   if (organization.isDemo) return sandboxAdapter(channel);
+  if (channel === "WHATSAPP") {
+    const [integration] = await tx
+      .select({ id: integrations.id, phoneNumberId: integrations.externalAccountId, credentialsEncrypted: integrations.credentialsEncrypted })
+      .from(integrations)
+      .where(and(eq(integrations.organizationId, organization.id), eq(integrations.provider, "WHATSAPP_CLOUD"), eq(integrations.status, "CONNECTED")))
+      .limit(1);
+    const credentials = readWhatsappCredentials(integration?.credentialsEncrypted ?? null);
+    if (integration?.phoneNumberId && credentials) {
+      return whatsappAdapter({ id: integration.id, organizationId: organization.id, phoneNumberId: integration.phoneNumberId, accessToken: credentials.accessToken });
+    }
+  }
   throw new ChannelNotConnectedError(channel);
 }
 

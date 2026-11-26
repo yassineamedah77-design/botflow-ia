@@ -28,8 +28,8 @@ export const CHANNEL_SETUP: Record<ChannelSlug, ChannelSetup> = {
     description: "SOFIA répond sur votre numéro WhatsApp Business, via l'API officielle de Meta.",
     requirements: [
       "Un compte Meta Business vérifié (justificatifs de l'entreprise)",
-      "Un numéro de téléphone dédié, non utilisé dans l'application WhatsApp",
-      "La connexion à la WhatsApp Business Platform (Cloud API), sans solution non officielle",
+      "Un numéro de téléphone dédié, enregistré sur la WhatsApp Business Platform (Cloud API) et non utilisé dans l'application WhatsApp",
+      "Un utilisateur système Meta et son jeton d'accès permanent (autorisations whatsapp_business_messaging et whatsapp_business_management)",
       "Des modèles de messages approuvés par Meta pour les relances au-delà de 24 h",
     ],
   },

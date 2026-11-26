@@ -75,6 +75,19 @@ const envSchema = z
     SOFIA_AI_FALLBACK_MODEL: z.string().default("claude-sonnet-5-5"),
     /** How much the model thinks before answering: more is slower, costlier and steadier. */
     SOFIA_AI_EFFORT: z.enum(["low", "medium", "high"]).default("medium"),
+
+    /**
+     * WhatsApp Business Platform (Cloud API). BotFlow's Meta app receives the
+     * webhooks of every connected number: its secret signs each delivery
+     * (X-Hub-Signature-256), and the verify token answers Meta's subscription
+     * check. Without them, the webhook refuses everything.
+     */
+    META_APP_SECRET: z.string().min(16).optional(),
+    WHATSAPP_WEBHOOK_VERIFY_TOKEN: z.string().min(24, "must be at least 24 characters (openssl rand -hex 24)").optional(),
+    /** Graph API version, bumped when Meta retires the current one (about two years after its release). */
+    WHATSAPP_GRAPH_VERSION: z.string().regex(/^v\d+\.\d+$/, "must look like v23.0").default("v23.0"),
+    /** Graph API address: only changed by tests, which point it at a local mock. */
+    WHATSAPP_GRAPH_URL: z.url().transform((value) => value.replace(/\/+$/, "")).default("https://graph.facebook.com"),
   })
   .superRefine((env, ctx) => {
     if (env.AI_PROVIDER === "scripted" && (env.APP_ENV === "production" || env.APP_ENV === "staging")) {
@@ -110,6 +123,10 @@ const envSchema = z
       }
       if (!env.APP_URL.startsWith("https://")) {
         ctx.addIssue({ code: "custom", path: ["APP_URL"], message: "must use https in production" });
+      }
+      if (env.WHATSAPP_GRAPH_URL !== "https://graph.facebook.com") {
+        // Access tokens travel with every call: they only ever go to Meta.
+        ctx.addIssue({ code: "custom", path: ["WHATSAPP_GRAPH_URL"], message: "must be https://graph.facebook.com in production" });
       }
     }
   });

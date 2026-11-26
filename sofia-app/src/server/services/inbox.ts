@@ -7,7 +7,7 @@ import type { InboxFilters } from "@/lib/inbox-filters";
 import type { TenantContext } from "@/server/auth/context";
 import { getChannelAdapter } from "@/server/channels";
 import { withTenant, type Transaction } from "@/server/db/context";
-import { appointments, conversations, leadNotes, leads, memberships, messages, services, users } from "@/server/db/schema";
+import { appointments, conversations, integrations, leadNotes, leads, memberships, messages, services, users } from "@/server/db/schema";
 import { AppError } from "@/server/errors";
 import { recordAudit, recordEvent } from "@/server/observability/audit";
 import type { RequestMeta } from "@/server/security/request";
@@ -239,11 +239,26 @@ export async function getConversationThread(
     nextAppointment: nextAppointment ?? null,
     serviceName: service?.name ?? null,
     notes: notes.map((note) => ({ ...note, authorName: note.authorUserId ? (teamName.get(note.authorUserId) ?? "Équipe") : "SOFIA" })),
+    /** Whether the team's replies can leave SOFIA on this conversation's channel. */
+    channelConnected: await isChannelConnected(tx, organizationId, conversation.channel),
     /** WhatsApp free-form window: open, or closed (only an approved template could be sent). */
     whatsappWindowOpen:
       conversation.channel !== "WHATSAPP" ||
       (conversation.lastInboundAt !== null && now.getTime() - conversation.lastInboundAt.getTime() < WHATSAPP_SESSION_MS),
   };
+}
+
+const CHANNEL_PROVIDER = { WHATSAPP: "WHATSAPP_CLOUD", INSTAGRAM: "INSTAGRAM_MESSAGING" } as const;
+
+async function isChannelConnected(tx: Transaction, organizationId: string, channel: "WHATSAPP" | "INSTAGRAM" | "WEBSITE") {
+  // The widget's window reads replies from SOFIA itself: always deliverable.
+  if (channel === "WEBSITE") return true;
+  const [integration] = await tx
+    .select({ id: integrations.id })
+    .from(integrations)
+    .where(and(eq(integrations.organizationId, organizationId), eq(integrations.provider, CHANNEL_PROVIDER[channel]), eq(integrations.status, "CONNECTED")))
+    .limit(1);
+  return Boolean(integration);
 }
 
 export type ConversationThread = NonNullable<Awaited<ReturnType<typeof getConversationThread>>>;

@@ -46,6 +46,8 @@ Renseigne ensuite les variables d'environnement, séparément pour **Production*
 | `SIGNUP_ENABLED` | `true` au lancement : l'inscription est aujourd'hui le seul moyen de créer un établissement, le tien comme ceux de tes clientes. Avec `false`, seules les invitations dans un établissement existant restent possibles |
 | `HEALTHCHECK_TOKEN` | Une valeur aléatoire, pour lire le détail de `/api/health` |
 | `ANTHROPIC_API_KEY` | La clé API Anthropic qui permet à SOFIA de répondre (console Anthropic, compte facturable). Sans elle, l'application fonctionne et l'équipe garde la main. Pour Preview, une clé séparée permet de suivre les coûts des tests à part |
+| `META_APP_SECRET`, `WHATSAPP_WEBHOOK_VERIFY_TOKEN` | Production seulement : la clé secrète de ton app Meta et le jeton de vérification du webhook WhatsApp (voir [`PHASE-5.md`](PHASE-5.md)). Sans elles, aucun message WhatsApp n'entre |
+| `WHATSAPP_GRAPH_VERSION` | Facultatif : `v23.0` par défaut, à monter quand Meta annonce la fin de cette version |
 | `SOFIA_AI_MODEL`, `SOFIA_AI_FALLBACK_MODEL`, `SOFIA_AI_EFFORT` | Facultatifs : `claude-opus-5-5`, `claude-sonnet-5-5` et `medium` par défaut |
 
 La liste complète, avec les valeurs par défaut, est dans `.env.example`. Une variable invalide est signalée dans les journaux de Vercel dès le démarrage, et l'application refuse alors de servir les pages plutôt que de fonctionner à moitié.
@@ -83,4 +85,4 @@ Après le premier déploiement, ouvre `https://sofia.botflow-ia.fr/api/health` :
 
 ## Ce qui viendra avec les phases suivantes
 
-Les relances automatiques, rappels et campagnes (Phase 8) s'appuieront sur une tâche planifiée qui appelle l'application chaque minute ; elle se configurera avec les Cron Jobs de Vercel (ou n8n). Les webhooks de WhatsApp et d'Instagram (phases 5 et 6) demanderont l'adresse publique en https de l'application, que ce déploiement fournit déjà.
+Les relances automatiques, rappels et campagnes (Phase 8) s'appuieront sur une tâche planifiée qui appelle l'application chaque minute ; elle se configurera avec les Cron Jobs de Vercel (ou n8n). Le webhook de WhatsApp (Phase 5) reçoit les messages à l'adresse `https://sofia.botflow-ia.fr/api/webhooks/whatsapp`, et celui d'Instagram (Phase 6) utilisera la même adresse publique en https.
